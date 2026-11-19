@@ -7,153 +7,295 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
 <style>
 :root {
-  --bg: #f1f5f9; --surface: rgba(255, 255, 255, 0.88); --ink: #0f172a; --muted: #64748b;
-  --accent: #4f46e5; --accent-hover: #4338ca; --accent-ink: #ffffff;
-  --tint: #e0e7ff; --line: #e2e8f0; --danger: #ef4444; --success: #10b981; --star: #fbbf24;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-  --shadow-md: 0 8px 30px rgba(0,0,0,0.08);
-  --shadow-lg: 0 20px 40px rgba(0,0,0,0.12);
-  --radius: 20px;
+  --bg: #f4f7fb;
+  --surface: rgba(255, 255, 255, 0.86);
+  --surface-solid: #ffffff;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-ink: #ffffff;
+  --tint: #e0e7ff;
+  --line: rgba(15, 23, 42, 0.08);
+  --danger: #ef4444;
+  --success: #10b981;
+  --warn: #f59e0b;
+  --star: #fbbf24;
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 12px 32px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.16);
+  --radius: 22px;
 }
 [data-theme="dark"] {
-  --bg: #0f172a; --surface: rgba(30, 41, 59, 0.88); --ink: #f8fafc; --muted: #94a3b8;
-  --accent: #818cf8; --accent-hover: #6366f1; --accent-ink: #0f172a;
-  --tint: #312e81; --line: #334155; --danger: #f87171; --success: #34d399; --star: #fbbf24;
+  --bg: #070d19;
+  --surface: rgba(17, 26, 46, 0.84);
+  --surface-solid: #111a2e;
+  --ink: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #818cf8;
+  --accent-hover: #6366f1;
+  --accent-ink: #070d19;
+  --tint: rgba(129, 140, 248, 0.16);
+  --line: rgba(248, 250, 252, 0.09);
+  --danger: #f87171;
+  --success: #34d399;
+  --warn: #fbbf24;
+  --star: #fbbf24;
 }
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html, body { margin: 0; min-height: 100%; }
 body {
-  background-color: var(--bg); color: var(--ink);
-  font: 16px/1.6 "IBM Plex Sans Arabic", system-ui, sans-serif;
-  background-image: radial-gradient(circle at top right, var(--tint), transparent 35%);
-  -webkit-font-smoothing: antialiased; transition: background 0.3s, color 0.3s;
+  background-color: var(--bg);
+  color: var(--ink);
+  font: 16px/1.65 "IBM Plex Sans Arabic", system-ui, sans-serif;
+  background-image:
+    radial-gradient(circle at 12% 0%, var(--tint), transparent 38%),
+    radial-gradient(circle at 90% 10%, rgba(139, 92, 246, 0.10), transparent 35%);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
 }
 body.viewing, body.sheet-open { overflow: hidden; }
 
-.wrap { max-width: 1040px; margin: 0 auto; padding: 20px 20px 80px; }
-.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 20px 20px 90px; }
+
+/* Top Header & Focus Timer */
+.header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 22px; gap: 12px; flex-wrap: wrap;
+  background: var(--surface); backdrop-filter: blur(16px);
+  border: 1px solid var(--line); border-radius: 24px;
+  padding: 12px 18px; box-shadow: var(--shadow-sm);
+}
 .logo-area { display: flex; align-items: center; gap: 12px; cursor: pointer; }
 .logo-icon {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 50px; height: 50px; border-radius: 14px;
+  width: 46px; height: 46px; border-radius: 15px;
   background: linear-gradient(135deg, var(--accent), #8b5cf6);
-  color: white; font-size: 24px; box-shadow: var(--shadow-md);
-  transition: transform 0.3s;
+  color: #fff; font-size: 22px; box-shadow: var(--shadow-md);
+  transition: transform 0.25s ease;
 }
-.logo-area:hover .logo-icon { transform: rotate(-10deg) scale(1.05); }
-h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
-.controls { display: flex; gap: 10px; }
-.icon-btn {
+.logo-area:hover .logo-icon { transform: rotate(-8deg) scale(1.05); }
+.brand-sub { font-size: 11px; color: var(--muted); font-weight: 600; display: block; margin-top: -2px; }
+h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
+
+.controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+/* Focus Timer Pill */
+.timer-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--bg); border: 1px solid var(--line);
+  border-radius: 16px; padding: 6px 12px; font-size: 13px; font-weight: 700;
+}
+.timer-time { font-variant-numeric: tabular-nums; font-size: 14px; color: var(--accent); min-width: 48px; text-align: center; }
+.timer-mode { font-size: 11px; color: var(--muted); background: var(--surface); padding: 2px 7px; border-radius: 8px; border: 1px solid var(--line); }
+.timer-btn {
   background: var(--surface); border: 1px solid var(--line); color: var(--ink);
-  width: 46px; height: 46px; border-radius: 14px; cursor: pointer; font-size: 20px;
-  display: grid; place-items: center; transition: 0.2s; backdrop-filter: blur(10px);
+  border-radius: 9px; padding: 4px 8px; font-size: 12px; cursor: pointer; font-weight: 600;
 }
-.icon-btn:hover { background: var(--line); transform: translateY(-2px); }
+.timer-btn:hover { border-color: var(--accent); color: var(--accent); }
+.timer-btn.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 
-/* Dashboard Stats & Global Progress */
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-@media (max-width: 650px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
-.stat-card { background: var(--surface); backdrop-filter: blur(10px); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; text-align: center; box-shadow: var(--shadow-sm); }
-.stat-val { font-size: 22px; font-weight: 700; color: var(--accent); }
-.stat-lbl { font-size: 13px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+.icon-btn {
+  background: var(--bg); border: 1px solid var(--line); color: var(--ink);
+  width: 42px; height: 42px; border-radius: 13px; cursor: pointer; font-size: 18px;
+  display: grid; place-items: center; transition: 0.2s;
+}
+.icon-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
 
-.progress-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 12px 18px; margin-bottom: 24px; display: flex; align-items: center; gap: 14px; }
+/* Stats & Global Progress */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+@media (max-width: 700px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+.stat-card {
+  background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 14px 16px; text-align: center; box-shadow: var(--shadow-sm);
+}
+.stat-val { font-size: 23px; font-weight: 700; color: var(--accent); line-height: 1.2; }
+.stat-lbl { font-size: 12.5px; color: var(--muted); font-weight: 600; margin-top: 4px; }
+
+.progress-wrap {
+  background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line);
+  border-radius: 18px; padding: 12px 18px; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow-sm);
+}
 .progress-bar-bg { flex: 1; height: 10px; background: var(--line); border-radius: 99px; overflow: hidden; }
 .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--success)); border-radius: 99px; transition: width 0.4s ease; }
 .progress-text { font-size: 13px; font-weight: 700; color: var(--muted); white-space: nowrap; }
 
-.toolbar { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+/* Search & Toolbar */
+.toolbar { display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
 .search-box { position: relative; flex: 1; min-width: 240px; }
-.search-box input { width: 100%; padding: 14px 42px 14px 70px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--ink); font: inherit; box-shadow: var(--shadow-sm); backdrop-filter: blur(10px); transition: 0.2s; }
+.search-box input {
+  width: 100%; padding: 13px 42px 13px 72px; border: 1px solid var(--line);
+  border-radius: 16px; background: var(--surface); color: var(--ink); font: inherit;
+  box-shadow: var(--shadow-sm); backdrop-filter: blur(14px); transition: 0.2s;
+}
 .search-box input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--tint); }
-.search-box::before { content: '🔍'; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 18px; opacity: 0.5; }
-.kbd-hint { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 11px; color: var(--muted); background: var(--bg); padding: 3px 7px; border-radius: 6px; border: 1px solid var(--line); pointer-events: none; }
+.search-box::before { content: '🔍'; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 17px; opacity: 0.55; }
+.kbd-hint {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 11px; color: var(--muted); background: var(--bg);
+  padding: 3px 7px; border-radius: 7px; border: 1px solid var(--line); pointer-events: none;
+}
+
+/* Quick Filter Pills */
+.filter-bar {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; align-items: center;
+}
+.filter-chip {
+  background: var(--surface); border: 1px solid var(--line); color: var(--muted);
+  padding: 6px 13px; border-radius: 99px; font-size: 12.5px; font-weight: 600;
+  cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px;
+}
+.filter-chip:hover { border-color: var(--accent); color: var(--ink); }
+.filter-chip.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.filter-sep { width: 1px; height: 18px; background: var(--line); margin: 0 2px; }
 
 .btn {
   border: 0; background: var(--accent); color: var(--accent-ink); font: inherit; font-weight: 600;
-  padding: 12px 22px; border-radius: 14px; cursor: pointer; transition: 0.2s;
+  padding: 11px 20px; border-radius: 14px; cursor: pointer; transition: 0.2s;
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: var(--shadow-sm);
 }
-.btn:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); }
-.btn.ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--line); backdrop-filter: blur(10px); }
+.btn:hover { background: var(--accent-hover); transform: translateY(-1.5px); box-shadow: var(--shadow-md); }
+.btn.ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--line); backdrop-filter: blur(12px); }
+.btn.ghost:hover { border-color: var(--accent); }
 .btn.success { background: var(--success); color: #fff; }
-.btn.small { padding: 7px 12px; font-size: 13px; border-radius: 10px; }
+.btn.small { padding: 7px 12px; font-size: 13px; border-radius: 11px; }
 
 /* Categories */
-.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
 .cat-card {
-  position: relative; background: var(--surface); backdrop-filter: blur(10px); border: 1px solid var(--line);
+  position: relative; background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line);
   border-radius: var(--radius); padding: 24px 16px; text-align: center; cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: var(--shadow-sm);
+  transition: all 0.25s ease; box-shadow: var(--shadow-sm);
 }
-.cat-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); border-color: var(--accent); }
-.cat-icon { font-size: 42px; margin-bottom: 10px; transition: transform 0.3s; }
-.cat-card:hover .cat-icon { transform: scale(1.1); }
+.cat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: var(--accent); }
+.cat-icon { font-size: 40px; margin-bottom: 10px; transition: transform 0.25s ease; }
+.cat-card:hover .cat-icon { transform: scale(1.08); }
 .cat-name { font-weight: 700; font-size: 17px; }
-.cat-mini-prog { height: 4px; background: var(--line); border-radius: 4px; margin-top: 12px; overflow: hidden; }
+.cat-mini-prog { height: 5px; background: var(--line); border-radius: 5px; margin-top: 12px; overflow: hidden; }
 .cat-mini-fill { height: 100%; background: var(--success); transition: width 0.3s; }
 .cat-admin-tools { position: absolute; top: 10px; left: 10px; display: flex; gap: 4px; }
-.mini-icon-btn { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; width: 28px; height: 28px; font-size: 12px; cursor: pointer; display: grid; place-items: center; }
+.mini-icon-btn {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+  width: 28px; height: 28px; font-size: 12px; cursor: pointer; display: grid; place-items: center;
+}
 .mini-icon-btn:hover { border-color: var(--accent); }
 
 /* Files Grid */
-.files-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; }
+.files-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
 .file-card {
-  background: var(--surface); backdrop-filter: blur(10px); border: 1px solid var(--line);
+  background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line);
   border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column;
-  gap: 12px; cursor: pointer; box-shadow: var(--shadow-sm); transition: 0.3s; position: relative;
+  gap: 12px; cursor: pointer; box-shadow: var(--shadow-sm); transition: 0.25s ease;
 }
-.file-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.file-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: var(--shadow-md); }
 .file-card.completed { border-right: 4px solid var(--success); }
 .file-header { display: flex; justify-content: space-between; align-items: center; }
-.file-badges { display: flex; align-items: center; gap: 8px; }
-.file-icon { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-weight: bold; font-size: 13px; background: var(--tint); color: var(--accent); }
-.file-type-pdf { color: var(--danger); background: #fee2e2; }
-.file-type-img { color: var(--success); background: #d1fae5; }
-.file-type-vid { color: #f59e0b; background: #fef3c7; }
-.file-type-mp4 { color: #8b5cf6; background: #ede9fe; }
-.cat-badge { font-size: 11px; background: var(--bg); border: 1px solid var(--line); padding: 3px 8px; border-radius: 8px; color: var(--muted); font-weight: 600; }
-.done-badge { font-size: 11px; background: #d1fae5; color: #065f46; padding: 3px 8px; border-radius: 8px; font-weight: 700; }
+.file-badges { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.file-icon {
+  width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center;
+  font-weight: 700; font-size: 12px; background: var(--tint); color: var(--accent); flex-shrink: 0;
+}
+.file-type-pdf { color: #dc2626; background: rgba(239, 68, 68, 0.14); }
+.file-type-img { color: #059669; background: rgba(16, 185, 129, 0.14); }
+.file-type-vid { color: #d97706; background: rgba(245, 158, 11, 0.16); }
+.file-type-mp4 { color: #7c3aed; background: rgba(139, 92, 246, 0.16); }
+.cat-badge {
+  font-size: 11px; background: var(--bg); border: 1px solid var(--line);
+  padding: 3px 8px; border-radius: 8px; color: var(--muted); font-weight: 600;
+}
+.done-badge {
+  font-size: 11px; background: rgba(16, 185, 129, 0.16); color: var(--success);
+  padding: 3px 8px; border-radius: 8px; font-weight: 700;
+}
+
+.lesson-tip-box {
+  background: rgba(79, 70, 229, 0.07);
+  border-right: 3px solid var(--accent);
+  border-radius: 10px;
+  padding: 8px 11px;
+  font-size: 12.5px;
+  color: var(--ink);
+  margin-top: 8px;
+}
+.lesson-tip-label { font-weight: 700; color: var(--accent); margin-left: 4px; }
+
+.ext-links-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+.ext-link-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; font-weight: 600; text-decoration: none;
+  padding: 5px 10px; border-radius: 10px;
+  background: var(--bg); color: var(--ink); border: 1px solid var(--line); transition: 0.2s;
+}
+.ext-link-chip:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+.ext-link-chip.yt { color: #dc2626; border-color: rgba(220, 38, 38, 0.25); background: rgba(220, 38, 38, 0.07); }
 
 .star-btn { background: none; border: 0; font-size: 24px; cursor: pointer; color: var(--muted); transition: 0.2s; line-height: 1; padding: 0; }
 .star-btn.active { color: var(--star); transform: scale(1.1); }
 .file-title { font-weight: 700; font-size: 17px; margin: 0; }
-.file-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.file-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .tag-pill { font-size: 11px; color: var(--accent); background: var(--tint); padding: 2px 8px; border-radius: 6px; font-weight: 600; }
-.file-date { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.file-date { font-size: 12px; color: var(--muted); margin-top: 8px; }
 .file-actions { display: flex; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line); }
 .file-actions button { flex: 1; }
 
 /* Viewer */
 .viewer { position: fixed; inset: 0; z-index: 20; background: var(--bg); display: none; flex-direction: column; }
 .viewing .viewer { display: flex; }
-.vbar { display: flex; justify-content: space-between; padding: 10px 16px; background: var(--surface); border-bottom: 1px solid var(--line); align-items: center; backdrop-filter: blur(10px); flex-wrap: wrap; gap: 8px; }
-.vactions { display: flex; gap: 6px; flex-wrap: wrap; }
-.vbody { flex: 1; position: relative; background: #fff; }
+.vbar {
+  display: flex; justify-content: space-between; padding: 10px 16px;
+  background: var(--surface); border-bottom: 1px solid var(--line);
+  align-items: center; backdrop-filter: blur(16px); flex-wrap: wrap; gap: 8px;
+}
+.vnav { display: flex; gap: 6px; align-items: center; }
+.vactions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.vnote-banner {
+  background: var(--surface-solid); border-bottom: 1px solid var(--line);
+  padding: 8px 18px; font-size: 13px; display: flex; align-items: center; gap: 8px;
+}
+.vbody { flex: 1; position: relative; background: #ffffff; }
 iframe, img, video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: contain; }
 pre { position: absolute; inset: 0; margin: 0; padding: 20px; background: #1e1e1e; color: #d4d4d4; overflow: auto; direction: ltr; text-align: left; font: 14px/1.6 monospace; }
 
 /* Modals */
-.scrim { position: fixed; inset: 0; z-index: 30; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; }
+.scrim { position: fixed; inset: 0; z-index: 30; background: rgba(15, 23, 42, 0.72); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; }
 .sheet-open .scrim { display: flex; }
-.sheet { width: 100%; max-width: 500px; background: var(--surface); border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 16px; margin: 20px; box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto; }
-label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 600; color: var(--muted); }
-select, input[type="text"], input[type="password"] { padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); color: var(--ink); font: inherit; transition: 0.2s; }
-select:focus, input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--tint); }
+.sheet {
+  width: 100%; max-width: 540px; background: var(--surface-solid);
+  border: 1px solid var(--line); border-radius: 24px; padding: 28px;
+  display: flex; flex-direction: column; gap: 15px; margin: 20px;
+  box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto;
+}
+label { display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 600; color: var(--muted); }
+select, input[type="text"], input[type="password"], input[type="url"], textarea {
+  padding: 11px 14px; border: 1px solid var(--line); border-radius: 12px;
+  background: var(--bg); color: var(--ink); font: inherit; transition: 0.2s; width: 100%;
+}
+textarea { resize: vertical; min-height: 68px; }
+select:focus, input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--tint); }
 
-/* Drag & Drop Area */
-.drop-zone { border: 2px dashed var(--line); border-radius: 16px; padding: 24px; text-align: center; cursor: pointer; transition: 0.2s; background: var(--bg); }
+.links-builder { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.links-builder-head { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; color: var(--ink); }
+.link-row { display: grid; grid-template-columns: 1fr 1.4fr auto; gap: 6px; align-items: center; }
+@media (max-width: 480px) { .link-row { grid-template-columns: 1fr; } }
+.link-row input { padding: 9px 10px; font-size: 13px; }
+.remove-link-btn { background: rgba(239, 68, 68, 0.12); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 10px; padding: 8px 10px; cursor: pointer; font-weight: bold; }
+
+.drop-zone { border: 2px dashed var(--line); border-radius: 16px; padding: 22px; text-align: center; cursor: pointer; transition: 0.2s; background: var(--bg); }
 .drop-zone.dragover { border-color: var(--accent); background: var(--tint); }
-.drop-zone p { margin: 0; color: var(--muted); font-size: 14px; }
+.drop-zone p { margin: 0; color: var(--muted); font-size: 13.5px; }
 
-#toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--ink); color: var(--bg); padding: 12px 26px; border-radius: 50px; font-weight: 600; opacity: 0; transition: 0.3s; z-index: 100; box-shadow: var(--shadow-lg); }
+#toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(100px);
+  background: var(--ink); color: var(--bg); padding: 12px 24px; border-radius: 99px;
+  font-weight: 600; opacity: 0; transition: 0.3s; z-index: 100; box-shadow: var(--shadow-lg);
+}
 #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 #toast.success { background: var(--success); color: #fff; }
 #toast.error { background: var(--danger); color: #fff; }
 
-/* Skeleton Loading */
-.skeleton { background: linear-gradient(90deg, var(--line) 25%, var(--surface) 50%, var(--line) 75%); background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: 16px; }
+.skeleton { background: linear-gradient(90deg, var(--line) 25%, var(--surface) 50%, var(--line) 75%); background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: 18px; }
 @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 </style>
 </head>
@@ -162,9 +304,22 @@ select:focus, input:focus { outline: none; border-color: var(--accent); box-shad
   <div class="header">
     <div class="logo-area" onclick="goHome()">
       <div class="logo-icon">🕊️</div>
-      <h1 id="siteTitle">هدهد</h1>
+      <div>
+        <h1 id="siteTitle">هدهد</h1>
+        <span class="brand-sub">منصة التعلم والمراجعة الذكية</span>
+      </div>
     </div>
+
     <div class="controls">
+      <!-- Study Focus Timer -->
+      <div class="timer-pill" title="مؤقت التركيز الدراسي">
+        <span class="timer-mode" id="timerMode">دراسة</span>
+        <span class="timer-time" id="timerDisplay">25:00</span>
+        <button class="timer-btn" id="timerToggleBtn" onclick="toggleTimer()">▶</button>
+        <button class="timer-btn" onclick="switchTimerMode()" title="تبديل بين دراسة واستراحة">↻</button>
+        <button class="timer-btn" onclick="resetTimer()" title="إعادة ضبط">↺</button>
+      </div>
+
       <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="تغيير المظهر">🌙</button>
       <button class="icon-btn" onclick="handleAdminBtn()" id="adminBtn" title="الإدارة">🔒</button>
     </div>
@@ -175,21 +330,29 @@ select:focus, input:focus { outline: none; border-color: var(--accent); box-shad
 
   <div class="toolbar" id="topToolbar">
     <div class="search-box">
-      <input type="text" id="searchInput" placeholder="ابحث في جميع الدروس والوسوم...">
+      <input type="text" id="searchInput" placeholder="ابحث في جميع الدروس، الوسوم، والملاحظات...">
       <span class="kbd-hint">Ctrl+K</span>
     </div>
     <button class="btn" id="mainAddBtn" style="display:none" onclick="openAddModal()">+ إضافة</button>
   </div>
 
+  <div class="filter-bar" id="filterBar"></div>
   <div id="content"></div>
 </div>
 
 <!-- Viewer -->
 <div class="viewer" id="viewer">
   <div class="vbar">
-    <button class="btn ghost small" onclick="closeViewer()">✕ إغلاق</button>
-    <div id="viewerTitle" style="font-weight:bold; flex:1; text-align:center; min-width:150px;"></div>
+    <div class="vnav">
+      <button class="btn ghost small" onclick="closeViewer()">✕ إغلاق</button>
+      <button class="btn ghost small" id="prevLessonBtn" onclick="stepLesson(-1)" title="الدرس السابق">« السابق</button>
+      <button class="btn ghost small" id="nextLessonBtn" onclick="stepLesson(1)" title="الدرس التالي">التالي »</button>
+    </div>
+
+    <div id="viewerTitle" style="font-weight:700; flex:1; text-align:center; min-width:140px;"></div>
+
     <div class="vactions">
+      <div id="viewerExtLinks" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
       <button class="btn ghost small" id="markDoneBtn" onclick="toggleCompletedCurrent()">⬜ تمت الدراسة</button>
       <button class="btn ghost small" onclick="shareCurrentFile()">🔗 مشاركة</button>
       <button class="btn ghost small" onclick="toggleFullscreen()">⛶ ملء الشاشة</button>
@@ -197,6 +360,12 @@ select:focus, input:focus { outline: none; border-color: var(--accent); box-shad
       <button class="btn ghost small" id="codeToggleBtn" style="display:none">الكود</button>
     </div>
   </div>
+
+  <div class="vnote-banner" id="viewerNoteBanner" style="display:none">
+    <span>💡</span>
+    <span id="viewerNoteText"></span>
+  </div>
+
   <div class="vbody" id="viewerBody"></div>
 </div>
 
@@ -243,7 +412,16 @@ select:focus, input:focus { outline: none; border-color: var(--accent); box-shad
 
       <label>القسم<select id="catSelect"></select></label>
       <label>اسم المحتوى<input type="text" id="fileTitle"></label>
+      <label>ملاحظة توجيهية للدرس (اختياري)<textarea id="fileNote" placeholder="مثال: ركّز على المسائل المحلولة في نهاية الملف أو شاهد الشرح أولاً..."></textarea></label>
       <label>الوسوم (افصل بينها بفاصلة)<input type="text" id="fileTags" placeholder="وزاريات, مرشحات, الفصل الأول"></label>
+
+      <div class="links-builder">
+        <div class="links-builder-head">
+          <span>🔗 روابط مرفقة بالدرس (اختبار، يوتيوب، موقع...)</span>
+          <button type="button" class="btn ghost small" onclick="addLinkRow()">+ إضافة رابط</button>
+        </div>
+        <div id="linksContainer" style="display:flex; flex-direction:column; gap:8px;"></div>
+      </div>
       
       <div style="display:flex; gap:10px; margin-top:6px;">
         <button class="btn" onclick="saveFile()" style="flex:1">حفظ</button>
@@ -275,10 +453,13 @@ let lib = { files: [], categories: [], settings: { siteName: 'هدهد' } };
 let isAdmin = false;
 let currentCatId = null;
 let showFavorites = false;
+let activeTypeFilter = 'all';
+let activeTagFilter = '';
 let editingFileId = null;
 let editingCatId = null;
 let pendingFileData = null;
 let currentViewerFile = null;
+let currentOrderedList = [];
 
 const DEFAULT_CATS = [
   {id:'general', name:'ملفات عامة', icon:'📁'},
@@ -286,6 +467,70 @@ const DEFAULT_CATS = [
   {id:'elec', name:'الكهرباء', icon:'⚡'},
   {id:'mech', name:'الميكانيك', icon:'⚙️'}
 ];
+
+// Focus Timer (25m Study / 5m Break)
+const STUDY_SEC = 25 * 60;
+const BREAK_SEC = 5 * 60;
+let timerMode = 'study';
+let remainingSec = STUDY_SEC;
+let timerInterval = null;
+
+function formatTimer(sec) {
+  const m = String(Math.floor(sec / 60)).padStart(2, '0');
+  const s = String(sec % 60).padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function updateTimerUI() {
+  document.getElementById('timerDisplay').textContent = formatTimer(remainingSec);
+  document.getElementById('timerMode').textContent = timerMode === 'study' ? 'دراسة' : 'استراحة';
+  const btn = document.getElementById('timerToggleBtn');
+  btn.textContent = timerInterval ? '⏸' : '▶';
+  btn.classList.toggle('active', Boolean(timerInterval));
+}
+
+function toggleTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    updateTimerUI();
+    return;
+  }
+  timerInterval = setInterval(() => {
+    remainingSec--;
+    if (remainingSec <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      if (timerMode === 'study') {
+        timerMode = 'break';
+        remainingSec = BREAK_SEC;
+        showToast('انتهت جلسة الدراسة! خذ استراحة 5 دقائق ☕');
+      } else {
+        timerMode = 'study';
+        remainingSec = STUDY_SEC;
+        showToast('انتهت الاستراحة! لنبدأ جلسة دراسة جديدة 🎯');
+      }
+    }
+    updateTimerUI();
+  }, 1000);
+  updateTimerUI();
+}
+
+function switchTimerMode() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  timerMode = timerMode === 'study' ? 'break' : 'study';
+  remainingSec = timerMode === 'study' ? STUDY_SEC : BREAK_SEC;
+  updateTimerUI();
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  remainingSec = timerMode === 'study' ? STUDY_SEC : BREAK_SEC;
+  updateTimerUI();
+}
+updateTimerUI();
 
 // Theme
 const html = document.documentElement;
@@ -304,7 +549,7 @@ function showToast(msg, type='success') {
   setTimeout(() => t.className = '', 3000);
 }
 
-// Local Storage States (Favorites & Completed Lessons)
+// Local Storage States
 let favs = JSON.parse(localStorage.getItem('favs') || '[]');
 let completed = JSON.parse(localStorage.getItem('completed') || '[]');
 
@@ -335,7 +580,7 @@ function updateViewerDoneBtn() {
 
 // Data Sync
 async function loadData() {
-  document.getElementById('content').innerHTML = `<div class="files-grid"><div class="file-card skeleton" style="height:150px"></div><div class="file-card skeleton" style="height:150px"></div></div>`;
+  document.getElementById('content').innerHTML = `<div class="files-grid"><div class="file-card skeleton" style="height:160px"></div><div class="file-card skeleton" style="height:160px"></div></div>`;
   try {
     const r = await fetch(FIREBASE_URL + 'data.json');
     const data = await r.json();
@@ -356,7 +601,7 @@ async function saveData() {
   await fetch(FIREBASE_URL + 'data.json', { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(lib) });
 }
 
-// Deep Linking (Shareable URLs)
+// Deep Linking
 function checkUrlHash() {
   const hash = window.location.hash;
   if (hash.startsWith('#file=')) {
@@ -371,7 +616,7 @@ function shareCurrentFile() {
   navigator.clipboard.writeText(url).then(() => showToast('تم نسخ رابط الدرس للمشاركة 🔗'));
 }
 
-// Keyboard Shortcuts (Ctrl+K for search, Esc to close)
+// Keyboard Shortcuts
 document.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
     e.preventDefault();
@@ -382,6 +627,96 @@ document.addEventListener('keydown', (e) => {
     if (document.body.classList.contains('sheet-open')) closeModal();
   }
 });
+
+// Helper: Links & Escaping
+function getLinkIcon(url, label) {
+  const u = (url || '').toLowerCase();
+  const l = (label || '').toLowerCase();
+  if (u.includes('youtube.com') || u.includes('youtu.be') || l.includes('يوتيوب')) return { icon: '▶️', cls: 'yt' };
+  if (l.includes('اختبار') || l.includes('امتحان') || u.includes('forms.gle') || u.includes('quiz')) return { icon: '📝', cls: '' };
+  if (u.includes('t.me') || l.includes('تليجرام')) return { icon: '✈️', cls: '' };
+  return { icon: '🔗', cls: '' };
+}
+
+function normalizeUrl(url) {
+  if (!url) return '';
+  return /^https?:\/\//i.test(url) ? url : 'https://' + url;
+}
+
+function buildExtLinksHtml(links) {
+  if (!Array.isArray(links) || !links.length) return '';
+  return `<div class="ext-links-row">` + links.map(lk => {
+    const meta = getLinkIcon(lk.url, lk.label);
+    const safeUrl = escapeHtml(normalizeUrl(lk.url));
+    const safeLabel = escapeHtml(lk.label || 'رابط مرفق');
+    return `<a class="ext-link-chip ${meta.cls}" href="${safeUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${meta.icon} ${safeLabel}</a>`;
+  }).join('') + `</div>`;
+}
+
+// Quick Filter Bar
+function renderFilterBar() {
+  const bar = document.getElementById('filterBar');
+  const query = document.getElementById('searchInput').value.trim();
+  const showFilters = query.length > 0 || currentCatId !== null || showFavorites;
+
+  if (!showFilters) {
+    bar.style.display = 'none';
+    return;
+  }
+  bar.style.display = 'flex';
+
+  const typeChips = [
+    { key: 'all', label: 'الكل' },
+    { key: 'html', label: 'تفاعلي HTML' },
+    { key: 'pdf', label: 'PDF' },
+    { key: 'video', label: 'فيديو' }
+  ];
+
+  const allTags = [...new Set(lib.files.flatMap(f => Array.isArray(f.tags) ? f.tags : []))];
+
+  let html = typeChips.map(t =>
+    `<button class="filter-chip ${activeTypeFilter === t.key ? 'active' : ''}" onclick="setTypeFilter('${t.key}')">${t.label}</button>`
+  ).join('');
+
+  if (allTags.length) {
+    html += `<span class="filter-sep"></span>`;
+    html += allTags.map(tag =>
+      `<button class="filter-chip ${activeTagFilter === tag ? 'active' : ''}" onclick="toggleTagFilter('${escapeHtml(tag)}')">#${escapeHtml(tag)}</button>`
+    ).join('');
+  }
+
+  if (activeTypeFilter !== 'all' || activeTagFilter) {
+    html += `<button class="filter-chip" onclick="resetFilters()">✕ مسح الفلاتر</button>`;
+  }
+
+  bar.innerHTML = html;
+}
+
+function setTypeFilter(type) {
+  activeTypeFilter = type;
+  render();
+}
+
+function toggleTagFilter(tag) {
+  activeTagFilter = activeTagFilter === tag ? '' : tag;
+  render();
+}
+
+function resetFilters() {
+  activeTypeFilter = 'all';
+  activeTagFilter = '';
+  render();
+}
+
+function applyQuickFilters(files) {
+  return files.filter(f => {
+    if (activeTypeFilter === 'html' && f.type !== 'html') return false;
+    if (activeTypeFilter === 'pdf' && f.type !== 'pdf') return false;
+    if (activeTypeFilter === 'video' && !['youtube', 'mp4'].includes(f.type)) return false;
+    if (activeTagFilter && !(Array.isArray(f.tags) && f.tags.includes(activeTagFilter))) return false;
+    return true;
+  });
+}
 
 // Main Render
 function render() {
@@ -410,16 +745,20 @@ function render() {
     <span class="progress-text">${pct}%</span>
   `;
 
+  renderFilterBar();
+
   const query = document.getElementById('searchInput').value.trim().toLowerCase();
 
-  // Global Search Mode or Category/Favorites View
   if (query.length > 0) {
     const matched = lib.files.filter(f => 
       f.title.toLowerCase().includes(query) || 
-      (f.tags && f.tags.some(t => t.toLowerCase().includes(query)))
+      (f.note && f.note.toLowerCase().includes(query)) ||
+      (f.tags && f.tags.some(t => t.toLowerCase().includes(query))) ||
+      (f.links && f.links.some(l => (l.label || '').toLowerCase().includes(query)))
     );
-    renderFilesList(c, matched, `نتائج البحث (${matched.length})`, true);
+    renderFilesList(c, applyQuickFilters(matched), `نتائج البحث`, true);
   } else if (currentCatId === null && !showFavorites) {
+    currentOrderedList = [];
     let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
         <h2 style="margin:0; font-size:20px;">تصفح الأقسام</h2>
         <div style="display:flex; gap:10px;">
@@ -440,7 +779,7 @@ function render() {
           <button class="mini-icon-btn" onclick="deleteCategory('${cat.id}', event)" title="حذف القسم">🗑️</button>
         </div>` : ''}
         <div class="cat-icon">${cat.icon}</div>
-        <div class="cat-name">${cat.name}</div>
+        <div class="cat-name">${escapeHtml(cat.name)}</div>
         <div style="color:var(--muted); font-size:13px; margin-top:6px;">${catDone} / ${catFiles.length} منجز</div>
         <div class="cat-mini-prog"><div class="cat-mini-fill" style="width:${catPct}%"></div></div>
       </div>`;
@@ -450,21 +789,25 @@ function render() {
   } else {
     let files = lib.files;
     let title = '';
-    if (showFavorites) { files = files.filter(f => favs.includes(f.id)); title = '⭐ الدروس المفضلة'; } 
-    else {
+    if (showFavorites) {
+      files = files.filter(f => favs.includes(f.id));
+      title = '⭐ الدروس المفضلة';
+    } else {
       const cat = lib.categories.find(x => x.id === currentCatId);
       files = files.filter(f => f.catId === currentCatId);
       title = cat ? `${cat.icon} ${cat.name}` : '';
     }
-    renderFilesList(c, files, title, showFavorites);
+    renderFilesList(c, applyQuickFilters(files), title, showFavorites);
   }
 }
 
 function renderFilesList(container, files, title, showCatBadge) {
   files.sort((a,b) => b.added - a.added);
-  let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+  currentOrderedList = files;
+
+  let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:10px; flex-wrap:wrap;">
       <button class="btn ghost small" onclick="goHome()">← الرئيسية</button>
-      <h2 style="margin:0; font-size:20px;">${title}</h2>
+      <h2 style="margin:0; font-size:20px;">${title} (${files.length})</h2>
     </div>`;
 
   if (files.length === 0) {
@@ -481,21 +824,29 @@ function renderFilesList(container, files, title, showCatBadge) {
       if(f.type === 'youtube') { icon = 'VID'; iconClass = 'file-type-vid'; }
       if(f.type === 'mp4') { icon = 'MP4'; iconClass = 'file-type-mp4'; }
 
-      const tagsHtml = (f.tags && f.tags.length) 
-        ? `<div class="file-tags">${f.tags.map(t => `<span class="tag-pill">#${t}</span>`).join('')}</div>` 
+      const noteHtml = f.note
+        ? `<div class="lesson-tip-box"><span class="lesson-tip-label">💡 ملاحظة:</span>${escapeHtml(f.note)}</div>`
         : '';
+
+      const tagsHtml = (f.tags && f.tags.length) 
+        ? `<div class="file-tags">${f.tags.map(t => `<span class="tag-pill">#${escapeHtml(t)}</span>`).join('')}</div>` 
+        : '';
+
+      const linksHtml = buildExtLinksHtml(f.links);
 
       html += `<div class="file-card ${isDone ? 'completed' : ''}" onclick="openViewer('${f.id}')">
         <div class="file-header">
           <div class="file-badges">
             <div class="file-icon ${iconClass}">${icon}</div>
-            ${showCatBadge && cat ? `<span class="cat-badge">${cat.icon} ${cat.name}</span>` : ''}
+            ${showCatBadge && cat ? `<span class="cat-badge">${cat.icon} ${escapeHtml(cat.name)}</span>` : ''}
             ${isDone ? `<span class="done-badge">✓ منجز</span>` : ''}
           </div>
           <button class="star-btn ${isFav ? 'active' : ''}" onclick="toggleFav('${f.id}', event)">${isFav ? '★' : '☆'}</button>
         </div>
         <div>
-          <h3 class="file-title">${f.title}</h3>
+          <h3 class="file-title">${escapeHtml(f.title)}</h3>
+          ${noteHtml}
+          ${linksHtml}
           ${tagsHtml}
           <div class="file-date">${new Date(f.added).toLocaleDateString('ar-IQ')}</div>
         </div>
@@ -512,14 +863,55 @@ function renderFilesList(container, files, title, showCatBadge) {
 
 document.getElementById('searchInput').addEventListener('input', () => render());
 
-// Viewer
+// Viewer + Next/Prev Navigation
+function updateNavButtons() {
+  const prevBtn = document.getElementById('prevLessonBtn');
+  const nextBtn = document.getElementById('nextLessonBtn');
+  if (!currentViewerFile || currentOrderedList.length <= 1) {
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    return;
+  }
+  const idx = currentOrderedList.findIndex(x => x.id === currentViewerFile.id);
+  prevBtn.disabled = idx <= 0;
+  nextBtn.disabled = idx < 0 || idx >= currentOrderedList.length - 1;
+}
+
+function stepLesson(delta) {
+  if (!currentViewerFile || !currentOrderedList.length) return;
+  const idx = currentOrderedList.findIndex(x => x.id === currentViewerFile.id);
+  const nextItem = currentOrderedList[idx + delta];
+  if (nextItem) openViewer(nextItem.id);
+}
+
 function openViewer(id) {
   const f = lib.files.find(x => x.id === id);
   if(!f) return;
+  if (!currentOrderedList.some(x => x.id === id)) {
+    currentOrderedList = lib.files.filter(x => x.catId === f.catId).sort((a,b) => b.added - a.added);
+  }
   currentViewerFile = f;
   history.replaceState(null, '', '#file=' + f.id);
   document.getElementById('viewerTitle').textContent = f.title;
   updateViewerDoneBtn();
+  updateNavButtons();
+
+  const noteBanner = document.getElementById('viewerNoteBanner');
+  const noteText = document.getElementById('viewerNoteText');
+  if (f.note) {
+    noteText.textContent = f.note;
+    noteBanner.style.display = 'flex';
+  } else {
+    noteBanner.style.display = 'none';
+  }
+
+  const vExt = document.getElementById('viewerExtLinks');
+  vExt.innerHTML = (Array.isArray(f.links) && f.links.length)
+    ? f.links.map(lk => {
+        const meta = getLinkIcon(lk.url, lk.label);
+        return `<a class="btn ghost small" style="text-decoration:none;" href="${escapeHtml(normalizeUrl(lk.url))}" target="_blank" rel="noopener noreferrer">${meta.icon} ${escapeHtml(lk.label || 'رابط')}</a>`;
+      }).join('')
+    : '';
 
   const body = document.getElementById('viewerBody');
   const codeBtn = document.getElementById('codeToggleBtn');
@@ -586,7 +978,31 @@ function closeViewer() {
   document.getElementById('viewerBody').innerHTML = '';
   history.replaceState(null, '', window.location.pathname);
 }
-function escapeHtml(unsafe) { return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
+function escapeHtml(unsafe) { return String(unsafe).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
+
+// Links Builder Helpers
+function addLinkRow(label = '', url = '') {
+  const container = document.getElementById('linksContainer');
+  const row = document.createElement('div');
+  row.className = 'link-row';
+  row.innerHTML = `
+    <input type="text" class="lk-label" placeholder="اسم الزر (مثلاً: شرح يوتيوب)" value="${escapeHtml(label)}">
+    <input type="url" class="lk-url" placeholder="https://..." dir="ltr" value="${escapeHtml(url)}">
+    <button type="button" class="remove-link-btn" onclick="this.parentElement.remove()" title="حذف الرابط">✕</button>
+  `;
+  container.appendChild(row);
+}
+
+function collectLinksFromForm() {
+  const rows = document.querySelectorAll('#linksContainer .link-row');
+  const links = [];
+  rows.forEach(r => {
+    const label = r.querySelector('.lk-label').value.trim();
+    const url = r.querySelector('.lk-url').value.trim();
+    if (url) links.push({ label: label || 'رابط الدرس', url });
+  });
+  return links;
+}
 
 // Admin & Modals
 function hideAllModalSecs() {
@@ -636,8 +1052,10 @@ function openAddModal() {
     document.getElementById('modalTitle').textContent = 'إضافة درس جديد';
     document.getElementById('fileNameDisplay').textContent = 'لم يتم اختيار ملف';
     document.getElementById('fileTitle').value = '';
+    document.getElementById('fileNote').value = '';
     document.getElementById('fileTags').value = '';
     document.getElementById('urlInput').value = '';
+    document.getElementById('linksContainer').innerHTML = '';
     document.getElementById('fileType').value = 'html';
     toggleFileInput();
     document.getElementById('addSec').style.display = 'flex';
@@ -647,7 +1065,6 @@ function openAddModal() {
   document.body.classList.add('sheet-open');
 }
 
-// Category CRUD
 function editCategory(id, event) {
   event.stopPropagation();
   const cat = lib.categories.find(c => c.id === id);
@@ -683,7 +1100,6 @@ function deleteCategory(id, event) {
   saveData().then(() => { render(); showToast('تم حذف القسم'); });
 }
 
-// File CRUD
 function editFile(id, event) {
   event.stopPropagation();
   const f = lib.files.find(x => x.id === id);
@@ -695,7 +1111,15 @@ function editFile(id, event) {
   
   document.getElementById('fileType').value = f.type;
   document.getElementById('fileTitle').value = f.title;
+  document.getElementById('fileNote').value = f.note || '';
   document.getElementById('fileTags').value = (f.tags || []).join(', ');
+  
+  const linksContainer = document.getElementById('linksContainer');
+  linksContainer.innerHTML = '';
+  if (Array.isArray(f.links)) {
+    f.links.forEach(lk => addLinkRow(lk.label, lk.url));
+  }
+
   toggleFileInput();
   
   if (['image', 'youtube', 'mp4'].includes(f.type)) document.getElementById('urlInput').value = f.content;
@@ -733,16 +1157,18 @@ function saveFile() {
   const type = document.getElementById('fileType').value;
   const catId = document.getElementById('catSelect').value;
   const title = document.getElementById('fileTitle').value.trim();
+  const note = document.getElementById('fileNote').value.trim();
   const rawTags = document.getElementById('fileTags').value;
   const tags = rawTags ? rawTags.split(',').map(t => t.trim()).filter(Boolean) : [];
+  const links = collectLinksFromForm();
 
   if(!title) return document.getElementById('errorMsg').textContent = 'اكتب اسم المحتوى';
   
   const doSave = (content) => {
     if (editingFileId) { 
-      lib.files = lib.files.map(f => f.id === editingFileId ? {...f, type, catId, title, tags, content} : f); 
+      lib.files = lib.files.map(f => f.id === editingFileId ? {...f, type, catId, title, note, tags, links, content} : f); 
     } else { 
-      lib.files.push({id: 'f'+Date.now(), type, catId, title, tags, content, added: Date.now()}); 
+      lib.files.push({id: 'f'+Date.now(), type, catId, title, note, tags, links, content, added: Date.now()}); 
     }
     saveData().then(() => { closeModal(); render(); showToast(editingFileId ? 'تم التعديل' : 'تم الحفظ'); });
   };
@@ -779,7 +1205,14 @@ function deleteFile(id, event) {
 }
 
 function closeModal() { document.body.classList.remove('sheet-open'); }
-function goHome() { currentCatId = null; showFavorites = false; document.getElementById('searchInput').value = ''; render(); }
+function goHome() {
+  currentCatId = null;
+  showFavorites = false;
+  activeTypeFilter = 'all';
+  activeTagFilter = '';
+  document.getElementById('searchInput').value = '';
+  render();
+}
 
 loadData();
 </script>
