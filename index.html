@@ -61,7 +61,7 @@ body.viewing, body.sheet-open { overflow: hidden; }
   z-index: 9998; transition: width 0.1s ease-out;
 }
 
-/* Network & Update Banners */
+/* Network Status Banner */
 .smart-banner {
   position: sticky; top: 0; z-index: 90; padding: 9px 16px;
   font-size: 13px; font-weight: 700; text-align: center;
@@ -70,11 +70,6 @@ body.viewing, body.sheet-open { overflow: hidden; }
 }
 .smart-banner.offline { background: rgba(239, 68, 68, 0.92); color: #fff; display: flex; }
 .smart-banner.online-back { background: rgba(16, 185, 129, 0.94); color: #fff; display: flex; }
-.smart-banner.update { background: rgba(79, 70, 229, 0.95); color: #fff; display: flex; }
-.banner-action-btn {
-  background: #fff; color: #0f172a; border: 0; border-radius: 99px;
-  padding: 4px 12px; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer;
-}
 
 /* Preloader */
 #preloader { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
@@ -255,32 +250,24 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
       <stop offset="100%" stop-color="#f97316"/>
     </linearGradient>
   </defs>
-  <!-- الذيل المخطط -->
   <path d="M22 84 L8 97 L17 102 L32 90 Z" fill="#0f172a"/>
   <path d="M16 90 L22 95" stroke="#f8fafc" stroke-width="2.5" stroke-linecap="round"/>
-  <!-- التاج الريشي المميز للهدهد -->
   <path d="M62 34 C56 16 44 10 35 12 C42 19 48 26 52 36 Z" fill="url(#crestFeatherGrad)"/>
   <path d="M67 33 C65 13 57 6 48 7 C53 15 57 23 59 35 Z" fill="#fbbf24"/>
   <path d="M72 34 C74 16 70 9 62 9 C64 17 65 25 65 35 Z" fill="url(#crestFeatherGrad)"/>
   <path d="M76 36 C82 21 82 14 75 13 C75 20 73 27 71 36 Z" fill="#f59e0b"/>
-  <!-- خطوط سوداء على أطراف ريش التاج -->
   <circle cx="36" cy="12.5" r="2.2" fill="#0f172a"/>
   <circle cx="49" cy="7.5" r="2.2" fill="#0f172a"/>
   <circle cx="62.5" cy="9.5" r="2.2" fill="#0f172a"/>
   <circle cx="75" cy="13.5" r="2.1" fill="#0f172a"/>
-  <!-- الجسم والرأس -->
   <path d="M24 82 C25 56 42 34 68 34 C83 34 91 42 93 52 C81 55 72 62 66 72 C56 87 40 93 24 82 Z" fill="url(#hoopoeBodyGrad)"/>
-  <!-- الجناح بأشرطة أبيض وأسود أنيقة -->
   <path d="M36 78 C42 58 58 48 74 52 C68 65 56 79 36 78 Z" fill="url(#hoopoeWingGrad)"/>
   <path d="M45 69 L65 56" stroke="#f8fafc" stroke-width="2.4" stroke-linecap="round"/>
   <path d="M50 74 L69 62" stroke="#f8fafc" stroke-width="2.4" stroke-linecap="round"/>
-  <!-- المنقار الذكي الرفيع -->
   <path d="M91 44 L114 51 L91 52 Z" fill="#1e293b"/>
-  <!-- العين الذكية -->
   <circle cx="81" cy="45" r="5.2" fill="#ffffff"/>
   <circle cx="82.5" cy="45" r="3" fill="#0f172a"/>
   <circle cx="83.6" cy="43.8" r="1.1" fill="#ffffff"/>
-  <!-- لمسة معرفية خفيفة (كتاب صغير تحت الجناح) -->
   <path d="M44 88 L56 85 L56 95 L44 98 Z" fill="#e0e7ff" stroke="#4f46e5" stroke-width="1.4"/>
   <path d="M56 85 L68 88 L68 98 L56 95 Z" fill="#ffffff" stroke="#4f46e5" stroke-width="1.4"/>
 </svg>
@@ -288,12 +275,8 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 <!-- Reading Scroll Progress -->
 <div id="scrollProgressBar"></div>
 
-<!-- Smart Connection & App Update Banners -->
+<!-- Smart Connection Banner -->
 <div id="networkBanner" class="smart-banner"></div>
-<div id="updateBanner" class="smart-banner update">
-  <span>✨ يتوفر تحديث جديد لمنصة هدهد</span>
-  <button class="banner-action-btn" onclick="applyAppUpdate()">تحديث الآن</button>
-</div>
 
 <!-- Preloader -->
 <div id="preloader">
@@ -447,7 +430,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
 <script>
-  // حقن أيقونة الهدهد المتجهية عالية الدقة وتوليد أيقونة PNG للتطبيق
   function mountHoopoeIcons() {
     const masterSvg = document.getElementById('hoopoeVectorMaster');
     if (!masterSvg) return;
@@ -468,7 +450,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     const preloaderBox = document.getElementById('preloaderHoopoeBox');
     if (preloaderBox) { preloaderBox.innerHTML = ''; preloaderBox.appendChild(preloaderSvg); }
 
-    // توليد أيقونة PNG عالية الدقة (512x512) للشاشة الرئيسية (apple-touch-icon)
     try {
       const exportSvg = masterSvg.cloneNode(true);
       exportSvg.setAttribute('width', '512');
@@ -501,7 +482,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   }
   mountHoopoeIcons();
 
-  // صوت تنبيه لطيف عند انتهاء المؤقت (25 دقيقة دراسة أو 5 دقائق استراحة)
   let audioCtxInstance = null;
   function getAudioContext() {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -516,7 +496,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   function playGentleChime(completedMode = 'study') {
     const ctx = getAudioContext();
     if (!ctx) return;
-    // نغمة صاعدة هادئة عند انتهاء الدراسة، ونغمة ناعمة مطمئنة عند انتهاء الاستراحة
     const notes = completedMode === 'study'
       ? [523.25, 659.25, 783.99, 1046.50]
       : [659.25, 587.33, 523.25];
@@ -543,7 +522,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     });
   }
 
-  // ⚠️ ضع إعداداتك هنا ⚠️
   const firebaseConfig = {
     apiKey: "AIzaSyCvejYBcuqCMd4EoWNVq6kKXKXSRUXTMYM",
     authDomain: "hudhud-344ec.firebaseapp.com",
@@ -570,7 +548,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   let currentViewerFile = null;
   let currentOrderedList = [];
   let deferredInstallPrompt = null;
-  let waitingWorker = null;
 
   const DEFAULT_CATS = [
     {id:'general', name:'ملفات عامة', icon:'📁'},
@@ -579,14 +556,12 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     {id:'mech', name:'الميكانيك', icon:'⚙️'}
   ];
 
-  // إخفاء شاشة التحميل
   window.addEventListener('load', () => {
     setTimeout(() => {
       document.getElementById('preloader').classList.add('hidden');
     }, 600);
   });
 
-  // Scroll Progress & Back to Top
   window.addEventListener('scroll', () => {
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
     const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
@@ -599,7 +574,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   });
   function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
-  // Network Online / Offline Status Banner
   function updateNetworkBanner(isOnline) {
     const banner = document.getElementById('networkBanner');
     if (!isOnline) {
@@ -616,7 +590,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   window.addEventListener('online', () => updateNetworkBanner(true));
   if (!navigator.onLine) updateNetworkBanner(false);
 
-  // PWA Install Prompt
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredInstallPrompt = e;
@@ -646,7 +619,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     }
   }
 
-  // Font Size Control (Saved in localStorage)
   let currentFontSize = parseInt(localStorage.getItem('hudhud_font_size') || '16', 10);
   document.documentElement.style.setProperty('--base-font', currentFontSize + 'px');
   function changeFontSize(delta) {
@@ -656,7 +628,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     showToast(`حجم الخط: ${currentFontSize}px`);
   }
 
-  // Theme Cycle (Light -> Dark -> Comfort Eye Mode)
   const html = document.documentElement;
   const THEMES = ['light', 'dark', 'comfort'];
   const THEME_ICONS = { light: '🌙', dark: '📖', comfort: '☀️' };
@@ -678,7 +649,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     applyTheme(next, true);
   }
 
-  // Timer Logic (25 دقيقة دراسة / 5 دقائق استراحة مع صوت لطيف عند الانتهاء)
   const STUDY_SEC = 25 * 60; const BREAK_SEC = 5 * 60;
   let timerMode = 'study'; let remainingSec = STUDY_SEC; let timerInterval = null;
 
@@ -731,7 +701,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     t._timer = setTimeout(() => t.className = '', 3400);
   }
 
-  // Local Storage (Favorites, Completed, UI State & Form Draft)
   let favs = JSON.parse(localStorage.getItem('favs') || '[]');
   let completed = JSON.parse(localStorage.getItem('completed') || '[]');
 
@@ -795,7 +764,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     btn.className = isDone ? 'btn success small' : 'btn ghost small';
   }
 
-  // Data Sync with Offline Support
   async function loadData() {
     const cachedData = localStorage.getItem('hudhud_lib_cache');
     if (cachedData) {
@@ -839,7 +807,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     } catch (e) { showToast('فشل الحفظ. تأكد من الصلاحيات أو الاتصال.', 'error'); }
   }
 
-  // Deep Linking
   function checkUrlHash() {
     const hash = window.location.hash;
     if (hash.startsWith('#file=')) {
@@ -853,14 +820,12 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     navigator.clipboard.writeText(url).then(() => showToast('تم نسخ رابط الدرس 🔗'));
   }
 
-  // Search Debounce
   let searchTimeout;
   document.getElementById('searchInput').addEventListener('input', () => {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => { saveUiState(); render(); }, 250);
   });
 
-  // Keyboard Shortcuts (Ctrl+K, Esc, Left/Right Arrows in Viewer)
   document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); document.getElementById('searchInput').focus(); }
     if (e.key === 'Escape') {
@@ -1174,40 +1139,9 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   loadData();
 </script>
 
-<!-- كود تشغيل التطبيق والعمل بدون إنترنت ومراقبة التحديثات -->
 <script>
-  function applyAppUpdate() {
-    if (waitingWorker) {
-      waitingWorker.postMessage({ type: 'SKIP_WAITING' });
-    }
-    window.location.reload();
-  }
-
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').then(reg => {
-      if (reg.waiting) {
-        waitingWorker = reg.waiting;
-        document.getElementById('updateBanner').style.display = 'flex';
-      }
-      reg.addEventListener('updatefound', () => {
-        const newWorker = reg.installing;
-        if (!newWorker) return;
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            waitingWorker = newWorker;
-            document.getElementById('updateBanner').style.display = 'flex';
-          }
-        });
-      });
-    }).catch(err => console.log('SW registration failed', err));
-
-    let refreshing = false;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (!refreshing) {
-        refreshing = true;
-        window.location.reload();
-      }
-    });
+    navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed', err));
   }
 </script>
 </body>
