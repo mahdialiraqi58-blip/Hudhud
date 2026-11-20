@@ -54,14 +54,12 @@ body {
 }
 body.viewing, body.sheet-open { overflow: hidden; }
 
-/* Top Reading Scroll Bar */
 #scrollProgressBar {
   position: fixed; top: 0; right: 0; height: 3px; width: 0%;
   background: linear-gradient(90deg, var(--accent), var(--success));
   z-index: 9998; transition: width 0.1s ease-out;
 }
 
-/* Network Status Banner */
 .smart-banner {
   position: sticky; top: 0; z-index: 90; padding: 9px 16px;
   font-size: 13px; font-weight: 700; text-align: center;
@@ -71,14 +69,13 @@ body.viewing, body.sheet-open { overflow: hidden; }
 .smart-banner.offline { background: rgba(239, 68, 68, 0.92); color: #fff; display: flex; }
 .smart-banner.online-back { background: rgba(16, 185, 129, 0.94); color: #fff; display: flex; }
 
-/* Preloader */
 #preloader { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
 .preloader-icon { display: inline-flex; align-items: center; justify-content: center; width: 84px; height: 84px; border-radius: 26px; background: linear-gradient(145deg, #1e1b4b, #312e81); box-shadow: var(--shadow-lg); animation: fly 1.5s infinite ease-in-out; }
 @keyframes fly { 0% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-16px) rotate(6deg); } 100% { transform: translateY(0) rotate(0deg); } }
 #preloader.hidden { opacity: 0; pointer-events: none; }
 
 .wrap { max-width: 1080px; margin: 0 auto; padding: 20px 20px 95px; }
-.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; gap: 12px; flex-wrap: wrap; background: var(--surface); backdrop-filter: blur(16px); border: 1px solid var(--line); border-radius: 24px; padding: 12px 18px; box-shadow: var(--shadow-sm); }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 12px; flex-wrap: wrap; background: var(--surface); backdrop-filter: blur(16px); border: 1px solid var(--line); border-radius: 24px; padding: 12px 18px; box-shadow: var(--shadow-sm); }
 .logo-area { display: flex; align-items: center; gap: 12px; cursor: pointer; }
 .logo-icon { display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 17px; background: linear-gradient(145deg, #1e1b4b, #312e81); border: 1px solid rgba(251, 191, 36, 0.35); box-shadow: var(--shadow-md); transition: transform 0.25s ease; overflow: hidden; }
 .logo-area:hover .logo-icon { transform: rotate(-5deg) scale(1.05); }
@@ -104,6 +101,12 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
   align-items: center; gap: 6px; box-shadow: var(--shadow-sm); transition: 0.2s;
 }
 .install-app-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+/* Smart Hub Tabs */
+.hub-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.hub-tab { background: var(--surface); border: 1px solid var(--line); color: var(--ink); padding: 9px 15px; border-radius: 14px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; box-shadow: var(--shadow-sm); }
+.hub-tab:hover { border-color: var(--accent); transform: translateY(-1px); }
+.hub-tab.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 
 .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
 @media (max-width: 700px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
@@ -178,6 +181,18 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
 .file-actions { display: flex; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line); }
 .file-actions button { flex: 1; }
 
+/* Smart Labs & Logic Blocks */
+.panel-card { background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
+.logic-block-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-top: 14px; }
+.logic-block-card { background: var(--bg); border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.formula-pill { font-family: monospace; direction: ltr; text-align: center; background: var(--tint); color: var(--accent); padding: 8px 12px; border-radius: 12px; font-weight: 700; font-size: 13.5px; }
+.sim-preview-box { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: #fff; min-height: 220px; margin-top: 12px; }
+.sim-preview-box iframe { position: static; width: 100%; height: 240px; }
+.quiz-option-btn { width: 100%; text-align: right; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 10px 14px; border-radius: 12px; font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+.quiz-option-btn:hover { border-color: var(--accent); }
+.quiz-option-btn.correct { background: rgba(16, 185, 129, 0.16); border-color: var(--success); color: var(--success); }
+.quiz-option-btn.wrong { background: rgba(239, 68, 68, 0.14); border-color: var(--danger); color: var(--danger); }
+
 .viewer { position: fixed; inset: 0; z-index: 200; background: var(--bg); display: none; flex-direction: column; }
 .viewing .viewer { display: flex; }
 .vbar { display: flex; justify-content: space-between; padding: 10px 14px; background: var(--surface-solid); border-bottom: 1px solid var(--line); align-items: center; flex-wrap: wrap; gap: 8px; }
@@ -211,7 +226,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 .drop-zone.dragover { border-color: var(--accent); background: var(--tint); }
 .drop-zone p { margin: 0; color: var(--muted); font-size: 13.5px; }
 
-/* Back to Top Floating Button */
 #backToTopBtn {
   position: fixed; bottom: 24px; left: 24px; z-index: 50;
   width: 46px; height: 46px; border-radius: 15px; border: 1px solid var(--line);
@@ -233,7 +247,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 </head>
 <body>
 
-<!-- تعريف أيقونة الهدهد المتجهية عالية الدقة -->
 <svg id="hoopoeVectorMaster" viewBox="0 0 120 120" width="0" height="0" style="position:absolute; width:0; height:0; overflow:hidden;" aria-hidden="true">
   <defs>
     <linearGradient id="hoopoeBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -272,24 +285,20 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   <path d="M56 85 L68 88 L68 98 L56 95 Z" fill="#ffffff" stroke="#4f46e5" stroke-width="1.4"/>
 </svg>
 
-<!-- Reading Scroll Progress -->
 <div id="scrollProgressBar"></div>
-
-<!-- Smart Connection Banner -->
 <div id="networkBanner" class="smart-banner"></div>
 
-<!-- Preloader -->
 <div id="preloader">
   <div class="preloader-icon" id="preloaderHoopoeBox"></div>
 </div>
 
 <div class="wrap">
   <div class="header">
-    <div class="logo-area" onclick="goHome()">
+    <div class="logo-area" onclick="switchHubTab('lessons')">
       <div class="logo-icon" id="headerHoopoeBox"></div>
       <div>
         <h1 id="siteTitle">هدهد</h1>
-        <span class="brand-sub">منصة التعلم والمراجعة الذكية</span>
+        <span class="brand-sub">منصة التعلم والمراجعة الذكية — متبقي 71 يوماً للتمهيدي (1/2/2027)</span>
       </div>
     </div>
 
@@ -312,22 +321,33 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     </div>
   </div>
 
+  <!-- شريط الأنظمة الذكية -->
+  <div class="hub-tabs">
+    <button class="hub-tab active" id="tab-lessons" onclick="switchHubTab('lessons')">📚 الدروس والأقسام</button>
+    <button class="hub-tab" id="tab-logic" onclick="switchHubTab('logic')">🧠 كتل الحفظ والمحاكيات</button>
+    <button class="hub-tab" id="tab-quiz" onclick="switchHubTab('quiz')">🎯 اختبار تدريبي ذكي</button>
+    <button class="hub-tab" id="tab-diag" onclick="switchHubTab('diag')">🛠️ التشخيص والنسخ الاحتياطي</button>
+  </div>
+
   <div class="stats-grid" id="statsGrid"></div>
   <div class="progress-wrap" id="globalProgress"></div>
 
-  <div class="toolbar" id="topToolbar">
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="ابحث في جميع الدروس، الوسوم، والملاحظات...">
-      <span class="kbd-hint">Ctrl+K</span>
+  <div id="lessonsView">
+    <div class="toolbar" id="topToolbar">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="ابحث في جميع الدروس، الوسوم، والملاحظات...">
+        <span class="kbd-hint">Ctrl+K</span>
+      </div>
+      <button class="btn" id="mainAddBtn" style="display:none" onclick="openAddModal()">+ إضافة</button>
     </div>
-    <button class="btn" id="mainAddBtn" style="display:none" onclick="openAddModal()">+ إضافة</button>
+
+    <div class="filter-bar" id="filterBar"></div>
+    <div id="content"></div>
   </div>
 
-  <div class="filter-bar" id="filterBar"></div>
-  <div id="content"></div>
+  <div id="smartHubContainer" style="display:none;"></div>
 </div>
 
-<!-- Back to Top Button -->
 <button id="backToTopBtn" onclick="scrollToTop()" title="العودة للأعلى">↑</button>
 
 <div class="viewer" id="viewer">
@@ -425,7 +445,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 
 <div id="toast"></div>
 
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
@@ -538,6 +557,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   const FIREBASE_URL = 'https://hudhud-344ec-default-rtdb.firebaseio.com/';
   let lib = { files: [], categories: [], settings: { siteName: 'هدهد' } };
   let isAdmin = false;
+  let activeHubTab = 'lessons';
   let currentCatId = null;
   let showFavorites = false;
   let activeTypeFilter = 'all';
@@ -548,6 +568,27 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   let currentViewerFile = null;
   let currentOrderedList = [];
   let deferredInstallPrompt = null;
+
+  // كتل المنطق والمعادلات المحفوظة محلياً
+  const DEFAULT_LOGIC_BLOCKS = [
+    {
+      id: 'lb1',
+      title: 'مولد تيار مستمر ذو تغذية منفصلة',
+      formula: 'E_g = K · Φ · n   |   V_t = E_g - I_a · R_a',
+      steps: '1. تغذية ملف المجال بمصدر مستقل لتثبيت الفيض Φ.\n2. دوران المنتج بسرعة n يولّد القوة الدافعة E_g.\n3. عند التحميل يظهر هبوط الجهد I_a · R_a.'
+    },
+    {
+      id: 'lb2',
+      title: 'القدرة الكهربائية في دوائر التيار المستمر',
+      formula: 'P = V · I = I² · R = V² / R',
+      steps: '1. تحديد الكميات المعطاة في المسألة.\n2. اختيار الصيغة المباشرة لتقليل خطوات التعويض.\n3. الانتباه لوحدات القياس (فولت، أمبير، أوم، واط).'
+    }
+  ];
+  let logicBlocks = JSON.parse(localStorage.getItem('hudhud_logic_blocks') || 'null') || DEFAULT_LOGIC_BLOCKS;
+
+  // جلسات الدراسة اليومية
+  const todayKey = 'hudhud_sessions_' + new Date().toISOString().slice(0, 10);
+  let todaySessions = parseInt(localStorage.getItem(todayKey) || '0', 10);
 
   const DEFAULT_CATS = [
     {id:'general', name:'ملفات عامة', icon:'📁'},
@@ -670,8 +711,11 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
         const finishedMode = timerMode;
         playGentleChime(finishedMode);
         if (finishedMode === 'study') {
+          todaySessions++;
+          localStorage.setItem(todayKey, String(todaySessions));
           timerMode = 'break'; remainingSec = BREAK_SEC;
-          showToast('انتهت جلسة الدراسة (25 دقيقة)! خذ استراحة 5 دقائق ☕');
+          showToast(`أحسنت! أتممت جلسة دراسة (جلسات اليوم: ${todaySessions}) — خذ استراحة 5 دقائق ☕`);
+          render();
         } else {
           timerMode = 'study'; remainingSec = STUDY_SEC;
           showToast('انتهت الاستراحة (5 دقائق)! لنبدأ جلسة دراسة 25 دقيقة 🎯');
@@ -698,7 +742,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   function showToast(msg, type='success') {
     const t = document.getElementById('toast'); t.textContent = msg; t.className = 'show ' + type;
     clearTimeout(t._timer);
-    t._timer = setTimeout(() => t.className = '', 3400);
+    t._timer = setTimeout(() => t.className = '', 3500);
   }
 
   let favs = JSON.parse(localStorage.getItem('favs') || '[]');
@@ -725,6 +769,280 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     } catch (e) {}
   }
   restoreUiState();
+
+  function switchHubTab(tabName) {
+    activeHubTab = tabName;
+    ['lessons', 'logic', 'quiz', 'diag'].forEach(t => {
+      const btn = document.getElementById('tab-' + t);
+      if (btn) btn.classList.toggle('active', t === tabName);
+    });
+    const lessonsView = document.getElementById('lessonsView');
+    const smartHub = document.getElementById('smartHubContainer');
+    if (tabName === 'lessons') {
+      lessonsView.style.display = 'block';
+      smartHub.style.display = 'none';
+      render();
+    } else {
+      lessonsView.style.display = 'none';
+      smartHub.style.display = 'block';
+      renderSmartHub();
+    }
+  }
+
+  function renderSmartHub() {
+    const container = document.getElementById('smartHubContainer');
+    if (!container) return;
+
+    if (activeHubTab === 'logic') {
+      container.innerHTML = `
+        <div class="panel-card">
+          <h2 style="margin:0 0 8px;">🧠 كتل المنطق والمعادلات + مولد المحاكاة الفوري</h2>
+          <p style="margin:0 0 14px; color:var(--muted); font-size:13.5px;">حوّل القوانين والمفاهيم إلى كتل منطقية للحفظ السريع، أو ولّد رسماً ومخططاً تفاعلياً فورياً.</p>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:10px;">
+            <input type="text" id="lbTitleInput" placeholder="عنوان الكتلة (مثلاً: قانون أوم أو محرك توازي)">
+            <input type="text" id="lbFormulaInput" placeholder="المعادلة أو الرمز (مثلاً: V = I · R)" dir="ltr">
+          </div>
+          <textarea id="lbStepsInput" style="margin-top:10px;" placeholder="خطوات الحل أو الفهم المنطقي (كل خطوة في سطر)..."></textarea>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+            <button class="btn small" onclick="addLogicBlock()">+ حفظ كتلة منطقية</button>
+            <button class="btn ghost small" onclick="generateQuickSimulation()">⚡ توليد محاكاة تفاعلية فورية</button>
+          </div>
+          <div id="simPreviewBox" class="sim-preview-box" style="display:none;"></div>
+        </div>
+        <div class="logic-block-grid">
+          ${logicBlocks.map(b => `
+            <div class="logic-block-card">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                <strong>${escapeHtml(b.title)}</strong>
+                ${b.id !== 'lb1' && b.id !== 'lb2' ? `<button class="remove-link-btn" onclick="deleteLogicBlock('${b.id}')">✕</button>` : ''}
+              </div>
+              <div class="formula-pill">${escapeHtml(b.formula)}</div>
+              <div style="font-size:13px; white-space:pre-line; color:var(--ink);">${escapeHtml(b.steps)}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    } else if (activeHubTab === 'quiz') {
+      const questions = buildDynamicQuestions();
+      container.innerHTML = `
+        <div class="panel-card">
+          <h2 style="margin:0 0 8px;">🎯 اختبار تدريبي ذكي للامتحان التمهيدي</h2>
+          <p style="margin:0 0 16px; color:var(--muted); font-size:13.5px;">اختبر استيعابك فوراً مع شرح لسبب كل إجابة قبل موعد 1/2/2027.</p>
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            ${questions.map((q, qIdx) => `
+              <div style="background:var(--bg); border:1px solid var(--line); border-radius:16px; padding:16px;">
+                <div style="font-weight:700; margin-bottom:10px;">${qIdx + 1}. ${escapeHtml(q.question)}</div>
+                <div style="display:flex; flex-direction:column; gap:8px;" id="qOpts_${qIdx}">
+                  ${q.options.map((opt, oIdx) => `
+                    <button type="button" class="quiz-option-btn" onclick="answerQuiz(${qIdx}, ${oIdx}, ${q.correct}, '${escapeHtml(q.explain)}')">${escapeHtml(opt)}</button>
+                  `).join('')}
+                </div>
+                <div id="qExplain_${qIdx}" style="display:none; margin-top:10px; font-size:13px; font-weight:600; color:var(--accent);"></div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    } else if (activeHubTab === 'diag') {
+      const cacheRaw = localStorage.getItem('hudhud_lib_cache');
+      const cacheSizeKb = cacheRaw ? Math.round(new Blob([cacheRaw]).size / 1024) : 0;
+      const brokenLinksCount = lib.files.reduce((acc, f) => {
+        const list = Array.isArray(f.links) ? f.links : [];
+        return acc + list.filter(l => !l.url || !/^https?:\/\//i.test(normalizeUrl(l.url))).length;
+      }, 0);
+
+      container.innerHTML = `
+        <div class="panel-card">
+          <h2 style="margin:0 0 10px;">🛠️ لوحة التشخيص الذاتي والنسخ الاحتياطي</h2>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:16px;">
+            <div style="background:var(--bg); padding:14px; border-radius:14px; border:1px solid var(--line);">
+              <div style="font-size:12px; color:var(--muted);">حالة الشبكة</div>
+              <div style="font-weight:700; margin-top:4px;">${navigator.onLine ? '✅ متصل بالإنترنت' : '📡 وضع عدم الاتصال'}</div>
+            </div>
+            <div style="background:var(--bg); padding:14px; border-radius:14px; border:1px solid var(--line);">
+              <div style="font-size:12px; color:var(--muted);">حجم الكاش المحلي للدروس</div>
+              <div style="font-weight:700; margin-top:4px;">${cacheSizeKb} KB</div>
+            </div>
+            <div style="background:var(--bg); padding:14px; border-radius:14px; border:1px solid var(--line);">
+              <div style="font-size:12px; color:var(--muted);">روابط ناقصة أو غير صالحة</div>
+              <div style="font-weight:700; margin-top:4px;">${brokenLinksCount}</div>
+            </div>
+            <div style="background:var(--bg); padding:14px; border-radius:14px; border:1px solid var(--line);">
+              <div style="font-size:12px; color:var(--muted);">جلسات الدراسة اليوم</div>
+              <div style="font-weight:700; margin-top:4px;">${todaySessions} جلسة</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn small" onclick="exportBackupJson()">📤 تصدير نسخة احتياطية JSON</button>
+            <button class="btn ghost small" onclick="document.getElementById('importBackupInput').click()">📥 استيراد نسخة احتياطية</button>
+            <input type="file" id="importBackupInput" accept=".json" hidden onchange="importBackupJson(this.files[0])">
+            <button class="btn ghost small" style="color:var(--danger); border-color:var(--danger)" onclick="clearLocalLessonCache()">🗑️ تفريغ الكاش المحلي للدروس</button>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  function addLogicBlock() {
+    const title = document.getElementById('lbTitleInput').value.trim();
+    const formula = document.getElementById('lbFormulaInput').value.trim();
+    const steps = document.getElementById('lbStepsInput').value.trim();
+    if (!title || !formula) return showToast('اكتب عنوان الكتلة والمعادلة أولاً', 'error');
+    logicBlocks.unshift({
+      id: 'lb_' + Date.now(),
+      title,
+      formula,
+      steps: steps || 'مراجعة الفكرة الأساسية والربط بالقوانين.'
+    });
+    localStorage.setItem('hudhud_logic_blocks', JSON.stringify(logicBlocks));
+    showToast('تم حفظ الكتلة المنطقية 🧠');
+    renderSmartHub();
+  }
+
+  function deleteLogicBlock(id) {
+    logicBlocks = logicBlocks.filter(b => b.id !== id);
+    localStorage.setItem('hudhud_logic_blocks', JSON.stringify(logicBlocks));
+    showToast('تم حذف الكتلة');
+    renderSmartHub();
+  }
+
+  function generateQuickSimulation() {
+    const title = document.getElementById('lbTitleInput').value.trim() || 'محاكاة مسار التيار والجهد';
+    const formula = document.getElementById('lbFormulaInput').value.trim() || 'V = I · R';
+    const box = document.getElementById('simPreviewBox');
+    box.style.display = 'block';
+    const simHtml = `
+      <!doctype html><html lang="ar" dir="rtl"><body style="margin:0; font-family:sans-serif; background:#0f172a; color:#f8fafc; padding:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <strong>⚡ ${escapeHtml(title)}</strong>
+          <span style="background:#312e81; padding:4px 10px; border-radius:8px; font-size:12px;">${escapeHtml(formula)}</span>
+        </div>
+        <label style="font-size:12px; color:#94a3b8;">تحكم بسرعة التدفق / الجهد: <span id="valLbl">50</span>%</label>
+        <input id="spd" type="range" min="10" max="100" value="50" style="width:100%; margin:8px 0 12px;">
+        <svg viewBox="0 0 400 110" style="width:100%; height:110px; background:#1e293b; border-radius:12px;">
+          <rect x="30" y="25" width="340" height="60" rx="14" fill="none" stroke="#818cf8" stroke-width="3" stroke-dasharray="10 6">
+            <animate id="dashAnim" attributeName="stroke-dashoffset" from="0" to="-64" dur="1.5s" repeatCount="indefinite"/>
+          </rect>
+          <circle cx="200" cy="55" r="18" fill="#f59e0b"/>
+          <text x="200" y="60" text-anchor="middle" fill="#0f172a" font-weight="bold" font-size="13">M / L</text>
+        </svg>
+        <script>
+          const s = document.getElementById('spd');
+          const a = document.getElementById('dashAnim');
+          const lbl = document.getElementById('valLbl');
+          s.addEventListener('input', () => {
+            lbl.textContent = s.value;
+            const dur = (2.6 - (Number(s.value) / 100) * 2.1).toFixed(2) + 's';
+            a.setAttribute('dur', dur);
+          });
+        <\/script>
+      </body></html>
+    `;
+    box.innerHTML = `<iframe srcdoc="${escapeHtml(simHtml)}"></iframe>`;
+  }
+
+  function buildDynamicQuestions() {
+    const base = [
+      {
+        question: 'ما الهدف الأساسي من التغذية المنفصلة لملف المجال في مولد التيار المستمر؟',
+        options: ['تثبيت الفيض المغناطيسي وعدم تأثره بتيار المنتج', 'إلغاء مقاومة ملفات المنتج تماماً', 'تحويل التيار المستمر إلى تيار متناوب داخل الحمل'],
+        correct: 0,
+        explain: 'فصل تغذية المجال يجعل الفيض المغناطيسي مستقراً ومستقلاً عن تغيرات تيار الحمل في المنتج.'
+      },
+      {
+        question: 'عند انتهاء جلسة التركيز الدراسية (25 دقيقة)، ما هي المدة المعيارية للاستراحة القصيرة؟',
+        options: ['5 دقائق', '45 دقيقة', 'ساعتان'],
+        correct: 0,
+        explain: 'الاستراحة القصيرة لمدة 5 دقائق تساعد على تجديد الذهن قبل بدء جلسة تركيز جديدة.'
+      }
+    ];
+
+    if (lib.files.length > 0) {
+      const sample = lib.files[0];
+      base.push({
+        question: `أي من العناصر التالية مسجل كدرس داخل منصة هدهد؟`,
+        options: [sample.title, 'مقرر علم الأحياء البحرية', 'قوانين الفضاء الفلكي'],
+        correct: 0,
+        explain: `«${sample.title}» من الدروس المدرجة ضمن المنصة للمراجعة.`
+      });
+    }
+    return base;
+  }
+
+  function answerQuiz(qIdx, chosenIdx, correctIdx, explain) {
+    const box = document.getElementById('qOpts_' + qIdx);
+    const expEl = document.getElementById('qExplain_' + qIdx);
+    if (!box) return;
+    const btns = box.querySelectorAll('.quiz-option-btn');
+    btns.forEach((b, i) => {
+      b.classList.remove('correct', 'wrong');
+      if (i === correctIdx) b.classList.add('correct');
+      else if (i === chosenIdx && chosenIdx !== correctIdx) b.classList.add('wrong');
+    });
+    if (expEl) {
+      expEl.style.display = 'block';
+      expEl.textContent = (chosenIdx === correctIdx ? '✅ إجابة صحيحة: ' : '❌ راجع الفكرة: ') + explain;
+    }
+  }
+
+  function exportBackupJson() {
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      lib,
+      logicBlocks,
+      favs,
+      completed
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'hudhud-backup-2026-11-21.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('تم تصدير النسخة الاحتياطية بنجاح 📤');
+  }
+
+  function importBackupJson(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (data.lib && Array.isArray(data.lib.files)) {
+          lib = data.lib;
+          localStorage.setItem('hudhud_lib_cache', JSON.stringify(lib));
+        }
+        if (Array.isArray(data.logicBlocks)) {
+          logicBlocks = data.logicBlocks;
+          localStorage.setItem('hudhud_logic_blocks', JSON.stringify(logicBlocks));
+        }
+        if (Array.isArray(data.favs)) {
+          favs = data.favs;
+          localStorage.setItem('favs', JSON.stringify(favs));
+        }
+        if (Array.isArray(data.completed)) {
+          completed = data.completed;
+          localStorage.setItem('completed', JSON.stringify(completed));
+        }
+        showToast('تم استيراد النسخة الاحتياطية وتحديث الواجهة 📥');
+        render();
+        renderSmartHub();
+      } catch (err) {
+        showToast('ملف النسخة الاحتياطية غير صالح', 'error');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function clearLocalLessonCache() {
+    localStorage.removeItem('hudhud_lib_cache');
+    showToast('تم تفريغ الكاش المحلي للدروس — جاري إعادة الجلب...');
+    loadData();
+    renderSmartHub();
+  }
 
   function saveFormDraft() {
     if (editingFileId) return;
@@ -892,9 +1210,10 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     stats.innerHTML = `
       <div class="stat-card"><div class="stat-val">${totalFiles}</div><div class="stat-lbl">إجمالي الدروس</div></div>
       <div class="stat-card"><div class="stat-val">${lib.categories.length}</div><div class="stat-lbl">الأقسام</div></div>
-      <div class="stat-card"><div class="stat-val">${favs.length}</div><div class="stat-lbl">المفضلة</div></div>
+      <div class="stat-card"><div class="stat-val">${todaySessions}</div><div class="stat-lbl">جلسات اليوم</div></div>
       <div class="stat-card"><div class="stat-val" style="color:var(--success)">${completedCount}</div><div class="stat-lbl">المنجزة</div></div>`;
     progWrap.innerHTML = `<span class="progress-text">مستوى الإنجاز العام</span><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%"></div></div><span class="progress-text">${pct}%</span>`;
+    if (activeHubTab !== 'lessons') return;
     renderFilterBar();
     const query = document.getElementById('searchInput').value.trim().toLowerCase();
     if (query.length > 0) {
@@ -1133,7 +1452,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   }
 
   function closeModal() { document.body.classList.remove('sheet-open'); }
-  function goHome() { currentCatId = null; showFavorites = false; activeTypeFilter = 'all'; activeTagFilter = ''; document.getElementById('searchInput').value = ''; saveUiState(); render(); }
+  function goHome() { switchHubTab('lessons'); currentCatId = null; showFavorites = false; activeTypeFilter = 'all'; activeTagFilter = ''; document.getElementById('searchInput').value = ''; saveUiState(); render(); }
 
   firebase.auth().onAuthStateChanged((user) => { if (user) { isAdmin = true; render(); } else { isAdmin = false; render(); } });
   loadData();
