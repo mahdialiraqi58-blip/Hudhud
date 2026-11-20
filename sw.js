@@ -1,41 +1,68 @@
-const CACHE_NAME = 'hudhud-v1';
-const ASSETS = [
+const CACHE_NAME = 'hudhud-cache-v2-2026-11-21';
+const CORE_ASSETS = [
   './',
   './index.html',
-  './manifest.json',
-  'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap',
-  'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js',
-  'https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js',
-  'https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js'
+  './manifest.json'
 ];
 
-// تثبيت الملفات في الكاش وتفعيل النسخة الجديدة فوراً
-self.addEventListener('install', event => {
+// تثبيت النسخة الجديدة وتفعيلها فوراً دون انتظار
+self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(CORE_ASSETS).catch(() => {});
+    })
   );
 });
 
-// حذف الإصدارات القديمة من الكاش واستلام التحكم بالصفحات
-self.addEventListener('activate', event => {
+// حذف جميع إصدارات الكاش القديمة والاستحواذ على الصفحات المفتوحة فوراً
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
-      )
-    ).then(() => self.clients.claim())
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys
+          .filter((key) => key !== CACHE_NAME)
+          .map((key) => caches.delete(key))
+      );
+    }).then(() => self.clients.claim())
   );
 });
 
-// جلب الملفات من الكاش أولاً ثم الشبكة عند الحاجة
-self.addEventListener('fetch', event => {
+// استقبال أمر التحديث الفوري من واجهة التطبيق
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+// جلب أحدث نسخة من الشبكة أولاً، مع التخزين للكاش والرجوع إليه عند عدم وجود إنترنت
+self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
-  if (event.request.url.includes('firebaseio.com')) return;
+
+  const url = new URL(event.request.url);
+  // عدم اعتراض طلبات قاعدة بيانات Firebase أو المصادقة
+  if (url.hostname.includes('firebaseio.com') || url.hostname.includes('googleapis.com/identitytoolkit')) {
+    return;
+  }
 
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      return cachedResponse || fetch(event.request).catch(() => cachedResponse);
-    })
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200 && url.origin === self.location.origin) {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone).catch(() => {});
+          });
+        }
+        return networkResponse;
+      })
+      .catch(() => {
+        return caches.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) return cachedResponse;
+          if (event.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+        });
+      })
   );
 });
