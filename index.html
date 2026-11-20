@@ -185,6 +185,7 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
 .viewing .viewer { display: flex; }
 .vbar { display: flex; justify-content: space-between; padding: 10px 16px; background: var(--surface); border-bottom: 1px solid var(--line); align-items: center; backdrop-filter: blur(16px); flex-wrap: wrap; gap: 8px; }
 .vnav { display: flex; gap: 6px; align-items: center; }
+.back-lesson-btn { font-weight: 700; border-color: var(--accent); color: var(--accent); background: var(--tint); }
 .vactions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 .vnote-banner { background: var(--surface-solid); border-bottom: 1px solid var(--line); padding: 8px 18px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
 .vbody { flex: 1; position: relative; background: #ffffff; }
@@ -295,18 +296,19 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 <div class="viewer" id="viewer">
   <div class="vbar">
     <div class="vnav">
-      <button class="btn ghost small" onclick="closeViewer()">✕ إغلاق</button>
-      <button class="btn ghost small" id="prevLessonBtn" onclick="stepLesson(-1)" title="الدرس السابق (السهم الأيمن)">« السابق</button>
-      <button class="btn ghost small" id="nextLessonBtn" onclick="stepLesson(1)" title="الدرس التالي (السهم الأيسر)">التالي »</button>
+      <button type="button" class="btn ghost small back-lesson-btn" id="backLessonBtn" onclick="closeViewer()">← رجوع</button>
+      <button type="button" class="btn ghost small" onclick="closeViewer()" title="إغلاق الدرس">✕ إغلاق</button>
+      <button type="button" class="btn ghost small" id="prevLessonBtn" onclick="stepLesson(-1)" title="الدرس السابق (السهم الأيمن)">« السابق</button>
+      <button type="button" class="btn ghost small" id="nextLessonBtn" onclick="stepLesson(1)" title="الدرس التالي (السهم الأيسر)">التالي »</button>
     </div>
     <div id="viewerTitle" style="font-weight:700; flex:1; text-align:center; min-width:140px;"></div>
     <div class="vactions">
       <div id="viewerExtLinks" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
-      <button class="btn ghost small" id="markDoneBtn" onclick="toggleCompletedCurrent()">⬜ تمت الدراسة</button>
-      <button class="btn ghost small" onclick="shareCurrentFile()">🔗 مشاركة</button>
-      <button class="btn ghost small" onclick="toggleFullscreen()">⛶ ملء الشاشة</button>
-      <button class="btn ghost small" id="downloadBtn" onclick="downloadFile()" style="display:none">📥 تحميل</button>
-      <button class="btn ghost small" id="codeToggleBtn" style="display:none">الكود</button>
+      <button type="button" class="btn ghost small" id="markDoneBtn" onclick="toggleCompletedCurrent()">⬜ تمت الدراسة</button>
+      <button type="button" class="btn ghost small" onclick="shareCurrentFile()">🔗 مشاركة</button>
+      <button type="button" class="btn ghost small" onclick="toggleFullscreen()">⛶ ملء الشاشة</button>
+      <button type="button" class="btn ghost small" id="downloadBtn" onclick="downloadFile()" style="display:none">📥 تحميل</button>
+      <button type="button" class="btn ghost small" id="codeToggleBtn" style="display:none">الكود</button>
     </div>
   </div>
   <div class="vnote-banner" id="viewerNoteBanner" style="display:none">
