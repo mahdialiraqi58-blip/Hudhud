@@ -5,170 +5,144 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>هدهد - المنصة التعليمية الذكية</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<!-- PWA Meta Tags -->
+<meta name="theme-color" content="#4f46e5">
+<link rel="manifest" href="./manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3750/3750079.png">
+<!-- Confetti Library -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 <style>
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
 :root {
-  --bg: #f4f7fb;
-  --surface: rgba(255, 255, 255, 0.86);
-  --surface-solid: #ffffff;
-  --ink: #0f172a;
-  --muted: #64748b;
-  --accent: #4f46e5;
-  --accent-hover: #4338ca;
-  --accent-ink: #ffffff;
-  --tint: #e0e7ff;
-  --line: rgba(15, 23, 42, 0.08);
-  --danger: #ef4444;
-  --success: #10b981;
-  --warn: #f59e0b;
-  --star: #fbbf24;
-  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
-  --shadow-md: 0 12px 32px rgba(15, 23, 42, 0.08);
-  --shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.16);
-  --radius: 22px;
+  --bg: #f4f7fb; --surface: rgba(255, 255, 255, 0.86); --surface-solid: #ffffff;
+  --ink: #0f172a; --muted: #64748b; --accent: #4f46e5; --accent-hover: #4338ca;
+  --accent-ink: #ffffff; --tint: #e0e7ff; --line: rgba(15, 23, 42, 0.08);
+  --danger: #ef4444; --success: #10b981; --warn: #f59e0b; --star: #fbbf24;
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04); --shadow-md: 0 12px 32px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.16); --radius: 22px;
+  --base-font: 16px;
 }
 [data-theme="dark"] {
-  --bg: #070d19;
-  --surface: rgba(17, 26, 46, 0.84);
-  --surface-solid: #111a2e;
-  --ink: #f8fafc;
-  --muted: #94a3b8;
-  --accent: #818cf8;
-  --accent-hover: #6366f1;
-  --accent-ink: #070d19;
-  --tint: rgba(129, 140, 248, 0.16);
-  --line: rgba(248, 250, 252, 0.09);
-  --danger: #f87171;
-  --success: #34d399;
-  --warn: #fbbf24;
-  --star: #fbbf24;
+  --bg: #070d19; --surface: rgba(17, 26, 46, 0.84); --surface-solid: #111a2e;
+  --ink: #f8fafc; --muted: #94a3b8; --accent: #818cf8; --accent-hover: #6366f1;
+  --accent-ink: #070d19; --tint: rgba(129, 140, 248, 0.16); --line: rgba(248, 250, 252, 0.09);
+  --danger: #f87171; --success: #34d399; --warn: #fbbf24; --star: #fbbf24;
+}
+[data-theme="comfort"] {
+  --bg: #f5efe4; --surface: rgba(252, 248, 240, 0.9); --surface-solid: #fcf8f0;
+  --ink: #2c241b; --muted: #6e5f4f; --accent: #b45309; --accent-hover: #92400e;
+  --accent-ink: #ffffff; --tint: rgba(180, 83, 9, 0.14); --line: rgba(44, 36, 27, 0.10);
 }
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html, body { margin: 0; min-height: 100%; }
+html { font-size: var(--base-font); }
+html, body { margin: 0; min-height: 100%; scroll-behavior: smooth; }
 body {
-  background-color: var(--bg);
-  color: var(--ink);
-  font: 16px/1.65 "IBM Plex Sans Arabic", system-ui, sans-serif;
-  background-image:
-    radial-gradient(circle at 12% 0%, var(--tint), transparent 38%),
-    radial-gradient(circle at 90% 10%, rgba(139, 92, 246, 0.10), transparent 35%);
-  -webkit-font-smoothing: antialiased;
-  transition: background 0.3s, color 0.3s;
+  background-color: var(--bg); color: var(--ink);
+  font: 1rem/1.65 "IBM Plex Sans Arabic", system-ui, sans-serif;
+  background-image: radial-gradient(circle at 12% 0%, var(--tint), transparent 38%), radial-gradient(circle at 90% 10%, rgba(139, 92, 246, 0.10), transparent 35%);
+  -webkit-font-smoothing: antialiased; transition: background 0.3s, color 0.3s;
+  touch-action: manipulation;
 }
 body.viewing, body.sheet-open { overflow: hidden; }
 
-.wrap { max-width: 1080px; margin: 0 auto; padding: 20px 20px 90px; }
+/* Top Reading Scroll Bar */
+#scrollProgressBar {
+  position: fixed; top: 0; right: 0; height: 3px; width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  z-index: 9998; transition: width 0.1s ease-out;
+}
 
-/* Top Header & Focus Timer */
-.header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 22px; gap: 12px; flex-wrap: wrap;
-  background: var(--surface); backdrop-filter: blur(16px);
-  border: 1px solid var(--line); border-radius: 24px;
-  padding: 12px 18px; box-shadow: var(--shadow-sm);
+/* Network & Update Banners */
+.smart-banner {
+  position: sticky; top: 0; z-index: 90; padding: 9px 16px;
+  font-size: 13px; font-weight: 700; text-align: center;
+  display: none; align-items: center; justify-content: center; gap: 10px;
+  backdrop-filter: blur(12px);
 }
+.smart-banner.offline { background: rgba(239, 68, 68, 0.92); color: #fff; display: flex; }
+.smart-banner.online-back { background: rgba(16, 185, 129, 0.94); color: #fff; display: flex; }
+.smart-banner.update { background: rgba(79, 70, 229, 0.95); color: #fff; display: flex; }
+.banner-action-btn {
+  background: #fff; color: #0f172a; border: 0; border-radius: 99px;
+  padding: 4px 12px; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer;
+}
+
+/* Preloader */
+#preloader { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
+.preloader-icon { font-size: 50px; animation: fly 1.5s infinite ease-in-out; }
+@keyframes fly { 0% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(10deg); } 100% { transform: translateY(0) rotate(0deg); } }
+#preloader.hidden { opacity: 0; pointer-events: none; }
+
+.wrap { max-width: 1080px; margin: 0 auto; padding: 20px 20px 95px; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; gap: 12px; flex-wrap: wrap; background: var(--surface); backdrop-filter: blur(16px); border: 1px solid var(--line); border-radius: 24px; padding: 12px 18px; box-shadow: var(--shadow-sm); }
 .logo-area { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-.logo-icon {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 46px; height: 46px; border-radius: 15px;
-  background: linear-gradient(135deg, var(--accent), #8b5cf6);
-  color: #fff; font-size: 22px; box-shadow: var(--shadow-md);
-  transition: transform 0.25s ease;
-}
+.logo-icon { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 15px; background: linear-gradient(135deg, var(--accent), #8b5cf6); color: #fff; font-size: 22px; box-shadow: var(--shadow-md); transition: transform 0.25s ease; }
 .logo-area:hover .logo-icon { transform: rotate(-8deg) scale(1.05); }
 .brand-sub { font-size: 11px; color: var(--muted); font-weight: 600; display: block; margin-top: -2px; }
 h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
-
 .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
-/* Focus Timer Pill */
-.timer-pill {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--bg); border: 1px solid var(--line);
-  border-radius: 16px; padding: 6px 12px; font-size: 13px; font-weight: 700;
-}
+.timer-pill { display: inline-flex; align-items: center; gap: 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 16px; padding: 6px 12px; font-size: 13px; font-weight: 700; }
 .timer-time { font-variant-numeric: tabular-nums; font-size: 14px; color: var(--accent); min-width: 48px; text-align: center; }
 .timer-mode { font-size: 11px; color: var(--muted); background: var(--surface); padding: 2px 7px; border-radius: 8px; border: 1px solid var(--line); }
-.timer-btn {
-  background: var(--surface); border: 1px solid var(--line); color: var(--ink);
-  border-radius: 9px; padding: 4px 8px; font-size: 12px; cursor: pointer; font-weight: 600;
-}
+.timer-btn { background: var(--surface); border: 1px solid var(--line); color: var(--ink); border-radius: 9px; padding: 4px 8px; font-size: 12px; cursor: pointer; font-weight: 600; transition: 0.2s; }
 .timer-btn:hover { border-color: var(--accent); color: var(--accent); }
 .timer-btn.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-
-.icon-btn {
-  background: var(--bg); border: 1px solid var(--line); color: var(--ink);
-  width: 42px; height: 42px; border-radius: 13px; cursor: pointer; font-size: 18px;
-  display: grid; place-items: center; transition: 0.2s;
-}
+.icon-btn { background: var(--bg); border: 1px solid var(--line); color: var(--ink); width: 40px; height: 40px; border-radius: 13px; cursor: pointer; font-size: 16px; font-weight: 700; display: grid; place-items: center; transition: 0.2s; }
 .icon-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
 
-/* Stats & Global Progress */
+.install-app-btn {
+  background: linear-gradient(135deg, var(--accent), #7c3aed); color: #fff;
+  border: 0; border-radius: 13px; padding: 8px 13px; font: inherit;
+  font-size: 12.5px; font-weight: 700; cursor: pointer; display: inline-flex;
+  align-items: center; gap: 6px; box-shadow: var(--shadow-sm); transition: 0.2s;
+}
+.install-app-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
 .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
 @media (max-width: 700px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
-.stat-card {
-  background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line);
-  border-radius: var(--radius); padding: 14px 16px; text-align: center; box-shadow: var(--shadow-sm);
-}
+.stat-card { background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; text-align: center; box-shadow: var(--shadow-sm); transition: transform 0.2s; }
+.stat-card:hover { transform: translateY(-2px); }
 .stat-val { font-size: 23px; font-weight: 700; color: var(--accent); line-height: 1.2; }
 .stat-lbl { font-size: 12.5px; color: var(--muted); font-weight: 600; margin-top: 4px; }
 
-.progress-wrap {
-  background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line);
-  border-radius: 18px; padding: 12px 18px; margin-bottom: 20px;
-  display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow-sm);
-}
+.progress-wrap { background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: 18px; padding: 12px 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow-sm); }
 .progress-bar-bg { flex: 1; height: 10px; background: var(--line); border-radius: 99px; overflow: hidden; }
-.progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--success)); border-radius: 99px; transition: width 0.4s ease; }
+.progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--success)); border-radius: 99px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
 .progress-text { font-size: 13px; font-weight: 700; color: var(--muted); white-space: nowrap; }
 
-/* Search & Toolbar */
 .toolbar { display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
 .search-box { position: relative; flex: 1; min-width: 240px; }
-.search-box input {
-  width: 100%; padding: 13px 42px 13px 72px; border: 1px solid var(--line);
-  border-radius: 16px; background: var(--surface); color: var(--ink); font: inherit;
-  box-shadow: var(--shadow-sm); backdrop-filter: blur(14px); transition: 0.2s;
-}
+.search-box input { width: 100%; padding: 13px 42px 13px 72px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--ink); font: inherit; box-shadow: var(--shadow-sm); backdrop-filter: blur(14px); transition: 0.2s; }
 .search-box input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--tint); }
 .search-box::before { content: '🔍'; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 17px; opacity: 0.55; }
-.kbd-hint {
-  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-  font-size: 11px; color: var(--muted); background: var(--bg);
-  padding: 3px 7px; border-radius: 7px; border: 1px solid var(--line); pointer-events: none;
-}
+.kbd-hint { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 11px; color: var(--muted); background: var(--bg); padding: 3px 7px; border-radius: 7px; border: 1px solid var(--line); pointer-events: none; }
 
-/* Quick Filter Pills */
-.filter-bar {
-  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; align-items: center;
-}
-.filter-chip {
-  background: var(--surface); border: 1px solid var(--line); color: var(--muted);
-  padding: 6px 13px; border-radius: 99px; font-size: 12.5px; font-weight: 600;
-  cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px;
-}
+.filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; align-items: center; }
+.filter-chip { background: var(--surface); border: 1px solid var(--line); color: var(--muted); padding: 6px 13px; border-radius: 99px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px; }
 .filter-chip:hover { border-color: var(--accent); color: var(--ink); }
 .filter-chip.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .filter-sep { width: 1px; height: 18px; background: var(--line); margin: 0 2px; }
 
-.btn {
-  border: 0; background: var(--accent); color: var(--accent-ink); font: inherit; font-weight: 600;
-  padding: 11px 20px; border-radius: 14px; cursor: pointer; transition: 0.2s;
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: var(--shadow-sm);
-}
+.btn { border: 0; background: var(--accent); color: var(--accent-ink); font: inherit; font-weight: 600; padding: 11px 20px; border-radius: 14px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: var(--shadow-sm); }
 .btn:hover { background: var(--accent-hover); transform: translateY(-1.5px); box-shadow: var(--shadow-md); }
 .btn.ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--line); backdrop-filter: blur(12px); }
 .btn.ghost:hover { border-color: var(--accent); }
 .btn.success { background: var(--success); color: #fff; }
 .btn.small { padding: 7px 12px; font-size: 13px; border-radius: 11px; }
 
-/* Categories */
 .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
-.cat-card {
-  position: relative; background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line);
-  border-radius: var(--radius); padding: 24px 16px; text-align: center; cursor: pointer;
-  transition: all 0.25s ease; box-shadow: var(--shadow-sm);
-}
+.cat-card { position: relative; background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 16px; text-align: center; cursor: pointer; transition: all 0.25s ease; box-shadow: var(--shadow-sm); animation: fadeIn 0.4s ease forwards; opacity: 0; }
+@keyframes fadeIn { to { opacity: 1; } }
 .cat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: var(--accent); }
 .cat-icon { font-size: 40px; margin-bottom: 10px; transition: transform 0.25s ease; }
 .cat-card:hover .cat-icon { transform: scale(1.08); }
@@ -176,61 +150,28 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
 .cat-mini-prog { height: 5px; background: var(--line); border-radius: 5px; margin-top: 12px; overflow: hidden; }
 .cat-mini-fill { height: 100%; background: var(--success); transition: width 0.3s; }
 .cat-admin-tools { position: absolute; top: 10px; left: 10px; display: flex; gap: 4px; }
-.mini-icon-btn {
-  background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
-  width: 28px; height: 28px; font-size: 12px; cursor: pointer; display: grid; place-items: center;
-}
-.mini-icon-btn:hover { border-color: var(--accent); }
+.mini-icon-btn { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; width: 28px; height: 28px; font-size: 12px; cursor: pointer; display: grid; place-items: center; transition: 0.2s; }
+.mini-icon-btn:hover { border-color: var(--accent); transform: scale(1.1); }
 
-/* Files Grid */
 .files-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-.file-card {
-  background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line);
-  border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column;
-  gap: 12px; cursor: pointer; box-shadow: var(--shadow-sm); transition: 0.25s ease;
-}
+.file-card { background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 12px; cursor: pointer; box-shadow: var(--shadow-sm); transition: all 0.25s ease; animation: fadeIn 0.4s ease forwards; opacity: 0; }
 .file-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: var(--shadow-md); }
 .file-card.completed { border-right: 4px solid var(--success); }
 .file-header { display: flex; justify-content: space-between; align-items: center; }
 .file-badges { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
-.file-icon {
-  width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center;
-  font-weight: 700; font-size: 12px; background: var(--tint); color: var(--accent); flex-shrink: 0;
-}
+.file-icon { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; font-weight: 700; font-size: 12px; background: var(--tint); color: var(--accent); flex-shrink: 0; }
 .file-type-pdf { color: #dc2626; background: rgba(239, 68, 68, 0.14); }
 .file-type-img { color: #059669; background: rgba(16, 185, 129, 0.14); }
 .file-type-vid { color: #d97706; background: rgba(245, 158, 11, 0.16); }
 .file-type-mp4 { color: #7c3aed; background: rgba(139, 92, 246, 0.16); }
-.cat-badge {
-  font-size: 11px; background: var(--bg); border: 1px solid var(--line);
-  padding: 3px 8px; border-radius: 8px; color: var(--muted); font-weight: 600;
-}
-.done-badge {
-  font-size: 11px; background: rgba(16, 185, 129, 0.16); color: var(--success);
-  padding: 3px 8px; border-radius: 8px; font-weight: 700;
-}
-
-.lesson-tip-box {
-  background: rgba(79, 70, 229, 0.07);
-  border-right: 3px solid var(--accent);
-  border-radius: 10px;
-  padding: 8px 11px;
-  font-size: 12.5px;
-  color: var(--ink);
-  margin-top: 8px;
-}
+.cat-badge { font-size: 11px; background: var(--bg); border: 1px solid var(--line); padding: 3px 8px; border-radius: 8px; color: var(--muted); font-weight: 600; }
+.done-badge { font-size: 11px; background: rgba(16, 185, 129, 0.16); color: var(--success); padding: 3px 8px; border-radius: 8px; font-weight: 700; }
+.lesson-tip-box { background: rgba(79, 70, 229, 0.07); border-right: 3px solid var(--accent); border-radius: 10px; padding: 8px 11px; font-size: 12.5px; color: var(--ink); margin-top: 8px; }
 .lesson-tip-label { font-weight: 700; color: var(--accent); margin-left: 4px; }
-
 .ext-links-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
-.ext-link-chip {
-  display: inline-flex; align-items: center; gap: 5px;
-  font-size: 12px; font-weight: 600; text-decoration: none;
-  padding: 5px 10px; border-radius: 10px;
-  background: var(--bg); color: var(--ink); border: 1px solid var(--line); transition: 0.2s;
-}
+.ext-link-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; text-decoration: none; padding: 5px 10px; border-radius: 10px; background: var(--bg); color: var(--ink); border: 1px solid var(--line); transition: 0.2s; }
 .ext-link-chip:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
 .ext-link-chip.yt { color: #dc2626; border-color: rgba(220, 38, 38, 0.25); background: rgba(220, 38, 38, 0.07); }
-
 .star-btn { background: none; border: 0; font-size: 24px; cursor: pointer; color: var(--muted); transition: 0.2s; line-height: 1; padding: 0; }
 .star-btn.active { color: var(--star); transform: scale(1.1); }
 .file-title { font-weight: 700; font-size: 17px; margin: 0; }
@@ -240,38 +181,22 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
 .file-actions { display: flex; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line); }
 .file-actions button { flex: 1; }
 
-/* Viewer */
 .viewer { position: fixed; inset: 0; z-index: 20; background: var(--bg); display: none; flex-direction: column; }
 .viewing .viewer { display: flex; }
-.vbar {
-  display: flex; justify-content: space-between; padding: 10px 16px;
-  background: var(--surface); border-bottom: 1px solid var(--line);
-  align-items: center; backdrop-filter: blur(16px); flex-wrap: wrap; gap: 8px;
-}
+.vbar { display: flex; justify-content: space-between; padding: 10px 16px; background: var(--surface); border-bottom: 1px solid var(--line); align-items: center; backdrop-filter: blur(16px); flex-wrap: wrap; gap: 8px; }
 .vnav { display: flex; gap: 6px; align-items: center; }
 .vactions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-.vnote-banner {
-  background: var(--surface-solid); border-bottom: 1px solid var(--line);
-  padding: 8px 18px; font-size: 13px; display: flex; align-items: center; gap: 8px;
-}
+.vnote-banner { background: var(--surface-solid); border-bottom: 1px solid var(--line); padding: 8px 18px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
 .vbody { flex: 1; position: relative; background: #ffffff; }
 iframe, img, video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: contain; }
 pre { position: absolute; inset: 0; margin: 0; padding: 20px; background: #1e1e1e; color: #d4d4d4; overflow: auto; direction: ltr; text-align: left; font: 14px/1.6 monospace; }
 
-/* Modals */
 .scrim { position: fixed; inset: 0; z-index: 30; background: rgba(15, 23, 42, 0.72); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; }
 .sheet-open .scrim { display: flex; }
-.sheet {
-  width: 100%; max-width: 540px; background: var(--surface-solid);
-  border: 1px solid var(--line); border-radius: 24px; padding: 28px;
-  display: flex; flex-direction: column; gap: 15px; margin: 20px;
-  box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto;
-}
+.sheet { width: 100%; max-width: 540px; background: var(--surface-solid); border: 1px solid var(--line); border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 15px; margin: 20px; box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto; transform: translateY(20px); opacity: 0; transition: all 0.3s; }
+.sheet-open .sheet { transform: translateY(0); opacity: 1; }
 label { display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 600; color: var(--muted); }
-select, input[type="text"], input[type="password"], input[type="url"], textarea {
-  padding: 11px 14px; border: 1px solid var(--line); border-radius: 12px;
-  background: var(--bg); color: var(--ink); font: inherit; transition: 0.2s; width: 100%;
-}
+select, input[type="text"], input[type="password"], input[type="email"], input[type="url"], textarea { padding: 11px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); color: var(--ink); font: inherit; transition: 0.2s; width: 100%; }
 textarea { resize: vertical; min-height: 68px; }
 select:focus, input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--tint); }
 
@@ -286,11 +211,18 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 .drop-zone.dragover { border-color: var(--accent); background: var(--tint); }
 .drop-zone p { margin: 0; color: var(--muted); font-size: 13.5px; }
 
-#toast {
-  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(100px);
-  background: var(--ink); color: var(--bg); padding: 12px 24px; border-radius: 99px;
-  font-weight: 600; opacity: 0; transition: 0.3s; z-index: 100; box-shadow: var(--shadow-lg);
+/* Back to Top Floating Button */
+#backToTopBtn {
+  position: fixed; bottom: 24px; left: 24px; z-index: 50;
+  width: 46px; height: 46px; border-radius: 15px; border: 1px solid var(--line);
+  background: var(--accent); color: #fff; font-size: 20px; font-weight: 700;
+  cursor: pointer; box-shadow: var(--shadow-md); display: grid; place-items: center;
+  opacity: 0; pointer-events: none; transform: translateY(15px); transition: 0.25s ease;
 }
+#backToTopBtn.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+#backToTopBtn:hover { background: var(--accent-hover); transform: translateY(-2px); }
+
+#toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--ink); color: var(--bg); padding: 12px 24px; border-radius: 99px; font-weight: 600; opacity: 0; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 100; box-shadow: var(--shadow-lg); text-align: center; max-width: 90vw; }
 #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 #toast.success { background: var(--success); color: #fff; }
 #toast.error { background: var(--danger); color: #fff; }
@@ -300,6 +232,20 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 </style>
 </head>
 <body>
+
+<!-- Reading Scroll Progress -->
+<div id="scrollProgressBar"></div>
+
+<!-- Smart Connection & App Update Banners -->
+<div id="networkBanner" class="smart-banner"></div>
+<div id="updateBanner" class="smart-banner update">
+  <span>✨ يتوفر تحديث جديد لمنصة هدهد</span>
+  <button class="banner-action-btn" onclick="applyAppUpdate()">تحديث الآن</button>
+</div>
+
+<!-- Preloader -->
+<div id="preloader"><div class="preloader-icon">🕊️</div></div>
+
 <div class="wrap">
   <div class="header">
     <div class="logo-area" onclick="goHome()">
@@ -311,16 +257,19 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     </div>
 
     <div class="controls">
-      <!-- Study Focus Timer -->
+      <button class="install-app-btn" id="installAppBtn" style="display:none" onclick="promptInstallApp()">📲 تثبيت التطبيق</button>
+
       <div class="timer-pill" title="مؤقت التركيز الدراسي">
         <span class="timer-mode" id="timerMode">دراسة</span>
         <span class="timer-time" id="timerDisplay">25:00</span>
         <button class="timer-btn" id="timerToggleBtn" onclick="toggleTimer()">▶</button>
-        <button class="timer-btn" onclick="switchTimerMode()" title="تبديل بين دراسة واستراحة">↻</button>
+        <button class="timer-btn" onclick="switchTimerMode()" title="تبديل">↻</button>
         <button class="timer-btn" onclick="resetTimer()" title="إعادة ضبط">↺</button>
       </div>
 
-      <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="تغيير المظهر">🌙</button>
+      <button class="icon-btn" onclick="changeFontSize(-1)" title="تصغير الخط">A-</button>
+      <button class="icon-btn" onclick="changeFontSize(1)" title="تكبير الخط">A+</button>
+      <button class="icon-btn" onclick="cycleTheme()" id="themeBtn" title="تغيير المظهر (نهاري / ليلي / مريح للعين)">🌙</button>
       <button class="icon-btn" onclick="handleAdminBtn()" id="adminBtn" title="الإدارة">🔒</button>
     </div>
   </div>
@@ -340,17 +289,17 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   <div id="content"></div>
 </div>
 
-<!-- Viewer -->
+<!-- Back to Top Button -->
+<button id="backToTopBtn" onclick="scrollToTop()" title="العودة للأعلى">↑</button>
+
 <div class="viewer" id="viewer">
   <div class="vbar">
     <div class="vnav">
       <button class="btn ghost small" onclick="closeViewer()">✕ إغلاق</button>
-      <button class="btn ghost small" id="prevLessonBtn" onclick="stepLesson(-1)" title="الدرس السابق">« السابق</button>
-      <button class="btn ghost small" id="nextLessonBtn" onclick="stepLesson(1)" title="الدرس التالي">التالي »</button>
+      <button class="btn ghost small" id="prevLessonBtn" onclick="stepLesson(-1)" title="الدرس السابق (السهم الأيمن)">« السابق</button>
+      <button class="btn ghost small" id="nextLessonBtn" onclick="stepLesson(1)" title="الدرس التالي (السهم الأيسر)">التالي »</button>
     </div>
-
     <div id="viewerTitle" style="font-weight:700; flex:1; text-align:center; min-width:140px;"></div>
-
     <div class="vactions">
       <div id="viewerExtLinks" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
       <button class="btn ghost small" id="markDoneBtn" onclick="toggleCompletedCurrent()">⬜ تمت الدراسة</button>
@@ -360,23 +309,20 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
       <button class="btn ghost small" id="codeToggleBtn" style="display:none">الكود</button>
     </div>
   </div>
-
   <div class="vnote-banner" id="viewerNoteBanner" style="display:none">
-    <span>💡</span>
-    <span id="viewerNoteText"></span>
+    <span>💡</span><span id="viewerNoteText"></span>
   </div>
-
   <div class="vbody" id="viewerBody"></div>
 </div>
 
-<!-- Modal -->
 <div class="scrim" id="scrim">
   <div class="sheet" id="sheet">
     <h2 id="modalTitle" style="margin:0; text-align:center;">إضافة محتوى</h2>
     
     <div id="loginSec" style="display:none; flex-direction:column; gap:12px;">
-      <label>كلمة السر<input type="password" id="passInput" placeholder="••••" onkeyup="if(event.key==='Enter') doLogin()"></label>
-      <button class="btn" onclick="doLogin()" style="width:100%">دخول</button>
+      <label>البريد الإلكتروني<input type="email" id="emailInput" placeholder="example@gmail.com" dir="ltr" onkeyup="if(event.key==='Enter') doLogin()"></label>
+      <label>كلمة السر<input type="password" id="passInput" placeholder="••••" dir="ltr" onkeyup="if(event.key==='Enter') doLogin()"></label>
+      <button class="btn" onclick="doLogin()" style="width:100%">دخول آمن</button>
     </div>
 
     <div id="settingsSec" style="display:none; flex-direction:column; gap:12px;">
@@ -389,7 +335,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 
     <div id="addSec" style="display:none; flex-direction:column; gap:12px;">
       <label>نوع المحتوى
-        <select id="fileType" onchange="toggleFileInput()">
+        <select id="fileType" onchange="toggleFileInput(); saveFormDraft();">
           <option value="html">ملف HTML (تفاعلي)</option>
           <option value="pdf">ملف PDF</option>
           <option value="image">صورة (رابط خارجي)</option>
@@ -397,7 +343,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
           <option value="mp4">فيديو MP4 (رابط مباشر)</option>
         </select>
       </label>
-      
       <div id="fileUploadBox">
         <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
           <p>📁 اسحب الملف هنا أو اضغط للاختيار</p>
@@ -405,24 +350,20 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
         </div>
         <input type="file" id="fileInput" hidden onchange="handleFileSelect(this.files[0])">
       </div>
-
       <div id="urlInputBox" style="display:none">
-        <label>ضع الرابط هنا<input type="text" id="urlInput" placeholder="https://..."></label>
+        <label>ضع الرابط هنا<input type="text" id="urlInput" placeholder="https://..." oninput="saveFormDraft()"></label>
       </div>
-
-      <label>القسم<select id="catSelect"></select></label>
-      <label>اسم المحتوى<input type="text" id="fileTitle"></label>
-      <label>ملاحظة توجيهية للدرس (اختياري)<textarea id="fileNote" placeholder="مثال: ركّز على المسائل المحلولة في نهاية الملف أو شاهد الشرح أولاً..."></textarea></label>
-      <label>الوسوم (افصل بينها بفاصلة)<input type="text" id="fileTags" placeholder="وزاريات, مرشحات, الفصل الأول"></label>
-
+      <label>القسم<select id="catSelect" onchange="saveFormDraft()"></select></label>
+      <label>اسم المحتوى<input type="text" id="fileTitle" oninput="saveFormDraft()"></label>
+      <label>ملاحظة توجيهية للدرس (اختياري)<textarea id="fileNote" placeholder="مثال: ركّز على المسائل المحلولة..." oninput="saveFormDraft()"></textarea></label>
+      <label>الوسوم (افصل بينها بفاصلة)<input type="text" id="fileTags" placeholder="وزاريات, مرشحات, الفصل الأول" oninput="saveFormDraft()"></label>
       <div class="links-builder">
         <div class="links-builder-head">
-          <span>🔗 روابط مرفقة بالدرس (اختبار، يوتيوب، موقع...)</span>
+          <span>🔗 روابط مرفقة بالدرس</span>
           <button type="button" class="btn ghost small" onclick="addLinkRow()">+ إضافة رابط</button>
         </div>
         <div id="linksContainer" style="display:flex; flex-direction:column; gap:8px;"></div>
       </div>
-      
       <div style="display:flex; gap:10px; margin-top:6px;">
         <button class="btn" onclick="saveFile()" style="flex:1">حفظ</button>
         <button class="btn ghost" onclick="closeModal()" style="flex:1">إلغاء</button>
@@ -445,776 +386,641 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 
 <div id="toast"></div>
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
 <script>
-const FIREBASE_URL = 'https://hudhud-344ec-default-rtdb.firebaseio.com/';
-const ADMIN_PASSWORD = '1234';
+  // ⚠️ ضع إعداداتك هنا ⚠️
+  const firebaseConfig = {
+    apiKey: "AIzaSyCvejYBcuqCMd4EoWNVq6kKXKXSRUXTMYM",
+    authDomain: "hudhud-344ec.firebaseapp.com",
+    databaseURL: "https://hudhud-344ec-default-rtdb.firebaseio.com",
+    projectId: "hudhud-344ec",
+    storageBucket: "hudhud-344ec.firebasestorage.app",
+    messagingSenderId: "841623957594",
+    appId: "1:841623957594:web:99b2d174df3c9da597e863",
+    measurementId: "G-NVPRYXP4W1"
+  };
+    
+  firebase.initializeApp(firebaseConfig);
 
-let lib = { files: [], categories: [], settings: { siteName: 'هدهد' } };
-let isAdmin = false;
-let currentCatId = null;
-let showFavorites = false;
-let activeTypeFilter = 'all';
-let activeTagFilter = '';
-let editingFileId = null;
-let editingCatId = null;
-let pendingFileData = null;
-let currentViewerFile = null;
-let currentOrderedList = [];
+  const FIREBASE_URL = 'https://hudhud-344ec-default-rtdb.firebaseio.com/';
+  let lib = { files: [], categories: [], settings: { siteName: 'هدهد' } };
+  let isAdmin = false;
+  let currentCatId = null;
+  let showFavorites = false;
+  let activeTypeFilter = 'all';
+  let activeTagFilter = '';
+  let editingFileId = null;
+  let editingCatId = null;
+  let pendingFileData = null;
+  let currentViewerFile = null;
+  let currentOrderedList = [];
+  let deferredInstallPrompt = null;
+  let waitingWorker = null;
 
-const DEFAULT_CATS = [
-  {id:'general', name:'ملفات عامة', icon:'📁'},
-  {id:'drawing', name:'الرسم الصناعي', icon:'📐'},
-  {id:'elec', name:'الكهرباء', icon:'⚡'},
-  {id:'mech', name:'الميكانيك', icon:'⚙️'}
-];
-
-// Focus Timer (25m Study / 5m Break)
-const STUDY_SEC = 25 * 60;
-const BREAK_SEC = 5 * 60;
-let timerMode = 'study';
-let remainingSec = STUDY_SEC;
-let timerInterval = null;
-
-function formatTimer(sec) {
-  const m = String(Math.floor(sec / 60)).padStart(2, '0');
-  const s = String(sec % 60).padStart(2, '0');
-  return `${m}:${s}`;
-}
-
-function updateTimerUI() {
-  document.getElementById('timerDisplay').textContent = formatTimer(remainingSec);
-  document.getElementById('timerMode').textContent = timerMode === 'study' ? 'دراسة' : 'استراحة';
-  const btn = document.getElementById('timerToggleBtn');
-  btn.textContent = timerInterval ? '⏸' : '▶';
-  btn.classList.toggle('active', Boolean(timerInterval));
-}
-
-function toggleTimer() {
-  if (timerInterval) {
-    clearInterval(timerInterval);
-    timerInterval = null;
-    updateTimerUI();
-    return;
-  }
-  timerInterval = setInterval(() => {
-    remainingSec--;
-    if (remainingSec <= 0) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-      if (timerMode === 'study') {
-        timerMode = 'break';
-        remainingSec = BREAK_SEC;
-        showToast('انتهت جلسة الدراسة! خذ استراحة 5 دقائق ☕');
-      } else {
-        timerMode = 'study';
-        remainingSec = STUDY_SEC;
-        showToast('انتهت الاستراحة! لنبدأ جلسة دراسة جديدة 🎯');
-      }
-    }
-    updateTimerUI();
-  }, 1000);
-  updateTimerUI();
-}
-
-function switchTimerMode() {
-  clearInterval(timerInterval);
-  timerInterval = null;
-  timerMode = timerMode === 'study' ? 'break' : 'study';
-  remainingSec = timerMode === 'study' ? STUDY_SEC : BREAK_SEC;
-  updateTimerUI();
-}
-
-function resetTimer() {
-  clearInterval(timerInterval);
-  timerInterval = null;
-  remainingSec = timerMode === 'study' ? STUDY_SEC : BREAK_SEC;
-  updateTimerUI();
-}
-updateTimerUI();
-
-// Theme
-const html = document.documentElement;
-if (localStorage.getItem('theme') === 'dark') { html.setAttribute('data-theme', 'dark'); document.getElementById('themeBtn').textContent = '☀️'; }
-function toggleTheme() {
-  if (html.getAttribute('data-theme') === 'dark') {
-    html.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); document.getElementById('themeBtn').textContent = '🌙';
-  } else {
-    html.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); document.getElementById('themeBtn').textContent = '☀️';
-  }
-}
-
-function showToast(msg, type='success') {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'show ' + type;
-  setTimeout(() => t.className = '', 3000);
-}
-
-// Local Storage States
-let favs = JSON.parse(localStorage.getItem('favs') || '[]');
-let completed = JSON.parse(localStorage.getItem('completed') || '[]');
-
-function toggleFav(id, event) {
-  event.stopPropagation();
-  favs = favs.includes(id) ? favs.filter(f => f !== id) : [...favs, id];
-  localStorage.setItem('favs', JSON.stringify(favs));
-  render();
-}
-
-function toggleCompletedCurrent() {
-  if (!currentViewerFile) return;
-  const id = currentViewerFile.id;
-  completed = completed.includes(id) ? completed.filter(c => c !== id) : [...completed, id];
-  localStorage.setItem('completed', JSON.stringify(completed));
-  updateViewerDoneBtn();
-  render();
-  showToast(completed.includes(id) ? 'تم تسجيل الدرس كمكتمل 🎉' : 'تم إلغاء علامة الإكمال');
-}
-
-function updateViewerDoneBtn() {
-  if (!currentViewerFile) return;
-  const btn = document.getElementById('markDoneBtn');
-  const isDone = completed.includes(currentViewerFile.id);
-  btn.textContent = isDone ? '✅ تمت الدراسة' : '⬜ تحديد كمكتمل';
-  btn.className = isDone ? 'btn success small' : 'btn ghost small';
-}
-
-// Data Sync
-async function loadData() {
-  document.getElementById('content').innerHTML = `<div class="files-grid"><div class="file-card skeleton" style="height:160px"></div><div class="file-card skeleton" style="height:160px"></div></div>`;
-  try {
-    const r = await fetch(FIREBASE_URL + 'data.json');
-    const data = await r.json();
-    if(data) {
-      lib.files = data.files || [];
-      lib.categories = (data.categories && data.categories.length) ? data.categories : DEFAULT_CATS;
-      if(data.settings) lib.settings = data.settings;
-    } else {
-      lib.categories = DEFAULT_CATS;
-    }
-    document.getElementById('siteTitle').textContent = lib.settings.siteName || 'هدهد';
-    render();
-    checkUrlHash();
-  } catch(e) { showToast('حدث خطأ في الاتصال', 'error'); }
-}
-
-async function saveData() {
-  await fetch(FIREBASE_URL + 'data.json', { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(lib) });
-}
-
-// Deep Linking
-function checkUrlHash() {
-  const hash = window.location.hash;
-  if (hash.startsWith('#file=')) {
-    const fileId = hash.replace('#file=', '');
-    if (lib.files.some(f => f.id === fileId)) openViewer(fileId);
-  }
-}
-
-function shareCurrentFile() {
-  if (!currentViewerFile) return;
-  const url = window.location.origin + window.location.pathname + '#file=' + currentViewerFile.id;
-  navigator.clipboard.writeText(url).then(() => showToast('تم نسخ رابط الدرس للمشاركة 🔗'));
-}
-
-// Keyboard Shortcuts
-document.addEventListener('keydown', (e) => {
-  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-    e.preventDefault();
-    document.getElementById('searchInput').focus();
-  }
-  if (e.key === 'Escape') {
-    if (document.body.classList.contains('viewing')) closeViewer();
-    if (document.body.classList.contains('sheet-open')) closeModal();
-  }
-});
-
-// Helper: Links & Escaping
-function getLinkIcon(url, label) {
-  const u = (url || '').toLowerCase();
-  const l = (label || '').toLowerCase();
-  if (u.includes('youtube.com') || u.includes('youtu.be') || l.includes('يوتيوب')) return { icon: '▶️', cls: 'yt' };
-  if (l.includes('اختبار') || l.includes('امتحان') || u.includes('forms.gle') || u.includes('quiz')) return { icon: '📝', cls: '' };
-  if (u.includes('t.me') || l.includes('تليجرام')) return { icon: '✈️', cls: '' };
-  return { icon: '🔗', cls: '' };
-}
-
-function normalizeUrl(url) {
-  if (!url) return '';
-  return /^https?:\/\//i.test(url) ? url : 'https://' + url;
-}
-
-function buildExtLinksHtml(links) {
-  if (!Array.isArray(links) || !links.length) return '';
-  return `<div class="ext-links-row">` + links.map(lk => {
-    const meta = getLinkIcon(lk.url, lk.label);
-    const safeUrl = escapeHtml(normalizeUrl(lk.url));
-    const safeLabel = escapeHtml(lk.label || 'رابط مرفق');
-    return `<a class="ext-link-chip ${meta.cls}" href="${safeUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${meta.icon} ${safeLabel}</a>`;
-  }).join('') + `</div>`;
-}
-
-// Quick Filter Bar
-function renderFilterBar() {
-  const bar = document.getElementById('filterBar');
-  const query = document.getElementById('searchInput').value.trim();
-  const showFilters = query.length > 0 || currentCatId !== null || showFavorites;
-
-  if (!showFilters) {
-    bar.style.display = 'none';
-    return;
-  }
-  bar.style.display = 'flex';
-
-  const typeChips = [
-    { key: 'all', label: 'الكل' },
-    { key: 'html', label: 'تفاعلي HTML' },
-    { key: 'pdf', label: 'PDF' },
-    { key: 'video', label: 'فيديو' }
+  const DEFAULT_CATS = [
+    {id:'general', name:'ملفات عامة', icon:'📁'},
+    {id:'drawing', name:'الرسم الصناعي', icon:'📐'},
+    {id:'elec', name:'الكهرباء', icon:'⚡'},
+    {id:'mech', name:'الميكانيك', icon:'⚙️'}
   ];
 
-  const allTags = [...new Set(lib.files.flatMap(f => Array.isArray(f.tags) ? f.tags : []))];
-
-  let html = typeChips.map(t =>
-    `<button class="filter-chip ${activeTypeFilter === t.key ? 'active' : ''}" onclick="setTypeFilter('${t.key}')">${t.label}</button>`
-  ).join('');
-
-  if (allTags.length) {
-    html += `<span class="filter-sep"></span>`;
-    html += allTags.map(tag =>
-      `<button class="filter-chip ${activeTagFilter === tag ? 'active' : ''}" onclick="toggleTagFilter('${escapeHtml(tag)}')">#${escapeHtml(tag)}</button>`
-    ).join('');
-  }
-
-  if (activeTypeFilter !== 'all' || activeTagFilter) {
-    html += `<button class="filter-chip" onclick="resetFilters()">✕ مسح الفلاتر</button>`;
-  }
-
-  bar.innerHTML = html;
-}
-
-function setTypeFilter(type) {
-  activeTypeFilter = type;
-  render();
-}
-
-function toggleTagFilter(tag) {
-  activeTagFilter = activeTagFilter === tag ? '' : tag;
-  render();
-}
-
-function resetFilters() {
-  activeTypeFilter = 'all';
-  activeTagFilter = '';
-  render();
-}
-
-function applyQuickFilters(files) {
-  return files.filter(f => {
-    if (activeTypeFilter === 'html' && f.type !== 'html') return false;
-    if (activeTypeFilter === 'pdf' && f.type !== 'pdf') return false;
-    if (activeTypeFilter === 'video' && !['youtube', 'mp4'].includes(f.type)) return false;
-    if (activeTagFilter && !(Array.isArray(f.tags) && f.tags.includes(activeTagFilter))) return false;
-    return true;
+  // إخفاء شاشة التحميل
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('preloader').classList.add('hidden');
+    }, 600);
   });
-}
 
-// Main Render
-function render() {
-  const c = document.getElementById('content');
-  const stats = document.getElementById('statsGrid');
-  const progWrap = document.getElementById('globalProgress');
-  const addBtn = document.getElementById('mainAddBtn');
-  
-  addBtn.style.display = isAdmin ? 'inline-flex' : 'none';
-  addBtn.textContent = currentCatId === null ? '+ إضافة قسم' : '+ إضافة ملف';
+  // Scroll Progress & Back to Top
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const pct = docHeight > 0 ? Math.min(100, Math.round((scrollTop / docHeight) * 100)) : 0;
+    document.getElementById('scrollProgressBar').style.width = pct + '%';
 
-  const totalFiles = lib.files.length;
-  const completedCount = lib.files.filter(f => completed.includes(f.id)).length;
-  const pct = totalFiles ? Math.round((completedCount / totalFiles) * 100) : 0;
+    const topBtn = document.getElementById('backToTopBtn');
+    if (scrollTop > 320) topBtn.classList.add('visible');
+    else topBtn.classList.remove('visible');
+  });
+  function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
-  stats.innerHTML = `
-    <div class="stat-card"><div class="stat-val">${totalFiles}</div><div class="stat-lbl">إجمالي الدروس</div></div>
-    <div class="stat-card"><div class="stat-val">${lib.categories.length}</div><div class="stat-lbl">الأقسام</div></div>
-    <div class="stat-card"><div class="stat-val">${favs.length}</div><div class="stat-lbl">المفضلة</div></div>
-    <div class="stat-card"><div class="stat-val" style="color:var(--success)">${completedCount}</div><div class="stat-lbl">المنجزة</div></div>
-  `;
-
-  progWrap.innerHTML = `
-    <span class="progress-text">مستوى الإنجاز العام</span>
-    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
-    <span class="progress-text">${pct}%</span>
-  `;
-
-  renderFilterBar();
-
-  const query = document.getElementById('searchInput').value.trim().toLowerCase();
-
-  if (query.length > 0) {
-    const matched = lib.files.filter(f => 
-      f.title.toLowerCase().includes(query) || 
-      (f.note && f.note.toLowerCase().includes(query)) ||
-      (f.tags && f.tags.some(t => t.toLowerCase().includes(query))) ||
-      (f.links && f.links.some(l => (l.label || '').toLowerCase().includes(query)))
-    );
-    renderFilesList(c, applyQuickFilters(matched), `نتائج البحث`, true);
-  } else if (currentCatId === null && !showFavorites) {
-    currentOrderedList = [];
-    let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
-        <h2 style="margin:0; font-size:20px;">تصفح الأقسام</h2>
-        <div style="display:flex; gap:10px;">
-          <button class="btn ghost small" onclick="showFavorites = true; render()">⭐ المفضلة (${favs.length})</button>
-          ${isAdmin ? `<button class="btn ghost small" onclick="openSettings()">⚙️ الإعدادات</button>` : ''}
-        </div>
-      </div>
-      <div class="cat-grid">`;
-    
-    lib.categories.forEach(cat => {
-      const catFiles = lib.files.filter(f => f.catId === cat.id);
-      const catDone = catFiles.filter(f => completed.includes(f.id)).length;
-      const catPct = catFiles.length ? Math.round((catDone / catFiles.length) * 100) : 0;
-
-      html += `<div class="cat-card" onclick="currentCatId='${cat.id}'; render()">
-        ${isAdmin ? `<div class="cat-admin-tools">
-          <button class="mini-icon-btn" onclick="editCategory('${cat.id}', event)" title="تعديل القسم">✏️</button>
-          <button class="mini-icon-btn" onclick="deleteCategory('${cat.id}', event)" title="حذف القسم">🗑️</button>
-        </div>` : ''}
-        <div class="cat-icon">${cat.icon}</div>
-        <div class="cat-name">${escapeHtml(cat.name)}</div>
-        <div style="color:var(--muted); font-size:13px; margin-top:6px;">${catDone} / ${catFiles.length} منجز</div>
-        <div class="cat-mini-prog"><div class="cat-mini-fill" style="width:${catPct}%"></div></div>
-      </div>`;
-    });
-    html += `</div>`;
-    c.innerHTML = html;
-  } else {
-    let files = lib.files;
-    let title = '';
-    if (showFavorites) {
-      files = files.filter(f => favs.includes(f.id));
-      title = '⭐ الدروس المفضلة';
+  // Network Online / Offline Status Banner
+  function updateNetworkBanner(isOnline) {
+    const banner = document.getElementById('networkBanner');
+    if (!isOnline) {
+      banner.className = 'smart-banner offline';
+      banner.textContent = '📡 أنت الآن في وضع عدم الاتصال بالإنترنت — يتم عرض الدروس المحفوظة محلياً';
     } else {
-      const cat = lib.categories.find(x => x.id === currentCatId);
-      files = files.filter(f => f.catId === currentCatId);
-      title = cat ? `${cat.icon} ${cat.name}` : '';
+      banner.className = 'smart-banner online-back';
+      banner.textContent = '✅ عاد الاتصال بالإنترنت — جاري مزامنة أحدث الدروس';
+      setTimeout(() => { banner.className = 'smart-banner'; }, 3500);
+      loadData();
     }
-    renderFilesList(c, applyQuickFilters(files), title, showFavorites);
   }
-}
+  window.addEventListener('offline', () => updateNetworkBanner(false));
+  window.addEventListener('online', () => updateNetworkBanner(true));
+  if (!navigator.onLine) updateNetworkBanner(false);
 
-function renderFilesList(container, files, title, showCatBadge) {
-  files.sort((a,b) => b.added - a.added);
-  currentOrderedList = files;
-
-  let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:10px; flex-wrap:wrap;">
-      <button class="btn ghost small" onclick="goHome()">← الرئيسية</button>
-      <h2 style="margin:0; font-size:20px;">${title} (${files.length})</h2>
-    </div>`;
-
-  if (files.length === 0) {
-    html += `<p style="text-align:center; color:var(--muted); margin-top:40px; font-size:17px;">لا توجد دروس مطابقة.</p>`;
-  } else {
-    html += `<div class="files-grid">`;
-    files.forEach(f => {
-      const isFav = favs.includes(f.id);
-      const isDone = completed.includes(f.id);
-      const cat = lib.categories.find(c => c.id === f.catId);
-      let icon = 'HTML'; let iconClass = '';
-      if(f.type === 'pdf') { icon = 'PDF'; iconClass = 'file-type-pdf'; }
-      if(f.type === 'image') { icon = 'IMG'; iconClass = 'file-type-img'; }
-      if(f.type === 'youtube') { icon = 'VID'; iconClass = 'file-type-vid'; }
-      if(f.type === 'mp4') { icon = 'MP4'; iconClass = 'file-type-mp4'; }
-
-      const noteHtml = f.note
-        ? `<div class="lesson-tip-box"><span class="lesson-tip-label">💡 ملاحظة:</span>${escapeHtml(f.note)}</div>`
-        : '';
-
-      const tagsHtml = (f.tags && f.tags.length) 
-        ? `<div class="file-tags">${f.tags.map(t => `<span class="tag-pill">#${escapeHtml(t)}</span>`).join('')}</div>` 
-        : '';
-
-      const linksHtml = buildExtLinksHtml(f.links);
-
-      html += `<div class="file-card ${isDone ? 'completed' : ''}" onclick="openViewer('${f.id}')">
-        <div class="file-header">
-          <div class="file-badges">
-            <div class="file-icon ${iconClass}">${icon}</div>
-            ${showCatBadge && cat ? `<span class="cat-badge">${cat.icon} ${escapeHtml(cat.name)}</span>` : ''}
-            ${isDone ? `<span class="done-badge">✓ منجز</span>` : ''}
-          </div>
-          <button class="star-btn ${isFav ? 'active' : ''}" onclick="toggleFav('${f.id}', event)">${isFav ? '★' : '☆'}</button>
-        </div>
-        <div>
-          <h3 class="file-title">${escapeHtml(f.title)}</h3>
-          ${noteHtml}
-          ${linksHtml}
-          ${tagsHtml}
-          <div class="file-date">${new Date(f.added).toLocaleDateString('ar-IQ')}</div>
-        </div>
-        ${isAdmin ? `<div class="file-actions">
-           <button class="btn ghost small" onclick="editFile('${f.id}', event)">تعديل</button>
-           <button class="btn ghost small" style="color:var(--danger); border-color:var(--danger)" onclick="deleteFile('${f.id}', event)">حذف</button>
-        </div>` : ''}
-      </div>`;
-    });
-    html += `</div>`;
-  }
-  container.innerHTML = html;
-}
-
-document.getElementById('searchInput').addEventListener('input', () => render());
-
-// Viewer + Next/Prev Navigation
-function updateNavButtons() {
-  const prevBtn = document.getElementById('prevLessonBtn');
-  const nextBtn = document.getElementById('nextLessonBtn');
-  if (!currentViewerFile || currentOrderedList.length <= 1) {
-    prevBtn.disabled = true;
-    nextBtn.disabled = true;
-    return;
-  }
-  const idx = currentOrderedList.findIndex(x => x.id === currentViewerFile.id);
-  prevBtn.disabled = idx <= 0;
-  nextBtn.disabled = idx < 0 || idx >= currentOrderedList.length - 1;
-}
-
-function stepLesson(delta) {
-  if (!currentViewerFile || !currentOrderedList.length) return;
-  const idx = currentOrderedList.findIndex(x => x.id === currentViewerFile.id);
-  const nextItem = currentOrderedList[idx + delta];
-  if (nextItem) openViewer(nextItem.id);
-}
-
-function openViewer(id) {
-  const f = lib.files.find(x => x.id === id);
-  if(!f) return;
-  if (!currentOrderedList.some(x => x.id === id)) {
-    currentOrderedList = lib.files.filter(x => x.catId === f.catId).sort((a,b) => b.added - a.added);
-  }
-  currentViewerFile = f;
-  history.replaceState(null, '', '#file=' + f.id);
-  document.getElementById('viewerTitle').textContent = f.title;
-  updateViewerDoneBtn();
-  updateNavButtons();
-
-  const noteBanner = document.getElementById('viewerNoteBanner');
-  const noteText = document.getElementById('viewerNoteText');
-  if (f.note) {
-    noteText.textContent = f.note;
-    noteBanner.style.display = 'flex';
-  } else {
-    noteBanner.style.display = 'none';
-  }
-
-  const vExt = document.getElementById('viewerExtLinks');
-  vExt.innerHTML = (Array.isArray(f.links) && f.links.length)
-    ? f.links.map(lk => {
-        const meta = getLinkIcon(lk.url, lk.label);
-        return `<a class="btn ghost small" style="text-decoration:none;" href="${escapeHtml(normalizeUrl(lk.url))}" target="_blank" rel="noopener noreferrer">${meta.icon} ${escapeHtml(lk.label || 'رابط')}</a>`;
-      }).join('')
-    : '';
-
-  const body = document.getElementById('viewerBody');
-  const codeBtn = document.getElementById('codeToggleBtn');
-  const dlBtn = document.getElementById('downloadBtn');
-  
-  codeBtn.style.display = 'none'; dlBtn.style.display = 'none'; body.innerHTML = '';
-
-  if (f.type === 'html') {
-    const ifr = document.createElement('iframe');
-    ifr.srcdoc = f.content;
-    body.appendChild(ifr);
-
-    codeBtn.style.display = 'inline-flex'; dlBtn.style.display = 'inline-flex';
-    codeBtn.textContent = 'الكود';
-    codeBtn.onclick = () => {
-      if(body.querySelector('iframe')) { body.innerHTML = `<pre>${escapeHtml(f.content)}</pre>`; codeBtn.textContent = 'الصفحة'; } 
-      else { body.innerHTML = ''; const newIfr = document.createElement('iframe'); newIfr.srcdoc = f.content; body.appendChild(newIfr); codeBtn.textContent = 'الكود'; }
-    };
-  } else if (f.type === 'pdf') { 
-    body.innerHTML = `<iframe src="data:application/pdf;base64,${f.content}"></iframe>`; 
-    dlBtn.style.display = 'inline-flex';
-  } else if (f.type === 'image') { 
-    body.innerHTML = `<img src="${f.content}">`; 
-  } else if (f.type === 'youtube') {
-    let vid = f.content.split('v=')[1] || f.content.split('/').pop();
-    if(vid.includes('&')) vid = vid.split('&')[0];
-    body.innerHTML = `<iframe src="https://www.youtube.com/embed/${vid}" allowfullscreen></iframe>`;
-  } else if (f.type === 'mp4') {
-    body.innerHTML = `<video src="${f.content}" controls autoplay></video>`;
-  }
-  document.body.classList.add('viewing');
-}
-
-function toggleFullscreen() {
-  const v = document.getElementById('viewer');
-  if (!document.fullscreenElement) { v.requestFullscreen().catch(() => {}); } 
-  else { document.exitFullscreen(); }
-}
-
-function downloadFile() {
-  if(!currentViewerFile) return;
-  let blob, filename;
-  if (currentViewerFile.type === 'html') {
-    blob = new Blob([currentViewerFile.content], {type: 'text/html;charset=utf-8'});
-    filename = currentViewerFile.title.replace(/[\/\\?%*:|"<>]/g, '-') + '.html';
-  } else if (currentViewerFile.type === 'pdf') {
-    const byteCharacters = atob(currentViewerFile.content);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) { byteNumbers[i] = byteCharacters.charCodeAt(i); }
-    blob = new Blob([new Uint8Array(byteNumbers)], {type: 'application/pdf'});
-    filename = currentViewerFile.title + '.pdf';
-  }
-  if(blob) {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = filename;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    URL.revokeObjectURL(url); showToast('جاري تحميل الملف...');
-  }
-}
-
-function closeViewer() {
-  if (document.fullscreenElement) document.exitFullscreen();
-  document.body.classList.remove('viewing');
-  document.getElementById('viewerBody').innerHTML = '';
-  history.replaceState(null, '', window.location.pathname);
-}
-function escapeHtml(unsafe) { return String(unsafe).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
-
-// Links Builder Helpers
-function addLinkRow(label = '', url = '') {
-  const container = document.getElementById('linksContainer');
-  const row = document.createElement('div');
-  row.className = 'link-row';
-  row.innerHTML = `
-    <input type="text" class="lk-label" placeholder="اسم الزر (مثلاً: شرح يوتيوب)" value="${escapeHtml(label)}">
-    <input type="url" class="lk-url" placeholder="https://..." dir="ltr" value="${escapeHtml(url)}">
-    <button type="button" class="remove-link-btn" onclick="this.parentElement.remove()" title="حذف الرابط">✕</button>
-  `;
-  container.appendChild(row);
-}
-
-function collectLinksFromForm() {
-  const rows = document.querySelectorAll('#linksContainer .link-row');
-  const links = [];
-  rows.forEach(r => {
-    const label = r.querySelector('.lk-label').value.trim();
-    const url = r.querySelector('.lk-url').value.trim();
-    if (url) links.push({ label: label || 'رابط الدرس', url });
+  // PWA Install Prompt
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    document.getElementById('installAppBtn').style.display = 'inline-flex';
   });
-  return links;
-}
-
-// Admin & Modals
-function hideAllModalSecs() {
-  ['loginSec', 'addSec', 'catSec', 'settingsSec'].forEach(id => document.getElementById(id).style.display = 'none');
-  document.getElementById('errorMsg').textContent = '';
-}
-
-function handleAdminBtn() {
-  if (isAdmin) { isAdmin = false; render(); showToast('تم تسجيل الخروج'); }
-  else { 
-    hideAllModalSecs();
-    document.getElementById('modalTitle').textContent = 'دخول الإدارة';
-    document.getElementById('loginSec').style.display = 'flex';
-    document.getElementById('passInput').value = '';
-    document.body.classList.add('sheet-open');
-    setTimeout(() => document.getElementById('passInput').focus(), 100);
+  window.addEventListener('appinstalled', () => {
+    deferredInstallPrompt = null;
+    document.getElementById('installAppBtn').style.display = 'none';
+    showToast('تم تثبيت تطبيق هدهد بنجاح 🎉');
+  });
+  // Show iOS Safari hint if standalone is not active on iOS
+  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  if (isIos && !isStandalone) {
+    const btn = document.getElementById('installAppBtn');
+    btn.style.display = 'inline-flex';
   }
-}
-function doLogin() {
-  if (document.getElementById('passInput').value === ADMIN_PASSWORD) {
-    isAdmin = true; closeModal(); render(); showToast('مرحباً بك يا مدير');
-  } else { document.getElementById('errorMsg').textContent = 'كلمة السر خطأ'; }
-}
-
-function openSettings() {
-  hideAllModalSecs();
-  document.getElementById('modalTitle').textContent = 'الإعدادات';
-  document.getElementById('settingsSec').style.display = 'flex';
-  document.getElementById('newSiteName').value = lib.settings.siteName || 'هدهد';
-  document.body.classList.add('sheet-open');
-}
-function saveSettings() {
-  lib.settings.siteName = document.getElementById('newSiteName').value.trim() || 'هدهد';
-  saveData().then(() => { document.getElementById('siteTitle').textContent = lib.settings.siteName; closeModal(); showToast('تم حفظ الإعدادات'); });
-}
-
-function openAddModal() {
-  editingFileId = null; editingCatId = null; pendingFileData = null;
-  hideAllModalSecs();
-  
-  if (currentCatId === null) {
-    document.getElementById('modalTitle').textContent = 'إضافة قسم جديد';
-    document.getElementById('newCatName').value = '';
-    document.getElementById('newCatIcon').value = '';
-    document.getElementById('catSec').style.display = 'flex';
-  } else {
-    document.getElementById('modalTitle').textContent = 'إضافة درس جديد';
-    document.getElementById('fileNameDisplay').textContent = 'لم يتم اختيار ملف';
-    document.getElementById('fileTitle').value = '';
-    document.getElementById('fileNote').value = '';
-    document.getElementById('fileTags').value = '';
-    document.getElementById('urlInput').value = '';
-    document.getElementById('linksContainer').innerHTML = '';
-    document.getElementById('fileType').value = 'html';
-    toggleFileInput();
-    document.getElementById('addSec').style.display = 'flex';
-    const sel = document.getElementById('catSelect'); sel.innerHTML = '';
-    lib.categories.forEach(c => sel.innerHTML += `<option value="${c.id}" ${c.id===currentCatId?'selected':''}>${c.name}</option>`);
-  }
-  document.body.classList.add('sheet-open');
-}
-
-function editCategory(id, event) {
-  event.stopPropagation();
-  const cat = lib.categories.find(c => c.id === id);
-  if (!cat) return;
-  editingCatId = id;
-  hideAllModalSecs();
-  document.getElementById('modalTitle').textContent = 'تعديل القسم';
-  document.getElementById('newCatName').value = cat.name;
-  document.getElementById('newCatIcon').value = cat.icon;
-  document.getElementById('catSec').style.display = 'flex';
-  document.body.classList.add('sheet-open');
-}
-
-function saveCategory() {
-  const name = document.getElementById('newCatName').value.trim();
-  const icon = document.getElementById('newCatIcon').value.trim() || '📁';
-  if(!name) return document.getElementById('errorMsg').textContent = 'اكتب اسم القسم';
-  
-  if (editingCatId) {
-    lib.categories = lib.categories.map(c => c.id === editingCatId ? {...c, name, icon} : c);
-  } else {
-    lib.categories.push({id: 'c'+Date.now(), name, icon});
-  }
-  saveData().then(() => { closeModal(); render(); showToast(editingCatId ? 'تم تحديث القسم' : 'تم إضافة القسم'); });
-}
-
-function deleteCategory(id, event) {
-  event.stopPropagation();
-  const count = lib.files.filter(f => f.catId === id).length;
-  if (count > 0) return showToast('لا يمكن حذف قسم يحتوي على ملفات، انقلها أو احذفها أولاً', 'error');
-  if (!confirm('حذف هذا القسم نهائياً؟')) return;
-  lib.categories = lib.categories.filter(c => c.id !== id);
-  saveData().then(() => { render(); showToast('تم حذف القسم'); });
-}
-
-function editFile(id, event) {
-  event.stopPropagation();
-  const f = lib.files.find(x => x.id === id);
-  if(!f) return;
-  editingFileId = id; pendingFileData = null;
-  hideAllModalSecs();
-  document.getElementById('modalTitle').textContent = 'تعديل الدرس';
-  document.getElementById('addSec').style.display = 'flex';
-  
-  document.getElementById('fileType').value = f.type;
-  document.getElementById('fileTitle').value = f.title;
-  document.getElementById('fileNote').value = f.note || '';
-  document.getElementById('fileTags').value = (f.tags || []).join(', ');
-  
-  const linksContainer = document.getElementById('linksContainer');
-  linksContainer.innerHTML = '';
-  if (Array.isArray(f.links)) {
-    f.links.forEach(lk => addLinkRow(lk.label, lk.url));
-  }
-
-  toggleFileInput();
-  
-  if (['image', 'youtube', 'mp4'].includes(f.type)) document.getElementById('urlInput').value = f.content;
-  else document.getElementById('fileNameDisplay').textContent = 'الملف الحالي محفوظ (اختر ملف جديد للتغيير)';
-  
-  const sel = document.getElementById('catSelect'); sel.innerHTML = '';
-  lib.categories.forEach(c => sel.innerHTML += `<option value="${c.id}" ${c.id===f.catId?'selected':''}>${c.name}</option>`);
-  document.body.classList.add('sheet-open');
-}
-
-function toggleFileInput() {
-  const type = document.getElementById('fileType').value;
-  if (['image', 'youtube', 'mp4'].includes(type)) {
-    document.getElementById('fileUploadBox').style.display = 'none'; document.getElementById('urlInputBox').style.display = 'block';
-  } else {
-    document.getElementById('fileUploadBox').style.display = 'block'; document.getElementById('urlInputBox').style.display = 'none';
-    document.getElementById('fileInput').accept = type === 'pdf' ? '.pdf' : '.html';
-  }
-}
-
-const dropZone = document.getElementById('dropZone');
-['dragenter', 'dragover', 'dragleave', 'drop'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); }));
-['dragenter', 'dragover'].forEach(ev => dropZone.addEventListener(ev, () => dropZone.classList.add('dragover')));
-['dragleave', 'drop'].forEach(ev => dropZone.addEventListener(ev, () => dropZone.classList.remove('dragover')));
-dropZone.addEventListener('drop', e => handleFileSelect(e.dataTransfer.files[0]));
-
-function handleFileSelect(file) {
-  if(!file) return;
-  pendingFileData = file;
-  document.getElementById('fileNameDisplay').textContent = file.name + ' (' + Math.round(file.size/1024) + ' KB)';
-  if(!document.getElementById('fileTitle').value) document.getElementById('fileTitle').value = file.name.replace(/\.[^/.]+$/, "");
-}
-
-function saveFile() {
-  const type = document.getElementById('fileType').value;
-  const catId = document.getElementById('catSelect').value;
-  const title = document.getElementById('fileTitle').value.trim();
-  const note = document.getElementById('fileNote').value.trim();
-  const rawTags = document.getElementById('fileTags').value;
-  const tags = rawTags ? rawTags.split(',').map(t => t.trim()).filter(Boolean) : [];
-  const links = collectLinksFromForm();
-
-  if(!title) return document.getElementById('errorMsg').textContent = 'اكتب اسم المحتوى';
-  
-  const doSave = (content) => {
-    if (editingFileId) { 
-      lib.files = lib.files.map(f => f.id === editingFileId ? {...f, type, catId, title, note, tags, links, content} : f); 
-    } else { 
-      lib.files.push({id: 'f'+Date.now(), type, catId, title, note, tags, links, content, added: Date.now()}); 
-    }
-    saveData().then(() => { closeModal(); render(); showToast(editingFileId ? 'تم التعديل' : 'تم الحفظ'); });
-  };
-
-  if (['image', 'youtube', 'mp4'].includes(type)) {
-    const url = document.getElementById('urlInput').value.trim();
-    if(!url) return document.getElementById('errorMsg').textContent = 'ضع الرابط';
-    doSave(url);
-  } else {
-    if (!pendingFileData) {
-      if (editingFileId) {
-        const existing = lib.files.find(f => f.id === editingFileId);
-        doSave(existing.content);
-        return;
+  async function promptInstallApp() {
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      const choice = await deferredInstallPrompt.userChoice;
+      if (choice.outcome === 'accepted') {
+        document.getElementById('installAppBtn').style.display = 'none';
       }
-      return document.getElementById('errorMsg').textContent = 'اختر الملف أولاً';
+      deferredInstallPrompt = null;
+    } else if (isIos) {
+      showToast('لتثبيت التطبيق على آيفون: اضغط زر المشاركة ⬆️ ثم «إضافة إلى الصفحة الرئيسية»');
     }
-    if (pendingFileData.size > 800 * 1024) return document.getElementById('errorMsg').textContent = 'حجم الملف كبير جداً (الحد 800 كيلوبايت)';
-    
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const res = e.target.result;
-      if (type === 'html') doSave(res); else doSave(res.split(',')[1]);
-    };
-    if(type === 'html') reader.readAsText(pendingFileData); else reader.readAsDataURL(pendingFileData);
   }
-}
 
-function deleteFile(id, event) {
-  event.stopPropagation();
-  if(!confirm('هل أنت متأكد من الحذف؟')) return;
-  lib.files = lib.files.filter(f => f.id !== id);
-  saveData().then(() => { render(); showToast('تم الحذف'); });
-}
+  // Font Size Control (Saved in localStorage)
+  let currentFontSize = parseInt(localStorage.getItem('hudhud_font_size') || '16', 10);
+  document.documentElement.style.setProperty('--base-font', currentFontSize + 'px');
+  function changeFontSize(delta) {
+    currentFontSize = Math.min(20, Math.max(14, currentFontSize + delta));
+    document.documentElement.style.setProperty('--base-font', currentFontSize + 'px');
+    localStorage.setItem('hudhud_font_size', String(currentFontSize));
+    showToast(`حجم الخط: ${currentFontSize}px`);
+  }
 
-function closeModal() { document.body.classList.remove('sheet-open'); }
-function goHome() {
-  currentCatId = null;
-  showFavorites = false;
-  activeTypeFilter = 'all';
-  activeTagFilter = '';
-  document.getElementById('searchInput').value = '';
-  render();
-}
+  // Theme Cycle (Light -> Dark -> Comfort Eye Mode)
+  const html = document.documentElement;
+  const THEMES = ['light', 'dark', 'comfort'];
+  const THEME_ICONS = { light: '🌙', dark: '📖', comfort: '☀️' };
+  const THEME_NAMES = { light: 'الوضع النهاري', dark: 'الوضع الليلي', comfort: 'وضع الراحة البصرية' };
+  let currentTheme = localStorage.getItem('theme') || 'light';
+  if (!THEMES.includes(currentTheme)) currentTheme = 'light';
+  applyTheme(currentTheme, false);
 
-loadData();
+  function applyTheme(themeName, notify = true) {
+    if (themeName === 'light') html.removeAttribute('data-theme');
+    else html.setAttribute('data-theme', themeName);
+    localStorage.setItem('theme', themeName);
+    document.getElementById('themeBtn').textContent = THEME_ICONS[themeName];
+    if (notify) showToast(`تم التبديل إلى ${THEME_NAMES[themeName]}`);
+  }
+  function cycleTheme() {
+    const next = THEMES[(THEMES.indexOf(currentTheme) + 1) % THEMES.length];
+    currentTheme = next;
+    applyTheme(next, true);
+  }
+
+  // Timer Logic
+  const STUDY_SEC = 25 * 60; const BREAK_SEC = 5 * 60;
+  let timerMode = 'study'; let remainingSec = STUDY_SEC; let timerInterval = null;
+
+  function formatTimer(sec) { const m = String(Math.floor(sec / 60)).padStart(2, '0'); const s = String(sec % 60).padStart(2, '0'); return `${m}:${s}`; }
+  function updateTimerUI() {
+    document.getElementById('timerDisplay').textContent = formatTimer(remainingSec);
+    document.getElementById('timerMode').textContent = timerMode === 'study' ? 'دراسة' : 'استراحة';
+    const btn = document.getElementById('timerToggleBtn');
+    btn.textContent = timerInterval ? '⏸' : '▶';
+    btn.classList.toggle('active', Boolean(timerInterval));
+  }
+  function toggleTimer() {
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; updateTimerUI(); return; }
+    timerInterval = setInterval(() => {
+      remainingSec--;
+      if (remainingSec <= 0) {
+        clearInterval(timerInterval); timerInterval = null;
+        if (timerMode === 'study') { timerMode = 'break'; remainingSec = BREAK_SEC; showToast('انتهت جلسة الدراسة! خذ استراحة ☕'); } 
+        else { timerMode = 'study'; remainingSec = STUDY_SEC; showToast('انتهت الاستراحة! لنبدأ 🎯'); }
+      }
+      updateTimerUI();
+    }, 1000);
+    updateTimerUI();
+  }
+  function switchTimerMode() { clearInterval(timerInterval); timerInterval = null; timerMode = timerMode === 'study' ? 'break' : 'study'; remainingSec = timerMode === 'study' ? STUDY_SEC : BREAK_SEC; updateTimerUI(); }
+  function resetTimer() { clearInterval(timerInterval); timerInterval = null; remainingSec = timerMode === 'study' ? STUDY_SEC : BREAK_SEC; updateTimerUI(); }
+  updateTimerUI();
+
+  function showToast(msg, type='success') {
+    const t = document.getElementById('toast'); t.textContent = msg; t.className = 'show ' + type;
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.className = '', 3200);
+  }
+
+  // Local Storage (Favorites, Completed, UI State & Form Draft)
+  let favs = JSON.parse(localStorage.getItem('favs') || '[]');
+  let completed = JSON.parse(localStorage.getItem('completed') || '[]');
+
+  function saveUiState() {
+    localStorage.setItem('hudhud_ui_state', JSON.stringify({
+      currentCatId,
+      showFavorites,
+      activeTypeFilter,
+      activeTagFilter,
+      searchQuery: document.getElementById('searchInput').value
+    }));
+  }
+  function restoreUiState() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('hudhud_ui_state') || 'null');
+      if (!saved) return;
+      currentCatId = saved.currentCatId || null;
+      showFavorites = Boolean(saved.showFavorites);
+      activeTypeFilter = saved.activeTypeFilter || 'all';
+      activeTagFilter = saved.activeTagFilter || '';
+      if (saved.searchQuery) document.getElementById('searchInput').value = saved.searchQuery;
+    } catch (e) {}
+  }
+  restoreUiState();
+
+  function saveFormDraft() {
+    if (editingFileId) return;
+    localStorage.setItem('hudhud_add_draft', JSON.stringify({
+      type: document.getElementById('fileType').value,
+      catId: document.getElementById('catSelect').value,
+      title: document.getElementById('fileTitle').value,
+      note: document.getElementById('fileNote').value,
+      tags: document.getElementById('fileTags').value,
+      url: document.getElementById('urlInput').value
+    }));
+  }
+  function clearFormDraft() { localStorage.removeItem('hudhud_add_draft'); }
+
+  function toggleFav(id, event) { event.stopPropagation(); favs = favs.includes(id) ? favs.filter(f => f !== id) : [...favs, id]; localStorage.setItem('favs', JSON.stringify(favs)); render(); }
+  
+  function toggleCompletedCurrent() {
+    if (!currentViewerFile) return;
+    const id = currentViewerFile.id;
+    if (!completed.includes(id)) {
+      completed.push(id);
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#4f46e5', '#10b981', '#fbbf24'] });
+      showToast('تم تسجيل الدرس كمكتمل 🎉');
+    } else {
+      completed = completed.filter(c => c !== id);
+      showToast('تم إلغاء علامة الإكمال');
+    }
+    localStorage.setItem('completed', JSON.stringify(completed));
+    updateViewerDoneBtn(); render();
+  }
+
+  function updateViewerDoneBtn() {
+    if (!currentViewerFile) return;
+    const btn = document.getElementById('markDoneBtn');
+    const isDone = completed.includes(currentViewerFile.id);
+    btn.textContent = isDone ? '✅ تمت الدراسة' : '⬜ تحديد كمكتمل';
+    btn.className = isDone ? 'btn success small' : 'btn ghost small';
+  }
+
+  // Data Sync with Offline Support
+  async function loadData() {
+    const cachedData = localStorage.getItem('hudhud_lib_cache');
+    if (cachedData) {
+      try {
+        lib = JSON.parse(cachedData);
+        document.getElementById('siteTitle').textContent = lib.settings.siteName || 'هدهد';
+        render();
+      } catch(e) { console.error("خطأ في قراءة البيانات المحفوظة"); }
+    } else {
+      document.getElementById('content').innerHTML = `<div class="files-grid"><div class="file-card skeleton" style="height:160px"></div><div class="file-card skeleton" style="height:160px"></div></div>`;
+    }
+
+    try {
+      const r = await fetch(FIREBASE_URL + 'data.json');
+      const data = await r.json();
+      if(data) {
+        lib.files = data.files || [];
+        lib.categories = (data.categories && data.categories.length) ? data.categories : DEFAULT_CATS;
+        if(data.settings) lib.settings = data.settings;
+        
+        localStorage.setItem('hudhud_lib_cache', JSON.stringify(lib));
+        
+        document.getElementById('siteTitle').textContent = lib.settings.siteName || 'هدهد';
+        render();
+        checkUrlHash();
+      } else if (!cachedData) {
+        lib.categories = DEFAULT_CATS;
+        render();
+      }
+    } catch(e) { 
+      if (!cachedData) {
+        document.getElementById('content').innerHTML = `<p style="text-align:center; color:var(--danger); margin-top:40px; font-size:16px;">لا يوجد اتصال بالإنترنت، ولم تقم بزيارة الموقع سابقاً لحفظ الدروس. يرجى الاتصال بالإنترنت أولاً.</p>`;
+      }
+    }
+  }
+
+  async function saveData() {
+    try {
+      await fetch(FIREBASE_URL + 'data.json', { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(lib) });
+      localStorage.setItem('hudhud_lib_cache', JSON.stringify(lib));
+    } catch (e) { showToast('فشل الحفظ. تأكد من الصلاحيات أو الاتصال.', 'error'); }
+  }
+
+  // Deep Linking
+  function checkUrlHash() {
+    const hash = window.location.hash;
+    if (hash.startsWith('#file=')) {
+      const fileId = hash.replace('#file=', '');
+      if (lib.files.some(f => f.id === fileId)) openViewer(fileId);
+    }
+  }
+  function shareCurrentFile() {
+    if (!currentViewerFile) return;
+    const url = window.location.origin + window.location.pathname + '#file=' + currentViewerFile.id;
+    navigator.clipboard.writeText(url).then(() => showToast('تم نسخ رابط الدرس 🔗'));
+  }
+
+  // Search Debounce
+  let searchTimeout;
+  document.getElementById('searchInput').addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => { saveUiState(); render(); }, 250);
+  });
+
+  // Keyboard Shortcuts (Ctrl+K, Esc, Left/Right Arrows in Viewer)
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); document.getElementById('searchInput').focus(); }
+    if (e.key === 'Escape') {
+      if (document.body.classList.contains('viewing')) closeViewer();
+      if (document.body.classList.contains('sheet-open')) closeModal();
+    }
+    if (document.body.classList.contains('viewing')) {
+      if (e.key === 'ArrowLeft') stepLesson(1);
+      if (e.key === 'ArrowRight') stepLesson(-1);
+    }
+  });
+
+  function getLinkIcon(url, label) {
+    const u = (url || '').toLowerCase(); const l = (label || '').toLowerCase();
+    if (u.includes('youtube.com') || u.includes('youtu.be') || l.includes('يوتيوب')) return { icon: '▶️', cls: 'yt' };
+    if (l.includes('اختبار') || l.includes('امتحان') || u.includes('forms.gle') || u.includes('quiz')) return { icon: '📝', cls: '' };
+    if (u.includes('t.me') || l.includes('تليجرام')) return { icon: '✈️', cls: '' };
+    return { icon: '🔗', cls: '' };
+  }
+  function normalizeUrl(url) { if (!url) return ''; return /^https?:\/\//i.test(url) ? url : 'https://' + url; }
+  function buildExtLinksHtml(links) {
+    if (!Array.isArray(links) || !links.length) return '';
+    return `<div class="ext-links-row">` + links.map(lk => {
+      const meta = getLinkIcon(lk.url, lk.label);
+      const safeUrl = escapeHtml(normalizeUrl(lk.url));
+      const safeLabel = escapeHtml(lk.label || 'رابط مرفق');
+      return `<a class="ext-link-chip ${meta.cls}" href="${safeUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${meta.icon} ${safeLabel}</a>`;
+    }).join('') + `</div>`;
+  }
+
+  function renderFilterBar() {
+    const bar = document.getElementById('filterBar');
+    const query = document.getElementById('searchInput').value.trim();
+    const showFilters = query.length > 0 || currentCatId !== null || showFavorites;
+    if (!showFilters) { bar.style.display = 'none'; return; }
+    bar.style.display = 'flex';
+    const typeChips = [ { key: 'all', label: 'الكل' }, { key: 'html', label: 'تفاعلي HTML' }, { key: 'pdf', label: 'PDF' }, { key: 'video', label: 'فيديو' } ];
+    const allTags = [...new Set(lib.files.flatMap(f => Array.isArray(f.tags) ? f.tags : []))];
+    let html = typeChips.map(t => `<button class="filter-chip ${activeTypeFilter === t.key ? 'active' : ''}" onclick="setTypeFilter('${t.key}')">${t.label}</button>`).join('');
+    if (allTags.length) { html += `<span class="filter-sep"></span>`; html += allTags.map(tag => `<button class="filter-chip ${activeTagFilter === tag ? 'active' : ''}" onclick="toggleTagFilter('${escapeHtml(tag)}')">#${escapeHtml(tag)}</button>`).join(''); }
+    if (activeTypeFilter !== 'all' || activeTagFilter) { html += `<button class="filter-chip" onclick="resetFilters()">✕ مسح الفلاتر</button>`; }
+    bar.innerHTML = html;
+  }
+  function setTypeFilter(type) { activeTypeFilter = type; saveUiState(); render(); }
+  function toggleTagFilter(tag) { activeTagFilter = activeTagFilter === tag ? '' : tag; saveUiState(); render(); }
+  function resetFilters() { activeTypeFilter = 'all'; activeTagFilter = ''; saveUiState(); render(); }
+  function applyQuickFilters(files) {
+    return files.filter(f => {
+      if (activeTypeFilter === 'html' && f.type !== 'html') return false;
+      if (activeTypeFilter === 'pdf' && f.type !== 'pdf') return false;
+      if (activeTypeFilter === 'video' && !['youtube', 'mp4'].includes(f.type)) return false;
+      if (activeTagFilter && !(Array.isArray(f.tags) && f.tags.includes(activeTagFilter))) return false;
+      return true;
+    });
+  }
+
+  function render() {
+    saveUiState();
+    const c = document.getElementById('content'); const stats = document.getElementById('statsGrid'); const progWrap = document.getElementById('globalProgress'); const addBtn = document.getElementById('mainAddBtn');
+    addBtn.style.display = isAdmin ? 'inline-flex' : 'none';
+    addBtn.textContent = currentCatId === null ? '+ إضافة قسم' : '+ إضافة ملف';
+    const totalFiles = lib.files.length; const completedCount = lib.files.filter(f => completed.includes(f.id)).length;
+    const pct = totalFiles ? Math.round((completedCount / totalFiles) * 100) : 0;
+    stats.innerHTML = `
+      <div class="stat-card"><div class="stat-val">${totalFiles}</div><div class="stat-lbl">إجمالي الدروس</div></div>
+      <div class="stat-card"><div class="stat-val">${lib.categories.length}</div><div class="stat-lbl">الأقسام</div></div>
+      <div class="stat-card"><div class="stat-val">${favs.length}</div><div class="stat-lbl">المفضلة</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--success)">${completedCount}</div><div class="stat-lbl">المنجزة</div></div>`;
+    progWrap.innerHTML = `<span class="progress-text">مستوى الإنجاز العام</span><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%"></div></div><span class="progress-text">${pct}%</span>`;
+    renderFilterBar();
+    const query = document.getElementById('searchInput').value.trim().toLowerCase();
+    if (query.length > 0) {
+      const matched = lib.files.filter(f => f.title.toLowerCase().includes(query) || (f.note && f.note.toLowerCase().includes(query)) || (f.tags && f.tags.some(t => t.toLowerCase().includes(query))) || (f.links && f.links.some(l => (l.label || '').toLowerCase().includes(query))));
+      renderFilesList(c, applyQuickFilters(matched), `نتائج البحث`, true);
+    } else if (currentCatId === null && !showFavorites) {
+      currentOrderedList = [];
+      let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;"><h2 style="margin:0; font-size:20px;">تصفح الأقسام</h2><div style="display:flex; gap:10px;"><button class="btn ghost small" onclick="showFavorites = true; render()">⭐ المفضلة (${favs.length})</button>${isAdmin ? `<button class="btn ghost small" onclick="openSettings()">⚙️ الإعدادات</button>` : ''}</div></div><div class="cat-grid">`;
+      lib.categories.forEach(cat => {
+        const catFiles = lib.files.filter(f => f.catId === cat.id); const catDone = catFiles.filter(f => completed.includes(f.id)).length; const catPct = catFiles.length ? Math.round((catDone / catFiles.length) * 100) : 0;
+        html += `<div class="cat-card" onclick="currentCatId='${cat.id}'; render()">${isAdmin ? `<div class="cat-admin-tools"><button class="mini-icon-btn" onclick="editCategory('${cat.id}', event)" title="تعديل">✏️</button><button class="mini-icon-btn" onclick="deleteCategory('${cat.id}', event)" title="حذف">🗑️</button></div>` : ''}<div class="cat-icon">${cat.icon}</div><div class="cat-name">${escapeHtml(cat.name)}</div><div style="color:var(--muted); font-size:13px; margin-top:6px;">${catDone} / ${catFiles.length} منجز</div><div class="cat-mini-prog"><div class="cat-mini-fill" style="width:${catPct}%"></div></div></div>`;
+      });
+      html += `</div>`; c.innerHTML = html;
+    } else {
+      let files = lib.files; let title = '';
+      if (showFavorites) { files = files.filter(f => favs.includes(f.id)); title = '⭐ الدروس المفضلة'; } 
+      else { const cat = lib.categories.find(x => x.id === currentCatId); if (!cat) { currentCatId = null; render(); return; } files = files.filter(f => f.catId === currentCatId); title = `${cat.icon} ${cat.name}`; }
+      renderFilesList(c, applyQuickFilters(files), title, showFavorites);
+    }
+  }
+
+  function renderFilesList(container, files, title, showCatBadge) {
+    files.sort((a,b) => b.added - a.added); currentOrderedList = files;
+    let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:10px; flex-wrap:wrap;"><button class="btn ghost small" onclick="goHome()">← الرئيسية</button><h2 style="margin:0; font-size:20px;">${title} (${files.length})</h2></div>`;
+    if (files.length === 0) { html += `<p style="text-align:center; color:var(--muted); margin-top:40px; font-size:17px;">لا توجد دروس مطابقة.</p>`; } 
+    else {
+      html += `<div class="files-grid">`;
+      files.forEach(f => {
+        const isFav = favs.includes(f.id); const isDone = completed.includes(f.id); const cat = lib.categories.find(c => c.id === f.catId);
+        let icon = 'HTML'; let iconClass = '';
+        if(f.type === 'pdf') { icon = 'PDF'; iconClass = 'file-type-pdf'; }
+        if(f.type === 'image') { icon = 'IMG'; iconClass = 'file-type-img'; }
+        if(f.type === 'youtube') { icon = 'VID'; iconClass = 'file-type-vid'; }
+        if(f.type === 'mp4') { icon = 'MP4'; iconClass = 'file-type-mp4'; }
+        const noteHtml = f.note ? `<div class="lesson-tip-box"><span class="lesson-tip-label">💡 ملاحظة:</span>${escapeHtml(f.note)}</div>` : '';
+        const tagsHtml = (f.tags && f.tags.length) ? `<div class="file-tags">${f.tags.map(t => `<span class="tag-pill">#${escapeHtml(t)}</span>`).join('')}</div>` : '';
+        const linksHtml = buildExtLinksHtml(f.links);
+        html += `<div class="file-card ${isDone ? 'completed' : ''}" onclick="openViewer('${f.id}')">
+          <div class="file-header"><div class="file-badges"><div class="file-icon ${iconClass}">${icon}</div>${showCatBadge && cat ? `<span class="cat-badge">${cat.icon} ${escapeHtml(cat.name)}</span>` : ''}${isDone ? `<span class="done-badge">✓ منجز</span>` : ''}</div><button class="star-btn ${isFav ? 'active' : ''}" onclick="toggleFav('${f.id}', event)">${isFav ? '★' : '☆'}</button></div>
+          <div><h3 class="file-title">${escapeHtml(f.title)}</h3>${noteHtml}${linksHtml}${tagsHtml}<div class="file-date">${new Date(f.added).toLocaleDateString('ar-IQ')}</div></div>
+          ${isAdmin ? `<div class="file-actions"><button class="btn ghost small" onclick="editFile('${f.id}', event)">تعديل</button><button class="btn ghost small" style="color:var(--danger); border-color:var(--danger)" onclick="deleteFile('${f.id}', event)">حذف</button></div>` : ''}
+        </div>`;
+      });
+      html += `</div>`;
+    }
+    container.innerHTML = html;
+  }
+
+  function updateNavButtons() {
+    const prevBtn = document.getElementById('prevLessonBtn'); const nextBtn = document.getElementById('nextLessonBtn');
+    if (!currentViewerFile || currentOrderedList.length <= 1) { prevBtn.disabled = true; nextBtn.disabled = true; return; }
+    const idx = currentOrderedList.findIndex(x => x.id === currentViewerFile.id);
+    prevBtn.disabled = idx <= 0; nextBtn.disabled = idx < 0 || idx >= currentOrderedList.length - 1;
+  }
+  function stepLesson(delta) {
+    if (!currentViewerFile || !currentOrderedList.length) return;
+    const idx = currentOrderedList.findIndex(x => x.id === currentViewerFile.id);
+    const nextItem = currentOrderedList[idx + delta]; if (nextItem) openViewer(nextItem.id);
+  }
+
+  function openViewer(id) {
+    const f = lib.files.find(x => x.id === id); if(!f) return;
+    if (!currentOrderedList.some(x => x.id === id)) { currentOrderedList = lib.files.filter(x => x.catId === f.catId).sort((a,b) => b.added - a.added); }
+    currentViewerFile = f; history.replaceState(null, '', '#file=' + f.id);
+    document.getElementById('viewerTitle').textContent = f.title;
+    updateViewerDoneBtn(); updateNavButtons();
+    const noteBanner = document.getElementById('viewerNoteBanner'); const noteText = document.getElementById('viewerNoteText');
+    if (f.note) { noteText.textContent = f.note; noteBanner.style.display = 'flex'; } else { noteBanner.style.display = 'none'; }
+    const vExt = document.getElementById('viewerExtLinks');
+    vExt.innerHTML = (Array.isArray(f.links) && f.links.length) ? f.links.map(lk => { const meta = getLinkIcon(lk.url, lk.label); return `<a class="btn ghost small" style="text-decoration:none;" href="${escapeHtml(normalizeUrl(lk.url))}" target="_blank" rel="noopener noreferrer">${meta.icon} ${escapeHtml(lk.label || 'رابط')}</a>`; }).join('') : '';
+    const body = document.getElementById('viewerBody'); const codeBtn = document.getElementById('codeToggleBtn'); const dlBtn = document.getElementById('downloadBtn');
+    codeBtn.style.display = 'none'; dlBtn.style.display = 'none'; body.innerHTML = '';
+    if (f.type === 'html') {
+      const ifr = document.createElement('iframe'); ifr.srcdoc = f.content; body.appendChild(ifr);
+      codeBtn.style.display = 'inline-flex'; dlBtn.style.display = 'inline-flex'; codeBtn.textContent = 'الكود';
+      codeBtn.onclick = () => { if(body.querySelector('iframe')) { body.innerHTML = `<pre>${escapeHtml(f.content)}</pre>`; codeBtn.textContent = 'الصفحة'; } else { body.innerHTML = ''; const newIfr = document.createElement('iframe'); newIfr.srcdoc = f.content; body.appendChild(newIfr); codeBtn.textContent = 'الكود'; } };
+    } else if (f.type === 'pdf') { body.innerHTML = `<iframe src="data:application/pdf;base64,${f.content}"></iframe>`; dlBtn.style.display = 'inline-flex'; } 
+    else if (f.type === 'image') { body.innerHTML = `<img src="${f.content}">`; } 
+    else if (f.type === 'youtube') { let vid = f.content.split('v=')[1] || f.content.split('/').pop(); if(vid.includes('&')) vid = vid.split('&')[0]; body.innerHTML = `<iframe src="https://www.youtube.com/embed/${vid}" allowfullscreen></iframe>`; } 
+    else if (f.type === 'mp4') { body.innerHTML = `<video src="${f.content}" controls autoplay></video>`; }
+    document.body.classList.add('viewing');
+  }
+
+  function toggleFullscreen() { const v = document.getElementById('viewer'); if (!document.fullscreenElement) { v.requestFullscreen().catch(() => {}); } else { document.exitFullscreen(); } }
+  
+  function downloadFile() {
+    if(!currentViewerFile) return; let blob, filename;
+    if (currentViewerFile.type === 'html') { blob = new Blob([currentViewerFile.content], {type: 'text/html;charset=utf-8'}); filename = currentViewerFile.title.replace(/[\/\\?%*:|"<>]/g, '-') + '.html'; } 
+    else if (currentViewerFile.type === 'pdf') { const byteCharacters = atob(currentViewerFile.content); const byteNumbers = new Array(byteCharacters.length); for (let i = 0; i < byteCharacters.length; i++) { byteNumbers[i] = byteCharacters.charCodeAt(i); } blob = new Blob([new Uint8Array(byteNumbers)], {type: 'application/pdf'}); filename = currentViewerFile.title + '.pdf'; }
+    if(blob) { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); showToast('جاري تحميل الملف...'); }
+  }
+
+  function closeViewer() { if (document.fullscreenElement) document.exitFullscreen(); document.body.classList.remove('viewing'); document.getElementById('viewerBody').innerHTML = ''; history.replaceState(null, '', window.location.pathname); }
+  function escapeHtml(unsafe) { return String(unsafe).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
+
+  function addLinkRow(label = '', url = '') {
+    const container = document.getElementById('linksContainer'); const row = document.createElement('div'); row.className = 'link-row';
+    row.innerHTML = `<input type="text" class="lk-label" placeholder="اسم الزر" value="${escapeHtml(label)}"><input type="url" class="lk-url" placeholder="https://..." dir="ltr" value="${escapeHtml(url)}"><button type="button" class="remove-link-btn" onclick="this.parentElement.remove()" title="حذف">✕</button>`;
+    container.appendChild(row);
+  }
+  function collectLinksFromForm() {
+    const rows = document.querySelectorAll('#linksContainer .link-row'); const links = [];
+    rows.forEach(r => { const label = r.querySelector('.lk-label').value.trim(); const url = r.querySelector('.lk-url').value.trim(); if (url) links.push({ label: label || 'رابط الدرس', url }); });
+    return links;
+  }
+
+  function hideAllModalSecs() { ['loginSec', 'addSec', 'catSec', 'settingsSec'].forEach(id => document.getElementById(id).style.display = 'none'); document.getElementById('errorMsg').textContent = ''; }
+  
+  function handleAdminBtn() {
+    if (isAdmin) { firebase.auth().signOut().then(() => { isAdmin = false; render(); showToast('تم تسجيل الخروج'); }); } 
+    else { hideAllModalSecs(); document.getElementById('modalTitle').textContent = 'دخول الإدارة الآمن'; document.getElementById('loginSec').style.display = 'flex'; document.getElementById('emailInput').value = ''; document.getElementById('passInput').value = ''; document.body.classList.add('sheet-open'); setTimeout(() => document.getElementById('emailInput').focus(), 100); }
+  }
+  function doLogin() {
+    const email = document.getElementById('emailInput').value.trim(); const password = document.getElementById('passInput').value;
+    if(!email || !password) return document.getElementById('errorMsg').textContent = 'أدخل البريد وكلمة المرور';
+    firebase.auth().signInWithEmailAndPassword(email, password).then((userCredential) => { isAdmin = true; closeModal(); render(); showToast('مرحباً بك يا مدير'); }).catch((error) => { document.getElementById('errorMsg').textContent = 'البريد أو كلمة المرور غير صحيحة'; });
+  }
+
+  function openSettings() { hideAllModalSecs(); document.getElementById('modalTitle').textContent = 'الإعدادات'; document.getElementById('settingsSec').style.display = 'flex'; document.getElementById('newSiteName').value = lib.settings.siteName || 'هدهد'; document.body.classList.add('sheet-open'); }
+  function saveSettings() { lib.settings.siteName = document.getElementById('newSiteName').value.trim() || 'هدهد'; saveData().then(() => { document.getElementById('siteTitle').textContent = lib.settings.siteName; closeModal(); showToast('تم حفظ الإعدادات'); }); }
+
+  function openAddModal() {
+    editingFileId = null; editingCatId = null; pendingFileData = null; hideAllModalSecs();
+    if (currentCatId === null) { document.getElementById('modalTitle').textContent = 'إضافة قسم جديد'; document.getElementById('newCatName').value = ''; document.getElementById('newCatIcon').value = ''; document.getElementById('catSec').style.display = 'flex'; } 
+    else {
+      document.getElementById('modalTitle').textContent = 'إضافة درس جديد'; document.getElementById('fileNameDisplay').textContent = 'لم يتم اختيار ملف'; document.getElementById('fileTitle').value = ''; document.getElementById('fileNote').value = ''; document.getElementById('fileTags').value = ''; document.getElementById('urlInput').value = ''; document.getElementById('linksContainer').innerHTML = ''; document.getElementById('fileType').value = 'html';
+      const sel = document.getElementById('catSelect'); sel.innerHTML = ''; lib.categories.forEach(c => sel.innerHTML += `<option value="${c.id}" ${c.id===currentCatId?'selected':''}>${c.name}</option>`);
+      try {
+        const draft = JSON.parse(localStorage.getItem('hudhud_add_draft') || 'null');
+        if (draft) {
+          if (draft.type) document.getElementById('fileType').value = draft.type;
+          if (draft.title) document.getElementById('fileTitle').value = draft.title;
+          if (draft.note) document.getElementById('fileNote').value = draft.note;
+          if (draft.tags) document.getElementById('fileTags').value = draft.tags;
+          if (draft.url) document.getElementById('urlInput').value = draft.url;
+        }
+      } catch (e) {}
+      toggleFileInput(); document.getElementById('addSec').style.display = 'flex';
+    }
+    document.body.classList.add('sheet-open');
+  }
+
+  function editCategory(id, event) {
+    event.stopPropagation(); const cat = lib.categories.find(c => c.id === id); if (!cat) return;
+    editingCatId = id; hideAllModalSecs(); document.getElementById('modalTitle').textContent = 'تعديل القسم'; document.getElementById('newCatName').value = cat.name; document.getElementById('newCatIcon').value = cat.icon; document.getElementById('catSec').style.display = 'flex'; document.body.classList.add('sheet-open');
+  }
+  function saveCategory() {
+    const name = document.getElementById('newCatName').value.trim(); const icon = document.getElementById('newCatIcon').value.trim() || '📁';
+    if(!name) return document.getElementById('errorMsg').textContent = 'اكتب اسم القسم';
+    if (editingCatId) { lib.categories = lib.categories.map(c => c.id === editingCatId ? {...c, name, icon} : c); } 
+    else { lib.categories.push({id: 'c'+Date.now(), name, icon}); }
+    saveData().then(() => { closeModal(); render(); showToast(editingCatId ? 'تم تحديث القسم' : 'تم إضافة القسم'); });
+  }
+  function deleteCategory(id, event) {
+    event.stopPropagation(); const count = lib.files.filter(f => f.catId === id).length;
+    if (count > 0) return showToast('لا يمكن حذف قسم يحتوي على ملفات', 'error');
+    if (!confirm('حذف هذا القسم نهائياً؟')) return;
+    lib.categories = lib.categories.filter(c => c.id !== id); saveData().then(() => { render(); showToast('تم حذف القسم'); });
+  }
+
+  function editFile(id, event) {
+    event.stopPropagation(); const f = lib.files.find(x => x.id === id); if(!f) return;
+    editingFileId = id; pendingFileData = null; hideAllModalSecs(); document.getElementById('modalTitle').textContent = 'تعديل الدرس'; document.getElementById('addSec').style.display = 'flex';
+    document.getElementById('fileType').value = f.type; document.getElementById('fileTitle').value = f.title; document.getElementById('fileNote').value = f.note || ''; document.getElementById('fileTags').value = (f.tags || []).join(', ');
+    const linksContainer = document.getElementById('linksContainer'); linksContainer.innerHTML = ''; if (Array.isArray(f.links)) { f.links.forEach(lk => addLinkRow(lk.label, lk.url)); }
+    toggleFileInput();
+    if (['image', 'youtube', 'mp4'].includes(f.type)) document.getElementById('urlInput').value = f.content; else document.getElementById('fileNameDisplay').textContent = 'الملف الحالي محفوظ (اختر ملف جديد للتغيير)';
+    const sel = document.getElementById('catSelect'); sel.innerHTML = ''; lib.categories.forEach(c => sel.innerHTML += `<option value="${c.id}" ${c.id===f.catId?'selected':''}>${c.name}</option>`);
+    document.body.classList.add('sheet-open');
+  }
+
+  function toggleFileInput() {
+    const type = document.getElementById('fileType').value;
+    if (['image', 'youtube', 'mp4'].includes(type)) { document.getElementById('fileUploadBox').style.display = 'none'; document.getElementById('urlInputBox').style.display = 'block'; } 
+    else { document.getElementById('fileUploadBox').style.display = 'block'; document.getElementById('urlInputBox').style.display = 'none'; document.getElementById('fileInput').accept = type === 'pdf' ? '.pdf' : '.html'; }
+  }
+
+  const dropZone = document.getElementById('dropZone');
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); }));
+  ['dragenter', 'dragover'].forEach(ev => dropZone.addEventListener(ev, () => dropZone.classList.add('dragover')));
+  ['dragleave', 'drop'].forEach(ev => dropZone.addEventListener(ev, () => dropZone.classList.remove('dragover')));
+  dropZone.addEventListener('drop', e => handleFileSelect(e.dataTransfer.files[0]));
+
+  function handleFileSelect(file) {
+    if(!file) return; pendingFileData = file;
+    document.getElementById('fileNameDisplay').textContent = file.name + ' (' + Math.round(file.size/1024) + ' KB)';
+    if(!document.getElementById('fileTitle').value) document.getElementById('fileTitle').value = file.name.replace(/\.[^/.]+$/, "");
+    saveFormDraft();
+  }
+
+  function saveFile() {
+    const type = document.getElementById('fileType').value; const catId = document.getElementById('catSelect').value; const title = document.getElementById('fileTitle').value.trim(); const note = document.getElementById('fileNote').value.trim();
+    const rawTags = document.getElementById('fileTags').value; const tags = rawTags ? rawTags.split(',').map(t => t.trim()).filter(Boolean) : []; const links = collectLinksFromForm();
+    if(!title) return document.getElementById('errorMsg').textContent = 'اكتب اسم المحتوى';
+    const doSave = (content) => {
+      if (editingFileId) { lib.files = lib.files.map(f => f.id === editingFileId ? {...f, type, catId, title, note, tags, links, content} : f); } 
+      else { lib.files.push({id: 'f'+Date.now(), type, catId, title, note, tags, links, content, added: Date.now()}); clearFormDraft(); }
+      saveData().then(() => { closeModal(); render(); showToast(editingFileId ? 'تم التعديل' : 'تم الحفظ'); });
+    };
+    if (['image', 'youtube', 'mp4'].includes(type)) {
+      const url = document.getElementById('urlInput').value.trim(); if(!url) return document.getElementById('errorMsg').textContent = 'ضع الرابط'; doSave(url);
+    } else {
+      if (!pendingFileData) {
+        if (editingFileId) { const existing = lib.files.find(f => f.id === editingFileId); doSave(existing.content); return; }
+        return document.getElementById('errorMsg').textContent = 'اختر الملف أولاً';
+      }
+      if (pendingFileData.size > 800 * 1024) return document.getElementById('errorMsg').textContent = 'حجم الملف كبير جداً (الحد 800 كيلوبايت)';
+      const reader = new FileReader();
+      reader.onload = (e) => { const res = e.target.result; if (type === 'html') doSave(res); else doSave(res.split(',')[1]); };
+      if(type === 'html') reader.readAsText(pendingFileData); else reader.readAsDataURL(pendingFileData);
+    }
+  }
+
+  function deleteFile(id, event) {
+    event.stopPropagation(); if(!confirm('هل أنت متأكد من الحذف؟')) return;
+    lib.files = lib.files.filter(f => f.id !== id); saveData().then(() => { render(); showToast('تم الحذف'); });
+  }
+
+  function closeModal() { document.body.classList.remove('sheet-open'); }
+  function goHome() { currentCatId = null; showFavorites = false; activeTypeFilter = 'all'; activeTagFilter = ''; document.getElementById('searchInput').value = ''; saveUiState(); render(); }
+
+  firebase.auth().onAuthStateChanged((user) => { if (user) { isAdmin = true; render(); } else { isAdmin = false; render(); } });
+  loadData();
+</script>
+
+<!-- كود تشغيل التطبيق والعمل بدون إنترنت ومراقبة التحديثات -->
+<script>
+  function applyAppUpdate() {
+    if (waitingWorker) {
+      waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+    }
+    window.location.reload();
+  }
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      if (reg.waiting) {
+        waitingWorker = reg.waiting;
+        document.getElementById('updateBanner').style.display = 'flex';
+      }
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        if (!newWorker) return;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            waitingWorker = newWorker;
+            document.getElementById('updateBanner').style.display = 'flex';
+          }
+        });
+      });
+    }).catch(err => console.log('SW registration failed', err));
+
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    });
+  }
 </script>
 </body>
 </html>
