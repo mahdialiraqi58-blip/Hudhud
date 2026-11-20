@@ -1,0 +1,18 @@
+{
+  "name": "هدهد - المنصة التعليمية",
+  "short_name": "هدهد",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#070d19",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3750/3750079.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
