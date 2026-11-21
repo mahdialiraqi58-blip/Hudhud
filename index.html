@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link id="dynamicAppleIcon" rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3750/3750079.png">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
 <style>
 ::-webkit-scrollbar { width: 8px; }
@@ -180,79 +181,84 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
 
 .panel-card { background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
 
-.quiz-pdf-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  background: var(--tint);
-  border: 1px dashed var(--accent);
-  border-radius: 16px;
-  padding: 12px 14px;
-  margin-bottom: 14px;
+/* تصميم خانة الاختبارات الاحترافية */
+.quiz-studio-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  flex-wrap: wrap; gap: 12px; margin-bottom: 16px;
+  padding-bottom: 14px; border-bottom: 1px solid var(--line);
+}
+.quiz-mode-switch {
+  display: inline-flex; gap: 6px; background: var(--bg);
+  padding: 5px; border-radius: 14px; border: 1px solid var(--line);
+}
+.quiz-mode-btn {
+  border: 0; background: transparent; color: var(--muted);
+  font: inherit; font-size: 13px; font-weight: 700;
+  padding: 7px 14px; border-radius: 10px; cursor: pointer; transition: 0.2s;
+}
+.quiz-mode-btn.active { background: var(--accent); color: var(--accent-ink); box-shadow: var(--shadow-sm); }
+
+.quiz-pdf-box {
+  background: linear-gradient(135deg, var(--tint), transparent);
+  border: 1px solid rgba(79, 70, 229, 0.28);
+  border-radius: 18px; padding: 16px; margin-bottom: 16px;
+}
+.quiz-pdf-top {
+  display: flex; flex-wrap: wrap; align-items: center;
+  justify-content: space-between; gap: 10px; margin-bottom: 12px;
 }
 .quiz-pdf-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--surface-solid);
-  border: 1px solid var(--line);
-  border-radius: 11px;
-  padding: 6px 12px;
-  font-size: 12.5px;
-  font-weight: 700;
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--surface-solid); border: 1px solid var(--line);
+  border-radius: 12px; padding: 6px 12px; font-size: 13px; font-weight: 700;
+}
+.quiz-page-range-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px; align-items: end; background: var(--surface-solid);
+  border: 1px solid var(--line); border-radius: 14px; padding: 12px;
+}
+.quiz-page-range-grid input[type="number"] {
+  padding: 9px 12px; border: 1px solid var(--line); border-radius: 11px;
+  background: var(--bg); color: var(--ink); font: inherit; font-weight: 700; width: 100%;
+}
+.quiz-excerpt-preview {
+  margin-top: 12px; background: var(--bg); border-right: 3px solid var(--success);
+  border-radius: 12px; padding: 10px 14px; font-size: 12.5px; color: var(--muted);
+  max-height: 115px; overflow-y: auto; line-height: 1.6;
 }
 
 .quiz-builder-bar {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 12px;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 14px;
-  margin-bottom: 16px;
-  align-items: end;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px; background: var(--bg); border: 1px solid var(--line);
+  border-radius: 18px; padding: 14px; margin-bottom: 16px; align-items: end;
 }
 .quiz-meta-strip {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 10px 14px;
-  margin-bottom: 14px;
-  font-size: 13px;
-  font-weight: 700;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 10px; background: var(--bg); border: 1px solid var(--line);
+  border-radius: 14px; padding: 10px 14px; margin-bottom: 14px;
+  font-size: 13px; font-weight: 700;
+}
+.quiz-q-card {
+  background: var(--bg); border: 1px solid var(--line);
+  border-radius: 18px; padding: 18px; transition: border-color 0.2s;
+}
+.quiz-q-badge {
+  display: inline-block; font-size: 11.5px; font-weight: 700;
+  color: var(--accent); background: var(--tint); padding: 3px 10px;
+  border-radius: 8px; margin-bottom: 8px;
 }
 .quiz-option-btn {
-  width: 100%;
-  text-align: right;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  color: var(--ink);
-  padding: 11px 14px;
-  border-radius: 12px;
-  font: inherit;
-  font-size: 13.5px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
+  width: 100%; text-align: right; background: var(--surface-solid);
+  border: 1px solid var(--line); color: var(--ink); padding: 11px 14px;
+  border-radius: 12px; font: inherit; font-size: 13.5px; font-weight: 600;
+  cursor: pointer; transition: 0.2s;
 }
 .quiz-option-btn:hover { border-color: var(--accent); transform: translateX(-2px); }
 .quiz-option-btn.correct { background: rgba(16, 185, 129, 0.16); border-color: var(--success); color: var(--success); }
 .quiz-option-btn.wrong { background: rgba(239, 68, 68, 0.14); border-color: var(--danger); color: var(--danger); }
 .quiz-result-box {
-  margin-top: 18px;
-  background: linear-gradient(135deg, var(--tint), transparent);
-  border: 1px solid var(--accent);
-  border-radius: 18px;
-  padding: 18px;
-  text-align: center;
+  margin-top: 18px; background: linear-gradient(135deg, var(--tint), transparent);
+  border: 1px solid var(--accent); border-radius: 18px; padding: 20px; text-align: center;
 }
 .quiz-history-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .quiz-history-chip { background: var(--bg); border: 1px solid var(--line); border-radius: 11px; padding: 6px 12px; font-size: 12.5px; font-weight: 700; }
@@ -270,7 +276,6 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
 .vbody { flex: 1; position: relative; background: #ffffff; }
 iframe, img, video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: contain; }
 pre { position: absolute; inset: 0; margin: 0; padding: 20px; background: #1e1e1e; color: #d4d4d4; overflow: auto; direction: ltr; text-align: left; font: 14px/1.6 monospace; }
-.sim-uploaded-img { position: static !important; inset: auto !important; width: auto !important; height: auto !important; }
 
 .scrim { position: fixed; inset: 0; z-index: 300; background: rgba(15, 23, 42, 0.72); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; }
 .sheet-open .scrim { display: flex; }
@@ -521,11 +526,15 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
 <script>
+if (window.pdfjsLib && window.pdfjsLib.GlobalWorkerOptions) {
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
 const DAY = 86400000;
 const EXAM_DATE = new Date('2027-02-01T00:00:00');
 const REVIEW_STEPS = [1, 3, 7, 14, 30];
-const MAX_LARGE_FILE_BYTES = 25 * 1024 * 1024; // 25 MB
-const LARGE_FILE_THRESHOLD = 450 * 1024; // أي ملف أكبر من 450 KB يُخزن في IndexedDB
+const MAX_LARGE_FILE_BYTES = 25 * 1024 * 1024;
+const LARGE_FILE_THRESHOLD = 450 * 1024;
 const LEVELS = [
   [0, 'بيضة', '🥚'],
   [100, 'فرخ', '🐣'],
@@ -543,7 +552,6 @@ const writeJson = (k, v) => {
 };
 const dayKey = t => new Date(t).toISOString().slice(0, 10);
 
-/* تخزين الملفات الكبيرة محلياً عبر IndexedDB */
 let largeFilesDb = null;
 function openLargeFilesDb() {
   return new Promise((resolve, reject) => {
@@ -720,15 +728,32 @@ let currentViewerFile = null;
 let currentOrderedList = [];
 let deferredInstallPrompt = null;
 
-let quizSettings = readJson('hudhud_quiz_settings', { catId: 'all', count: 10, seed: 1 });
+/* ======================================================
+   إعادة بناء خانة الاختبارات التدريبية الذكية بالكامل:
+   - تركيز مباشر على ملف الـ PDF المختار
+   - تحديد نطاق الصفحات (من صفحة إلى صفحة)
+   - استخراج نصوص الصفحات وتوليد أسئلة دقيقة منها
+   ====================================================== */
+let quizSettings = readJson('hudhud_quiz_settings', {
+  mode: 'file', // 'file' للتركيز على الملف المرفق | 'section' لقسم من المنصة
+  catId: 'all',
+  count: 8,
+  pageFrom: 1,
+  pageTo: 5,
+  seed: 1
+});
+
 let quizPdfMeta = readJson('hudhud_quiz_pdf_meta', null);
 let quizPdfBase64Cache = '';
+let quizPdfDocProxy = null;
+let quizPdfTotalPages = 0;
+let quizRangeExtractInfo = { text: '', pageCount: 0, status: 'idle', pages: [] };
 let currentQuizQuestions = [];
 let quizAnswers = {};
 let quizHistory = readJson('hudhud_quiz_history', []);
 let quizRecordedCurrentRun = false;
 
-const QUESTION_BANK = [
+const SECTION_BANK = [
   {
     catHint: 'elec',
     question: 'ما الفائدة الأساسية من التغذية المنفصلة لملف المجال في مولد التيار المستمر؟',
@@ -763,17 +788,6 @@ const QUESTION_BANK = [
     explain: 'السرعة تتناسب عكسياً مع الفيض المغناطيسي، فزيادة الفيض تقلل السرعة.'
   },
   {
-    catHint: 'elec',
-    question: 'أي من العلاقات التالية تمثل القدرة الكهربائية المستهلكة في مقاومة؟',
-    options: [
-      'P = V · I = I² · R = V² / R',
-      'P = V / I = R · t',
-      'P = I / (V · R)'
-    ],
-    correct: 0,
-    explain: 'القدرة الكهربائية بالواط تساوي حاصل ضرب الجهد بالتيار أو مربع التيار في المقاومة أو مربع الجهد على المقاومة.'
-  },
-  {
     catHint: 'drawing',
     question: 'ما الهدف الرئيسي من الالتزام بمعايير المقياس والخطوط في الرسم الصناعي؟',
     options: [
@@ -785,17 +799,6 @@ const QUESTION_BANK = [
     explain: 'الرموز والخطوط القياسية تجعل المخطط لغة هندسية موحدة ومفهومة في التنفيذ والصيانة.'
   },
   {
-    catHint: 'drawing',
-    question: 'في المخططات الكهربائية، ما أهمية التمييز بين مسارات التغذية والقياس والتحكم؟',
-    options: [
-      'تسهيل تتبع المسارات وفحص الأعطال بسرعة وأمان',
-      'رفع جهد المصدر إلى الضعف تلقائياً',
-      'إلغاء الحاجة إلى أجهزة القياس'
-    ],
-    correct: 0,
-    explain: 'تنظيم المسارات والرموز يسرّع فهم الدائرة وتشخيص الأعطال أثناء المراجعة والعمل.'
-  },
-  {
     catHint: 'mech',
     question: 'ما وظيفة الوصلة الميكانيكية بين المحرك الدائر والمولد الميكانيكي؟',
     options: [
@@ -805,17 +808,6 @@ const QUESTION_BANK = [
     ],
     correct: 0,
     explain: 'المحرك يوفر الحركة الدورانية الميكانيكية التي يدير بها المولد لتوليد القوة الدافعة الكهربائية.'
-  },
-  {
-    catHint: 'mech',
-    question: 'ماذا يعني ثبات سرعة الدوران (rpm) عند تشغيل آلة ضمن حدودها الاسمية؟',
-    options: [
-      'استقرار الأداء والجهد المتولد ضمن النطاق التصميمي الآمن',
-      'توقف سريان التيار في الدائرة كلياً',
-      'ارتفاع درجة الحرارة إلى حد الخطر فوراً'
-    ],
-    correct: 0,
-    explain: 'العمل بالسرعة الاسمية يحافظ على استقرار التشغيل ومنظومة التبريد والجهد.'
   }
 ];
 
@@ -1015,9 +1007,17 @@ function switchHubTab(tabName) {
   } else {
     $('lessonsView').style.display = 'none';
     $('smartHubContainer').style.display = 'block';
-    if (tabName === 'quiz' && currentQuizQuestions.length === 0) generateUnlimitedQuiz(false);
-    if (tabName === 'cmd') renderCmd();
-    else renderSmartHub();
+    if (tabName === 'cmd') {
+      renderCmd();
+    } else if (tabName === 'quiz') {
+      if (currentQuizQuestions.length === 0) {
+        buildAndRenderQuiz(false);
+      } else {
+        renderSmartHub();
+      }
+    } else {
+      renderSmartHub();
+    }
   }
 }
 
@@ -1138,10 +1138,71 @@ window.cmdReview = (id, ok) => {
   renderCmd();
 };
 
-function handleQuizPdfUpload(file) {
+function shuffleArray(arr) {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+async function parsePdfFromBase64(base64Str) {
+  if (!window.pdfjsLib || !base64Str) return null;
+  const raw = atob(base64Str);
+  const bytes = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+  const loadingTask = window.pdfjsLib.getDocument({ data: bytes });
+  const doc = await loadingTask.promise;
+  quizPdfDocProxy = doc;
+  quizPdfTotalPages = doc.numPages || 1;
+  quizSettings.pageFrom = Math.max(1, Math.min(quizSettings.pageFrom || 1, quizPdfTotalPages));
+  quizSettings.pageTo = Math.max(quizSettings.pageFrom, Math.min(quizSettings.pageTo || Math.min(5, quizPdfTotalPages), quizPdfTotalPages));
+  writeJson('hudhud_quiz_settings', quizSettings);
+  return doc;
+}
+
+async function extractPagesTextFromPdf(fromPage, toPage) {
+  if (!quizPdfDocProxy && quizPdfBase64Cache) {
+    await parsePdfFromBase64(quizPdfBase64Cache);
+  }
+  if (!quizPdfDocProxy) {
+    return { text: '', pageCount: 0, status: 'no_doc', pages: [] };
+  }
+
+  const total = quizPdfDocProxy.numPages || 1;
+  const start = Math.max(1, Math.min(Number(fromPage) || 1, total));
+  const end = Math.max(start, Math.min(Number(toPage) || start, total));
+  quizSettings.pageFrom = start;
+  quizSettings.pageTo = end;
+  writeJson('hudhud_quiz_settings', quizSettings);
+
+  const pageTexts = [];
+  for (let p = start; p <= end; p++) {
+    try {
+      const page = await quizPdfDocProxy.getPage(p);
+      const tc = await page.getTextContent();
+      const str = (tc.items || []).map(it => it.str || '').join(' ').replace(/\s+/g, ' ').trim();
+      pageTexts.push({ pageNum: p, text: str });
+    } catch (e) {
+      pageTexts.push({ pageNum: p, text: '' });
+    }
+  }
+
+  const combined = pageTexts.map(x => x.text).filter(Boolean).join('\n');
+  return {
+    text: combined,
+    pageCount: end - start + 1,
+    status: combined.trim().length > 25 ? 'ok' : 'scanned_or_empty',
+    pages: pageTexts
+  };
+}
+
+async function handleQuizPdfUpload(file) {
   if (!file) return;
   if (!file.name.toLowerCase().endsWith('.pdf')) return showToast('يرجى اختيار ملف بصيغة PDF', 'error');
   if (file.size > MAX_LARGE_FILE_BYTES) return showToast('الحد الأقصى لملف PDF هو 25 MB', 'error');
+
   const sizeKb = Math.round(file.size / 1024);
   quizPdfMeta = {
     name: file.name,
@@ -1151,35 +1212,39 @@ function handleQuizPdfUpload(file) {
   writeJson('hudhud_quiz_pdf_meta', quizPdfMeta);
 
   const reader = new FileReader();
-  reader.onload = (e) => {
+  reader.onload = async (e) => {
     quizPdfBase64Cache = String(e.target.result || '').split(',')[1] || '';
-    if (activeHubTab === 'quiz') renderSmartHub();
+    quizPdfDocProxy = null;
+    quizSettings.mode = 'file';
+    await parsePdfFromBase64(quizPdfBase64Cache);
+    quizRangeExtractInfo = await extractPagesTextFromPdf(quizSettings.pageFrom, quizSettings.pageTo);
+    showToast(`تم إرفاق «${quizPdfMeta.name}» (${quizPdfTotalPages} صفحة) 📄`);
+    await buildAndRenderQuiz(false);
   };
   reader.readAsDataURL(file);
-
-  showToast(`تم إرفاق ملف PDF «${file.name}» للاختبارات 📄`);
-  generateUnlimitedQuiz(false);
-  renderSmartHub();
 }
 
 function removeQuizPdf() {
   quizPdfMeta = null;
   quizPdfBase64Cache = '';
+  quizPdfDocProxy = null;
+  quizPdfTotalPages = 0;
+  quizRangeExtractInfo = { text: '', pageCount: 0, status: 'idle', pages: [] };
   localStorage.removeItem('hudhud_quiz_pdf_meta');
   showToast('تمت إزالة ملف PDF من الاختبارات');
-  generateUnlimitedQuiz(false);
-  renderSmartHub();
+  buildAndRenderQuiz(false);
 }
 
 function previewQuizPdf() {
-  if (!quizPdfMeta) return;
-  if (!quizPdfBase64Cache) return showToast('أعد اختيار ملف PDF من جهازك لعرض معاينته المباشرة', 'error');
+  if (!quizPdfMeta || !quizPdfBase64Cache) {
+    return showToast('اختر ملف PDF أولاً لعرض معاينته', 'error');
+  }
   currentViewerFile = {
     id: 'quiz_pdf_preview',
     title: quizPdfMeta.name,
     type: 'pdf',
     content: quizPdfBase64Cache,
-    note: 'معاينة ملف PDF المرفق للاختبارات التدريبية'
+    note: `معاينة ملف PDF المرفق — النطاق المحدد: صفحات ${quizSettings.pageFrom} إلى ${quizSettings.pageTo}`
   };
   $('viewerTitle').textContent = quizPdfMeta.name;
   $('viewerNoteText').textContent = currentViewerFile.note;
@@ -1191,105 +1256,134 @@ function previewQuizPdf() {
   document.body.classList.add('viewing');
 }
 
-function shuffleArray(arr) {
-  const copy = [...arr];
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
+function setQuizMode(mode) {
+  quizSettings.mode = mode;
+  writeJson('hudhud_quiz_settings', quizSettings);
+  buildAndRenderQuiz(true);
 }
 
-function buildPdfQuestions() {
-  if (!quizPdfMeta) return [];
-  const cleanName = quizPdfMeta.name.replace(/\.pdf$/i, '');
-  return [
+async function applyPageRangeAndGenerate() {
+  const fromEl = $('quizPageFrom');
+  const toEl = $('quizPageTo');
+  const cntEl = $('quizCountSelect');
+  if (fromEl) quizSettings.pageFrom = Math.max(1, parseInt(fromEl.value, 10) || 1);
+  if (toEl) quizSettings.pageTo = Math.max(quizSettings.pageFrom, parseInt(toEl.value, 10) || quizSettings.pageFrom);
+  if (cntEl) quizSettings.count = Number(cntEl.value) || 8;
+  writeJson('hudhud_quiz_settings', quizSettings);
+  await buildAndRenderQuiz(true);
+}
+
+function generateFocusedPdfQuestions(docName, extractInfo) {
+  const cleanTitle = docName.replace(/\.pdf$/i, '');
+  const rangeLabel = `صفحة ${quizSettings.pageFrom} إلى ${quizSettings.pageTo}`;
+  const questions = [];
+
+  // تقسيم النصوص المستخرجة من الصفحات إلى جمل وعبارات مفيدة
+  const rawSentences = (extractInfo.text || '')
+    .split(/[\n.؟!؛:]+/)
+    .map(s => s.trim())
+    .filter(s => s.length >= 24 && s.length <= 165);
+
+  const pageSpecificSentences = [];
+  (extractInfo.pages || []).forEach(pObj => {
+    const parts = (pObj.text || '')
+      .split(/[\n.؟!؛:]+/)
+      .map(s => s.trim())
+      .filter(s => s.length >= 24 && s.length <= 155);
+    parts.forEach(part => pageSpecificSentences.push({ pageNum: pObj.pageNum, text: part }));
+  });
+
+  // 1) أسئلة مبنية مباشرة على جمل وعبارات من الصفحات المحددة
+  pageSpecificSentences.forEach((item, idx) => {
+    const others = rawSentences.filter(s => s !== item.text);
+    const d1 = others[idx % others.length] || `معلومة مختلفة غير واردة في صفحة ${item.pageNum}`;
+    const d2 = others[(idx + 2) % others.length] || 'عبارة خارج نطاق الصفحات المحددة في الملف';
+    const opts = shuffleArray([
+      { text: item.text, ok: true },
+      { text: d1, ok: false },
+      { text: d2, ok: false }
+    ]);
+    questions.push({
+      badge: `📄 ${cleanTitle} • صفحة ${item.pageNum}`,
+      question: `أي من العبارات التالية وردت في الصفحة (${item.pageNum}) من ملف «${cleanTitle}»؟`,
+      options: opts.map(o => o.text),
+      correct: opts.findIndex(o => o.ok),
+      explain: `وردت في الصفحة ${item.pageNum}: «${item.text}»`
+    });
+  });
+
+  // 2) أسئلة ربط الصفحة بالمحتوى داخل النطاق المحدد
+  pageSpecificSentences.slice(0, 6).forEach((item, idx) => {
+    const shortSnippet = item.text.slice(0, 75) + (item.text.length > 75 ? '...' : '');
+    const wrongPages = [
+      `خارج النطاق (${rangeLabel}) في الملف`,
+      `في صفحة غير مرتبطة بهذا المقطع`
+    ];
+    const opts = shuffleArray([
+      { text: `ضمن النطاق المحدد (${rangeLabel}) في «${cleanTitle}»`, ok: true },
+      { text: wrongPages[idx % wrongPages.length], ok: false },
+      { text: 'معلومة من قسم آخر لا علاقة لها بالملف', ok: false }
+    ]);
+    questions.push({
+      badge: `🎯 نطاق ${rangeLabel}`,
+      question: `أين يقع المقطع التالي: «${shortSnippet}»؟`,
+      options: opts.map(o => o.text),
+      correct: opts.findIndex(o => o.ok),
+      explain: `هذا المقطع موجود في الصفحة ${item.pageNum} ضمن نطاق ${rangeLabel}.`
+    });
+  });
+
+  // 3) أسئلة مركّزة على نطاق الصفحات والملف المرفق (تعمل حتى لو كان الملف صوراً ممسوحة ضوئياً)
+  const focusedTemplates = [
     {
-      question: `ما الغرض من إرفاق ملف «${cleanName}» ضمن خانة الاختبارات؟`,
+      badge: `📌 تركيز الملف (${rangeLabel})`,
+      question: `ما النطاق المحدد حالياً لاختبارك في ملف «${cleanTitle}»؟`,
       options: [
-        'ربط المراجعة والاختبارات بملف المنهج أو الأسئلة المرفق',
-        'إلغاء باقي الأقسام والمواد الدراسية',
-        'تغيير موعد الامتحان التمهيدي'
+        `من صفحة ${quizSettings.pageFrom} إلى صفحة ${quizSettings.pageTo}`,
+        'اختبار عشوائي من كل الأقسام والمواد الأخرى',
+        'صفحة عشوائية واحدة خارج الملف'
       ],
       correct: 0,
-      explain: `ملف «${quizPdfMeta.name}» مرفق ليكون مرجعاً سريعاً أثناء التدريب والاختبار.`
+      explain: `الاختبار مضبوط الآن للتركيز على صفحات ${rangeLabel} من ملف «${cleanTitle}».`
     },
     {
-      question: `كيف تستفيد بأقصى شكل من ملف «${cleanName}» قبل يوم 1/2/2027؟`,
+      badge: `📌 تركيز الملف (${rangeLabel})`,
+      question: `كيف تراجع صفحات (${rangeLabel}) من «${cleanTitle}» بأعلى كفاءة قبل يوم 1/2/2027؟`,
       options: [
-        'قراءة الفكرة ثم حل اختبارات متكررة وتصحيح الأخطاء فوراً',
-        'تصفحه مرة واحدة دون حل أي أسئلة',
-        'تأجيله إلى ليلة الامتحان فقط'
+        'التركيز على مفاهيم وتعريفات وقوانين هذه الصفحات تحديداً ثم إعادة الاختبار',
+        'الانتقال إلى مواد أخرى قبل إتمام صفحات النطاق',
+        'حفظ الإجابات دون فهم سبب اختيارها'
       ],
       correct: 0,
-      explain: 'التدريب المتكرر بالاختبارات ومراجعة الأخطاء يثبّت المعلومة بشكل أفضل.'
+      explain: `إتقان صفحات ${rangeLabel} أولاً يبني فهماً متدرجاً ومنظماً للملف.`
+    },
+    {
+      badge: `📌 تركيز الملف (${rangeLabel})`,
+      question: `ماذا تفعل إذا أخطأت في سؤال يخص صفحات (${rangeLabel}) من ملف «${cleanTitle}»؟`,
+      options: [
+        'الرجوع مباشرة إلى تلك الصفحات في الملف وتثبيت الفكرة قبل توليد جولة جديدة',
+        'تجاهل الخطأ والاستمرار دون مراجعة الصفحة',
+        'تغيير الملف دون إكمال النطاق'
+      ],
+      correct: 0,
+      explain: 'مراجعة الصفحة المرتبطة بالخطأ فوراً تمنع تكراره في الاختبار التالي.'
     }
   ];
+
+  focusedTemplates.forEach(t => questions.push(t));
+  return questions;
 }
 
-function buildLessonQuestions(catId) {
-  const pool = catId === 'all' ? lib.files : lib.files.filter(f => f.catId === catId);
-  const allTitles = lib.files.map(f => f.title).filter(Boolean);
-  const distractors = [
-    'مقرر الجغرافيا الاقتصادية والسياحية',
-    'قوانين الوراثة في علم الأحياء',
-    'تاريخ العمارة الإغريقية القديمة',
-    'تحليل التربة والأسمدة العضوية'
-  ];
+function generateSectionQuestions(catId) {
+  const bankFiltered = catId === 'all'
+    ? SECTION_BANK
+    : SECTION_BANK.filter(q => q.catHint === catId);
 
-  const generated = [];
-  pool.forEach((f, i) => {
-    const cat = lib.categories.find(c => c.id === f.catId);
-    const catName = cat ? cat.name : 'المقرر الدراسي';
-    const otherTitles = allTitles.filter(t => t !== f.title);
-    const wrongPool = shuffleArray([...otherTitles, ...distractors]).slice(0, 2);
-
-    if (i % 2 === 0) {
-      const rawOpts = [
-        { text: catName, ok: true },
-        { text: wrongPool[0] || 'قسم خارج المنهج', ok: false },
-        { text: wrongPool[1] || 'مادة غير مقررة', ok: false }
-      ];
-      const shuffledOpts = shuffleArray(rawOpts);
-      generated.push({
-        question: `ضمن أي قسم يُصنّف درس «${f.title}»؟`,
-        options: shuffledOpts.map(o => o.text),
-        correct: shuffledOpts.findIndex(o => o.ok),
-        explain: `الدرس «${f.title}» تابع لقسم «${catName}».`
-      });
-    } else {
-      const tipText = f.note && f.note.trim()
-        ? f.note.trim()
-        : `مراجعة الدرس «${f.title}» ضمن قسم «${catName}» والاستعداد للامتحان التمهيدي.`;
-      const rawOpts = [
-        { text: tipText, ok: true },
-        { text: 'إهمال مراجعة الدرس تماماً لعدم أهميته', ok: false },
-        { text: 'حذف الدرس من الخطة الدراسية', ok: false }
-      ];
-      const shuffledOpts = shuffleArray(rawOpts);
-      generated.push({
-        question: `ما الفكرة أو التوجيه المرتبط بدرس «${f.title}»؟`,
-        options: shuffledOpts.map(o => o.text),
-        correct: shuffledOpts.findIndex(o => o.ok),
-        explain: tipText
-      });
-    }
-  });
-  return generated;
-}
-
-function generateUnlimitedQuiz(notify = true) {
-  quizSettings.seed = (quizSettings.seed || 1) + 1;
-  writeJson('hudhud_quiz_settings', quizSettings);
-
-  const bankFiltered = quizSettings.catId === 'all'
-    ? QUESTION_BANK
-    : QUESTION_BANK.filter(q => q.catHint === quizSettings.catId);
-
-  const bankShuffled = shuffleArray(bankFiltered.length ? bankFiltered : QUESTION_BANK).map(q => {
-    const taggedOpts = q.options.map((text, idx) => ({ text, ok: idx === q.correct }));
-    const shuf = shuffleArray(taggedOpts);
+  const bankShuffled = shuffleArray(bankFiltered.length ? bankFiltered : SECTION_BANK).map(q => {
+    const tagged = q.options.map((text, idx) => ({ text, ok: idx === q.correct }));
+    const shuf = shuffleArray(tagged);
     return {
+      badge: '📚 بنك الأسئلة',
       question: q.question,
       options: shuf.map(o => o.text),
       correct: shuf.findIndex(o => o.ok),
@@ -1297,12 +1391,57 @@ function generateUnlimitedQuiz(notify = true) {
     };
   });
 
-  const combined = shuffleArray([...buildPdfQuestions(), ...bankShuffled, ...buildLessonQuestions(quizSettings.catId)]);
-  const targetCount = Math.max(3, Math.min(20, Number(quizSettings.count) || 10));
+  const pool = catId === 'all' ? lib.files : lib.files.filter(f => f.catId === catId);
+  const allTitles = lib.files.map(f => f.title).filter(Boolean);
+  const distractors = [
+    'مقرر الجغرافيا الاقتصادية',
+    'قوانين الوراثة في الأحياء',
+    'تاريخ العمارة القديمة'
+  ];
+
+  const lessonQs = [];
+  pool.forEach(f => {
+    const cat = lib.categories.find(c => c.id === f.catId);
+    const catName = cat ? cat.name : 'المقرر الدراسي';
+    const wrongPool = shuffleArray([...allTitles.filter(t => t !== f.title), ...distractors]).slice(0, 2);
+    const opts = shuffleArray([
+      { text: catName, ok: true },
+      { text: wrongPool[0] || 'قسم خارج المنهج', ok: false },
+      { text: wrongPool[1] || 'مادة غير مقررة', ok: false }
+    ]);
+    lessonQs.push({
+      badge: `🗂️ ${catName}`,
+      question: `ضمن أي قسم يُصنّف درس «${f.title}»؟`,
+      options: opts.map(o => o.text),
+      correct: opts.findIndex(o => o.ok),
+      explain: `الدرس «${f.title}» يتبع لقسم «${catName}».`
+    });
+  });
+
+  return shuffleArray([...bankShuffled, ...lessonQs]);
+}
+
+async function buildAndRenderQuiz(notify = false) {
+  quizSettings.seed = (quizSettings.seed || 1) + 1;
+  writeJson('hudhud_quiz_settings', quizSettings);
+
+  const targetCount = Math.max(3, Math.min(20, Number(quizSettings.count) || 8));
+  let sourcePool = [];
+
+  if (quizSettings.mode === 'file' && quizPdfMeta) {
+    if (quizPdfBase64Cache && !quizPdfDocProxy) {
+      await parsePdfFromBase64(quizPdfBase64Cache);
+    }
+    quizRangeExtractInfo = await extractPagesTextFromPdf(quizSettings.pageFrom, quizSettings.pageTo);
+    sourcePool = generateFocusedPdfQuestions(quizPdfMeta.name, quizRangeExtractInfo);
+  } else {
+    sourcePool = generateSectionQuestions(quizSettings.catId);
+  }
+
   const list = [];
-  if (combined.length > 0) {
+  if (sourcePool.length > 0) {
     while (list.length < targetCount) {
-      const batch = shuffleArray(combined);
+      const batch = shuffleArray(sourcePool);
       for (const item of batch) {
         if (list.length >= targetCount) break;
         list.push({ ...item, qNum: list.length + 1 });
@@ -1313,17 +1452,16 @@ function generateUnlimitedQuiz(notify = true) {
   currentQuizQuestions = list;
   quizAnswers = {};
   quizRecordedCurrentRun = false;
-  if (notify) showToast(`تم توليد اختبار جديد رقم #${quizSettings.seed} (${list.length} أسئلة) ⚡`);
-  if (activeHubTab === 'quiz') renderSmartHub();
-}
 
-function onQuizFilterChange() {
-  const catEl = $('quizCatSelect');
-  const cntEl = $('quizCountSelect');
-  if (catEl) quizSettings.catId = catEl.value;
-  if (cntEl) quizSettings.count = Number(cntEl.value) || 10;
-  writeJson('hudhud_quiz_settings', quizSettings);
-  generateUnlimitedQuiz(true);
+  if (notify) {
+    if (quizSettings.mode === 'file' && quizPdfMeta) {
+      showToast(`تم توليد اختبار من صفحات ${quizSettings.pageFrom}–${quizSettings.pageTo} لملف «${quizPdfMeta.name}» 🎯`);
+    } else {
+      showToast(`تم توليد اختبار جديد #${quizSettings.seed} ⚡`);
+    }
+  }
+
+  if (activeHubTab === 'quiz') renderSmartHub();
 }
 
 function answerQuiz(qIdx, chosenIdx) {
@@ -1353,8 +1491,12 @@ function answerQuiz(qIdx, chosenIdx) {
   if (answeredCount === currentQuizQuestions.length && !quizRecordedCurrentRun) {
     quizRecordedCurrentRun = true;
     const pct = Math.round((scoreCount / currentQuizQuestions.length) * 100);
+    const modeLabel = (quizSettings.mode === 'file' && quizPdfMeta)
+      ? `${quizPdfMeta.name} (ص ${quizSettings.pageFrom}-${quizSettings.pageTo})`
+      : 'اختبار القسم';
     quizHistory.unshift({
       run: quizSettings.seed,
+      label: modeLabel,
       score: scoreCount,
       total: currentQuizQuestions.length,
       pct,
@@ -1383,50 +1525,90 @@ function renderSmartHub() {
     const scoreCount = Object.entries(quizAnswers).filter(([idx, val]) => currentQuizQuestions[Number(idx)]?.correct === val).length;
     const isFinished = currentQuizQuestions.length > 0 && answeredCount === currentQuizQuestions.length;
     const finalPct = currentQuizQuestions.length ? Math.round((scoreCount / currentQuizQuestions.length) * 100) : 0;
+    const isFileMode = quizSettings.mode === 'file';
+
+    const extractStatusText = !quizPdfMeta
+      ? 'ارفع ملف PDF أولاً لتفعيل الأسئلة المركّزة على الملف وتحديد الصفحات.'
+      : (quizRangeExtractInfo.status === 'ok'
+          ? `✅ تم استخراج نص الصفحات (${quizSettings.pageFrom} إلى ${quizSettings.pageTo}) وتوليد أسئلة مباشرة من محتواها.`
+          : (quizPdfBase64Cache
+              ? `ℹ️ تم تحديد نطاق الصفحات (${quizSettings.pageFrom} إلى ${quizSettings.pageTo}) لملف «${quizPdfMeta.name}» (الملف مصوّر أو بدون نص قابل للنسخ، وتم تجهيز أسئلة مركّزة على نطاق الصفحات).`
+              : `ℹ️ الملف «${quizPdfMeta.name}» مسجّل؛ أعد اختياره من جهازك لاستخراج نصوص الصفحات (${quizSettings.pageFrom} إلى ${quizSettings.pageTo}) تلقائياً.`));
 
     container.innerHTML = `
       <div class="panel-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+        <div class="quiz-studio-header">
           <div>
-            <h2 style="margin:0;">🎯 اختبار تدريبي ذكي — جولات غير محدودة</h2>
-            <p style="margin:4px 0 0; color:var(--muted); font-size:13.5px;">ارفع ملف PDF أو اختر القسم والعدد وولّد اختبارات غير محدودة استعداداً ليوم 1/2/2027.</p>
+            <h2 style="margin:0;">🎯 اختبار تدريبي ذكي</h2>
+            <p style="margin:4px 0 0; color:var(--muted); font-size:13.5px;">اختبارات منظمة تركّز على ملف الـ PDF ونطاق الصفحات المحدد دون خلط عشوائي.</p>
           </div>
-          <button type="button" class="btn" onclick="generateUnlimitedQuiz(true)">⚡ اختبار جديد غير محدود</button>
-        </div>
-
-        <div class="quiz-pdf-bar">
-          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-            <button type="button" class="btn small" onclick="$('quizPdfFileInput').click()">📄 إضافة ملف PDF</button>
-            <input type="file" id="quizPdfFileInput" accept=".pdf" hidden onchange="handleQuizPdfUpload(this.files[0])">
-            ${quizPdfMeta
-              ? `<span class="quiz-pdf-chip">📎 ${escapeHtml(quizPdfMeta.name)} (${quizPdfMeta.sizeKb} KB)</span>
-                 ${quizPdfBase64Cache ? `<button type="button" class="btn ghost small" onclick="previewQuizPdf()">👁️ معاينة PDF</button>` : ''}
-                 <button type="button" class="remove-link-btn" onclick="removeQuizPdf()">✕ إزالة</button>`
-              : `<span style="font-size:12.5px; color:var(--muted);">لم يُرفق ملف PDF بعد — اضغط «إضافة ملف PDF» لإرفاق ملزمة أو أسئلة.</span>`
-            }
+          <div class="quiz-mode-switch">
+            <button type="button" class="quiz-mode-btn ${isFileMode ? 'active' : ''}" onclick="setQuizMode('file')">📄 تركيز على ملف PDF</button>
+            <button type="button" class="quiz-mode-btn ${!isFileMode ? 'active' : ''}" onclick="setQuizMode('section')">🗂️ اختبار قسم</button>
           </div>
         </div>
 
-        <div class="quiz-builder-bar">
-          <label style="margin:0;">القسم المستهدف
-            <select id="quizCatSelect" onchange="onQuizFilterChange()">
-              <option value="all" ${quizSettings.catId === 'all' ? 'selected' : ''}>كل الأقسام والدروس</option>
-              ${lib.categories.map(c => `<option value="${c.id}" ${quizSettings.catId === c.id ? 'selected' : ''}>${escapeHtml(c.icon + ' ' + c.name)}</option>`).join('')}
-            </select>
-          </label>
-          <label style="margin:0;">عدد الأسئلة
-            <select id="quizCountSelect" onchange="onQuizFilterChange()">
-              <option value="5" ${Number(quizSettings.count) === 5 ? 'selected' : ''}>5 أسئلة</option>
-              <option value="10" ${Number(quizSettings.count) === 10 ? 'selected' : ''}>10 أسئلة</option>
-              <option value="15" ${Number(quizSettings.count) === 15 ? 'selected' : ''}>15 سؤالاً</option>
-              <option value="20" ${Number(quizSettings.count) === 20 ? 'selected' : ''}>20 سؤالاً</option>
-            </select>
-          </label>
-          <button type="button" class="btn ghost" onclick="generateUnlimitedQuiz(true)">🔀 خلط الأسئلة الآن</button>
-        </div>
+        ${isFileMode ? `
+          <div class="quiz-pdf-box">
+            <div class="quiz-pdf-top">
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <button type="button" class="btn small" onclick="$('quizPdfFileInput').click()">📄 اختيار / تغيير ملف PDF</button>
+                <input type="file" id="quizPdfFileInput" accept=".pdf" hidden onchange="handleQuizPdfUpload(this.files[0])">
+                ${quizPdfMeta
+                  ? `<span class="quiz-pdf-chip">📎 ${escapeHtml(quizPdfMeta.name)} (${quizPdfMeta.sizeKb} KB${quizPdfTotalPages ? ` • ${quizPdfTotalPages} ص` : ''})</span>
+                     ${quizPdfBase64Cache ? `<button type="button" class="btn ghost small" onclick="previewQuizPdf()">👁️ معاينة الملف</button>` : ''}
+                     <button type="button" class="remove-link-btn" onclick="removeQuizPdf()">✕ إزالة الملف</button>`
+                  : `<span style="font-size:12.5px; color:var(--muted);">لم يتم اختيار ملف PDF بعد.</span>`
+                }
+              </div>
+            </div>
+
+            <div class="quiz-page-range-grid">
+              <label style="margin:0;">من صفحة
+                <input type="number" id="quizPageFrom" min="1" ${quizPdfTotalPages ? `max="${quizPdfTotalPages}"` : ''} value="${quizSettings.pageFrom}">
+              </label>
+              <label style="margin:0;">إلى صفحة
+                <input type="number" id="quizPageTo" min="1" ${quizPdfTotalPages ? `max="${quizPdfTotalPages}"` : ''} value="${quizSettings.pageTo}">
+              </label>
+              <label style="margin:0;">عدد الأسئلة
+                <select id="quizCountSelect">
+                  <option value="5" ${Number(quizSettings.count) === 5 ? 'selected' : ''}>5 أسئلة</option>
+                  <option value="8" ${Number(quizSettings.count) === 8 ? 'selected' : ''}>8 أسئلة</option>
+                  <option value="12" ${Number(quizSettings.count) === 12 ? 'selected' : ''}>12 سؤالاً</option>
+                  <option value="15" ${Number(quizSettings.count) === 15 ? 'selected' : ''}>15 سؤالاً</option>
+                </select>
+              </label>
+              <button type="button" class="btn" onclick="applyPageRangeAndGenerate()">⚡ توليد من الصفحات</button>
+            </div>
+
+            <div class="quiz-excerpt-preview">
+              <div style="font-weight:700; color:var(--ink); margin-bottom:4px;">${escapeHtml(extractStatusText)}</div>
+              ${quizRangeExtractInfo.text
+                ? `<div>${escapeHtml(quizRangeExtractInfo.text.slice(0, 320))}${quizRangeExtractInfo.text.length > 320 ? '...' : ''}</div>`
+                : ''}
+            </div>
+          </div>
+        ` : `
+          <div class="quiz-builder-bar">
+            <label style="margin:0;">القسم المحدد
+              <select id="quizCatSelect" onchange="quizSettings.catId = this.value; writeJson('hudhud_quiz_settings', quizSettings); buildAndRenderQuiz(true);">
+                <option value="all" ${quizSettings.catId === 'all' ? 'selected' : ''}>كل الأقسام</option>
+                ${lib.categories.map(c => `<option value="${c.id}" ${quizSettings.catId === c.id ? 'selected' : ''}>${escapeHtml(c.icon + ' ' + c.name)}</option>`).join('')}
+              </select>
+            </label>
+            <label style="margin:0;">عدد الأسئلة
+              <select id="quizCountSelect" onchange="quizSettings.count = Number(this.value) || 8; writeJson('hudhud_quiz_settings', quizSettings); buildAndRenderQuiz(true);">
+                <option value="5" ${Number(quizSettings.count) === 5 ? 'selected' : ''}>5 أسئلة</option>
+                <option value="8" ${Number(quizSettings.count) === 8 ? 'selected' : ''}>8 أسئلة</option>
+                <option value="12" ${Number(quizSettings.count) === 12 ? 'selected' : ''}>12 سؤالاً</option>
+              </select>
+            </label>
+            <button type="button" class="btn" onclick="buildAndRenderQuiz(true)">⚡ اختبار جديد</button>
+          </div>
+        `}
 
         <div class="quiz-meta-strip">
-          <span>رقم الاختبار: #${quizSettings.seed}</span>
+          <span>${isFileMode && quizPdfMeta ? `المصدر: ${escapeHtml(quizPdfMeta.name)} (ص ${quizSettings.pageFrom}–${quizSettings.pageTo})` : `الجولة #${quizSettings.seed}`}</span>
           <span id="quizLiveScore">المجاب: ${answeredCount} / ${currentQuizQuestions.length} | الدرجة: ${scoreCount}</span>
         </div>
 
@@ -1435,8 +1617,9 @@ function renderSmartHub() {
             const chosen = quizAnswers[qIdx];
             const hasChosen = chosen !== undefined;
             return `
-              <div style="background:var(--bg); border:1px solid var(--line); border-radius:16px; padding:16px;">
-                <div style="font-weight:700; margin-bottom:10px;">${qIdx + 1}. ${escapeHtml(q.question)}</div>
+              <div class="quiz-q-card">
+                ${q.badge ? `<span class="quiz-q-badge">${escapeHtml(q.badge)}</span>` : ''}
+                <div style="font-weight:700; margin-bottom:10px; font-size:15px;">${qIdx + 1}. ${escapeHtml(q.question)}</div>
                 <div style="display:flex; flex-direction:column; gap:8px;" id="qOpts_${qIdx}">
                   ${q.options.map((opt, oIdx) => {
                     let cls = 'quiz-option-btn';
@@ -1457,22 +1640,22 @@ function renderSmartHub() {
 
         ${isFinished ? `
           <div class="quiz-result-box">
-            <div style="font-size:20px; font-weight:700;">نتيجة الاختبار #${quizSettings.seed}: ${scoreCount} من ${currentQuizQuestions.length} (${finalPct}%)</div>
+            <div style="font-size:20px; font-weight:700;">نتيجة الاختبار: ${scoreCount} من ${currentQuizQuestions.length} (${finalPct}%)</div>
             <div style="font-size:13.5px; color:var(--muted); margin-top:6px;">
-              ${finalPct >= 80 ? 'ممتاز جداً! مستوى جاهزيتك عالٍ جداً.' : (finalPct >= 50 ? 'جيد جداً، جرّب اختباراً جديداً لتثبيت المعلومات أكثر.' : 'لا بأس؛ راجع الدرس أو ملف الـ PDF ثم ولّد اختباراً جديداً.')}
+              ${finalPct >= 80 ? 'ممتاز جداً! مستوى ممتاز في هذا النطاق.' : (finalPct >= 50 ? 'جيد جداً، جرّب جولة جديدة لتثبيت المعلومات أكثر.' : 'راجع الصفحات المحددة ثم أعد الاختبار بثقة.')}
             </div>
-            <button type="button" class="btn" style="margin-top:12px;" onclick="generateUnlimitedQuiz(true)">⚡ ابدأ اختباراً جديداً الآن</button>
+            <button type="button" class="btn" style="margin-top:12px;" onclick="buildAndRenderQuiz(true)">⚡ جولة جديدة</button>
           </div>
         ` : ''}
 
         ${quizHistory.length > 0 ? `
           <div style="margin-top:18px; padding-top:14px; border-top:1px solid var(--line);">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <strong style="font-size:13.5px;">📊 سجل آخر المحاولات</strong>
+              <strong style="font-size:13.5px;">📊 سجل المحاولات السابقة</strong>
               <button type="button" class="remove-link-btn" onclick="clearQuizHistory()">مسح السجل</button>
             </div>
             <div class="quiz-history-list">
-              ${quizHistory.map(h => `<span class="quiz-history-chip">اختبار #${h.run}: ${h.score}/${h.total} (${h.pct}%) • ${escapeHtml(h.time)}</span>`).join('')}
+              ${quizHistory.map(h => `<span class="quiz-history-chip">${escapeHtml(h.label || ('اختبار #' + h.run))}: ${h.score}/${h.total} (${h.pct}%) • ${escapeHtml(h.time)}</span>`).join('')}
             </div>
           </div>
         ` : ''}
@@ -1640,7 +1823,6 @@ function updateViewerDoneBtn() {
   btn.className = isDone ? 'btn success small' : 'btn ghost small';
 }
 
-/* تحضير نسخة خفيفة لقاعدة البيانات كي لا تتضخم بملفات كبيرة */
 function buildLightFirebasePayload() {
   const lightFiles = (lib.files || []).map(f => {
     if (f.idbStored) {
@@ -2303,11 +2485,6 @@ async function saveFile() {
   else reader.readAsDataURL(pendingFileData);
 }
 
-/* ======================================================
-   الأجزاء الناقصة في النسخة الأصلية (كانت دوال مستخدمة
-   لكنها غير معرّفة): closeModal / goHome / deleteFile
-   + مراقبة حالة تسجيل الدخول + التشغيل الأولي
-   ====================================================== */
 function closeModal() {
   document.body.classList.remove('sheet-open');
   editingFileId = null;
