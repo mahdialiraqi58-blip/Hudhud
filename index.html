@@ -2337,7 +2337,251 @@ firebase.auth().onAuthStateChanged((user) => {
   isAdmin = Boolean(user);
   render();
 });
+
+</script>
+<script>
+/* ===== الجزء 1: hudhud-upgrade ===== */
+(() => {
+const CFG = { AI_ENDPOINT: '' /* رابط Cloud Function بعد النشر */ };
+const load = src => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.appendChild(s); });
+const storageReady = load('https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js');
+const pdfReady = load('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js').then(() => {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+});
+const clean = s => String(s ?? '').replace(/[<>&"'`\\]/g, '');
+const blobB64 = b => new Promise(ok => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1]); r.readAsDataURL(b); });
+const b64Blob = (b64, type) => new Blob([Uint8Array.from(atob(b64), c => c.charCodeAt(0))], { type });
+const remoteUrls = {};
+let synced = {};
+
+const _slf = saveLargeFileContent;
+window.saveLargeFileContent = async (id, type, content) => {
+  await _slf(id, type, content).catch(() => {});
+  await storageReady;
+  const blob = type === 'html' ? new Blob([content], { type: 'text/html;charset=utf-8' }) : b64Blob(content, 'application/pdf');
+  const ref = firebase.storage().ref('files/' + id);
+  await ref.put(blob);
+  remoteUrls[id] = await ref.getDownloadURL();
+};
+window.buildLightFirebasePayload = () => ({
+  ...lib,
+  files: (lib.files || []).map(f => {
+    if (remoteUrls[f.id]) f.remoteUrl = remoteUrls[f.id];
+    if (f.idbStored || f.remoteUrl) { const { content, ...rest } = f; return rest; }
+    return f;
+  })
+});
+const _ov = openViewer;
+window.openViewer = async id => {
+  const f = lib.files.find(x => x.id === id);
+  if (f && f.remoteUrl && !f.content) {
+    try {
+      const r = await fetch(f.remoteUrl);
+      f.content = f.type === 'html' ? await r.text() : await blobB64(await r.blob());
+    } catch (e) { return showToast('تعذر جلب الملف من السحابة (تحقق من إعداد CORS)', 'error'); }
+  }
+  return _ov(id);
+};
+
+const sanitize = () => {
+  lib.categories = (lib.categories || []).map(c => ({ ...c, id: clean(c.id), name: clean(c.name), icon: clean([...String(c.icon || '📁')].slice(0, 4).join('')) }));
+  lib.files = (lib.files || []).map(f => ({ ...f, catId: clean(f.catId), tags: Array.isArray(f.tags) ? f.tags.map(clean) : [] }));
+};
+const _sc = saveCategory;
+window.saveCategory = () => { $('newCatName').value = clean($('newCatName').value); $('newCatIcon').value = clean($('newCatIcon').value); _sc(); };
+const _sf = saveFile;
+window.saveFile = () => { $('fileTags').value = $('fileTags').value.split(',').map(clean).join(','); return _sf(); };
+
+window.saveData = async () => {
+  const light = buildLightFirebasePayload();
+  writeJson('hudhud_lib_cache', light);
+  const u = firebase.auth().currentUser;
+  if (!isAdmin || !u) return;
+  try {
+    const cur = {}, upd = {};
+    light.files.forEach(f => { cur[f.id] = JSON.stringify(f); if (synced[f.id] !== cur[f.id]) upd['filesMap/' + f.id] = f; });
+    Object.keys(synced).forEach(id => { if (!(id in cur)) upd['filesMap/' + id] = null; });
+    upd.categories = light.categories; upd.settings = light.settings; upd.files = null;
+    const t = await u.getIdToken();
+    const r = await fetch(FIREBASE_URL + 'data.json?auth=' + encodeURIComponent(t), { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(upd) });
+    if (!r.ok) throw new Error(r.status);
+    synced = cur;
+  } catch (e) { showToast('تم الحفظ محلياً فقط؛ تحقق من الدخول وصلاحيات القاعدة', 'error'); }
+};
+
+window.loadData = async () => {
+  const cached = localStorage.getItem('hudhud_lib_cache');
+  if (cached) { try { lib = JSON.parse(cached); sanitize(); $('siteTitle').textContent = lib.settings?.siteName || 'هدهد'; render(); } catch (e) {} }
+  try {
+    const data = await (await fetch(FIREBASE_URL + 'data.json')).json();
+    if (!data) { if (!cached) { lib.categories = DEFAULT_CATS; render(); } return; }
+    const remote = data.filesMap ? Object.values(data.filesMap) : Object.values(data.files || {}).filter(Boolean);
+    const local = new Map((lib.files || []).map(f => [f.id, f]));
+    lib.files = remote.map(f => { const l = local.get(f.id); return l && l.content && (f.idbStored || f.remoteUrl) ? { ...f, content: l.content } : f; });
+    lib.categories = data.categories && data.categories.length ? data.categories : DEFAULT_CATS;
+    if (data.settings) lib.settings = data.settings;
+    sanitize();
+    synced = {}; buildLightFirebasePayload().files.forEach(f => { synced[f.id] = JSON.stringify(f); });
+    writeJson('hudhud_lib_cache', buildLightFirebasePayload());
+    $('siteTitle').textContent = lib.settings.siteName || 'هدهد';
+    render(); checkUrlHash();
+  } catch (e) {
+    if (!cached) $('content').innerHTML = '<p style="text-align:center;color:var(--danger);margin-top:40px">لا يوجد اتصال، ولم تزر الموقع سابقاً.</p>';
+  }
+};
+
+firebase.auth().onAuthStateChanged(async u => {
+  if (!u) { try { await firebase.auth().signInAnonymously(); } catch (e) {} return; }
+  isAdmin = u.providerData.some(p => p.providerId === 'password');
+  render(); pullProgress();
+});
+const collect = () => {
+  const sess = {};
+  for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k.startsWith('hudhud_sessions_')) sess[k] = +localStorage.getItem(k) || 0; }
+  return { favs: readJson('favs', []), completed: readJson('completed', []), comp: readJson('hudhud_comp_log', {}), rev: readJson('hudhud_reviews', {}), wrong: readJson('hudhud_wrong', {}), sess };
+};
+const api = async (path, opt) => { const t = await firebase.auth().currentUser.getIdToken(); return (await fetch(FIREBASE_URL + path + '.json?auth=' + encodeURIComponent(t), opt)).json(); };
+let lastSent = '';
+async function pushProgress() {
+  const u = firebase.auth().currentUser; if (!u) return;
+  const body = JSON.stringify(collect()); if (body === lastSent) return;
+  try { await api('users/' + u.uid + '/progress', { method: 'PUT', body }); lastSent = body; } catch (e) {}
+}
+async function pullProgress() {
+  const u = firebase.auth().currentUser; if (!u) return;
+  try {
+    const r = await api('users/' + u.uid + '/progress');
+    if (r) {
+      const L = collect(), maxMap = (a = {}, b = {}) => { const o = { ...a }; for (const k in b) o[k] = Math.max(o[k] || 0, b[k]); return o; };
+      favs = [...new Set([...(r.favs || []), ...L.favs])]; completed = [...new Set([...(r.completed || []), ...L.completed])];
+      writeJson('favs', favs); writeJson('completed', completed);
+      writeJson('hudhud_comp_log', maxMap(r.comp, L.comp));
+      writeJson('hudhud_reviews', { ...(r.rev || {}), ...L.rev }); writeJson('hudhud_wrong', { ...(r.wrong || {}), ...L.wrong });
+      const s = maxMap(r.sess, L.sess); for (const k in s) localStorage.setItem(k, String(s[k]));
+      todaySessions = parseInt(localStorage.getItem(todayKey) || '0', 10);
+      render(); if (activeHubTab === 'cmd') renderCmd();
+    }
+    pushProgress();
+  } catch (e) {}
+}
+setInterval(pushProgress, 10000);
+document.addEventListener('visibilitychange', () => { if (document.hidden) pushProgress(); });
+window.linkGoogle = async () => {
+  const u = firebase.auth().currentUser, p = new firebase.auth.GoogleAuthProvider();
+  try { await u.linkWithPopup(p); showToast('تم ربط حسابك ✅ تقدمك صار محفوظ'); pushProgress(); }
+  catch (e) {
+    if (e.code === 'auth/credential-already-in-use') { await firebase.auth().signInWithCredential(e.credential); pullProgress(); }
+    else showToast('تعذر الربط بحساب Google', 'error');
+  }
+};
+const gb = document.createElement('button');
+gb.className = 'install-app-btn'; gb.textContent = '☁️ حفظ تقدمي'; gb.onclick = () => linkGoogle();
+document.querySelector('.controls').prepend(gb);
+
+async function pdfText(b64) {
+  await pdfReady;
+  const pdf = await pdfjsLib.getDocument({ data: Uint8Array.from(atob(b64), c => c.charCodeAt(0)) }).promise;
+  let t = '';
+  for (let i = 1; i <= Math.min(pdf.numPages, 30) && t.length < 12000; i++) t += (await (await pdf.getPage(i)).getTextContent()).items.map(x => x.str).join(' ') + '\n';
+  return t.slice(0, 12000);
+}
+async function aiQuestions(text, n) {
+  const t = await firebase.auth().currentUser.getIdToken();
+  const r = await fetch(CFG.AI_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify({ text, count: n }) });
+  return (await r.json()).questions || [];
+}
+const W = () => readJson('hudhud_wrong', {});
+function injectWrong() {
+  Object.values(W()).filter(x => x.due <= Date.now()).slice(0, 3).forEach((x, i) => { currentQuizQuestions[i] = { ...x.q, qNum: i + 1, _wk: x.k }; });
+}
+const _gen = generateUnlimitedQuiz;
+window.generateUnlimitedQuiz = async (notify = true) => {
+  _gen(notify); injectWrong(); if (activeHubTab === 'quiz') renderSmartHub();
+  if (!CFG.AI_ENDPOINT) return;
+  const src = quizPdfBase64Cache || (lib.files.find(f => f.type === 'pdf' && f.content && (quizSettings.catId === 'all' || f.catId === quizSettings.catId)) || {}).content;
+  if (!src) return;
+  try {
+    showToast('جاري توليد أسئلة من محتوى الـ PDF 🤖');
+    const qs = await aiQuestions(await pdfText(src), quizSettings.count);
+    if (qs.length) { currentQuizQuestions = qs.map((q, i) => ({ ...q, qNum: i + 1 })); quizAnswers = {}; quizRecordedCurrentRun = false; injectWrong(); if (activeHubTab === 'quiz') renderSmartHub(); }
+  } catch (e) { showToast('تعذر التوليد الذكي، عرضنا اختباراً عادياً', 'error'); }
+};
+const _ans = answerQuiz;
+window.answerQuiz = (i, c) => {
+  if (quizAnswers[i] !== undefined) return;
+  const q = currentQuizQuestions[i]; _ans(i, c); if (!q) return;
+  const w = W(), k = q._wk || q.question;
+  if (c !== q.correct) w[k] = { k, q: { question: q.question, options: q.options, correct: q.correct, explain: q.explain }, step: 0, due: Date.now() + DAY };
+  else if (w[k]) { w[k].step++; if (w[k].step >= REVIEW_STEPS.length) delete w[k]; else w[k].due = Date.now() + REVIEW_STEPS[w[k].step] * DAY; }
+  writeJson('hudhud_wrong', w);
+};
+
 loadData();
+})();
+
+/* ===== الجزء 2: الإضافات ===== */
+(() => {
+let endAt = 0, wake = null;
+const lock = () => navigator.wakeLock?.request('screen').then(w => wake = w).catch(() => {});
+const _tt = toggleTimer;
+window.toggleTimer = function () {
+  const running = !!timerInterval;
+  _tt();
+  if (running) { endAt = 0; wake?.release?.(); wake = null; return; }
+  endAt = Date.now() + remainingSec * 1000;
+  lock();
+};
+['resetTimer', 'switchTimerMode'].forEach(n => { const o = window[n]; window[n] = () => { endAt = 0; o(); }; });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden || !endAt || !timerInterval) return;
+  remainingSec = Math.max(1, Math.ceil((endAt - Date.now()) / 1000));
+  updateTimerUI(); lock();
+});
+
+const TC = { light: '#4f46e5', dark: '#070d19', comfort: '#f5efe4' };
+const _at = applyTheme;
+window.applyTheme = (t, n) => { _at(t, n); document.querySelector('meta[name=theme-color]').content = TC[t]; };
+applyTheme(currentTheme, false);
+
+const _ov2 = openViewer;
+window.openViewer = id => {
+  const f = lib.files.find(x => x.id === id);
+  if (f && f.type === 'youtube' && f.content) {
+    const m = f.content.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/);
+    if (m) f.content = 'https://www.youtube.com/watch?v=' + m[1];
+  }
+  return _ov2(id);
+};
+
+const _rc = renderCmd;
+window.renderCmd = () => {
+  _rc();
+  if (activeHubTab !== 'cmd') return;
+  const n = Object.keys(readJson('hudhud_wrong', {})).length;
+  $('smartHubContainer').insertAdjacentHTML('beforeend',
+    `<div class="panel-card"><h3 style="margin:0 0 8px">🧩 نقاط ضعفك</h3>
+     <p style="margin:0 0 10px;color:var(--muted)">${n ? `عندك ${n} سؤال غلطت بيه، ويرجعون لك بالاختبارات حسب جدول المراجعة.` : 'ما غلطت بأي سؤال لحد الآن، استمر 👏'}</p>
+     ${n ? `<button class="btn small" onclick="reviewWrongNow()">🎯 تدرّب عليها الآن</button>` : ''}</div>`);
+};
+window.reviewWrongNow = () => {
+  const w = readJson('hudhud_wrong', {});
+  Object.values(w).forEach(x => x.due = 0);
+  writeJson('hudhud_wrong', w);
+  switchHubTab('quiz'); generateUnlimitedQuiz(true);
+};
+
+const nb = document.createElement('button');
+nb.className = 'btn ghost small'; nb.textContent = '📝 ملاحظاتي';
+nb.onclick = () => {
+  if (!currentViewerFile) return;
+  const k = 'hudhud_note_' + currentViewerFile.id;
+  const v = prompt('ملاحظتك الخاصة على هذا الدرس:', localStorage.getItem(k) || '');
+  if (v === null) return;
+  if (v.trim()) localStorage.setItem(k, v.trim()); else localStorage.removeItem(k);
+  showToast('تم حفظ ملاحظتك 📝');
+};
+document.querySelector('.vactions').prepend(nb);
+})();
 </script>
 </body>
 </html>
