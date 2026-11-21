@@ -187,32 +187,79 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
 .logic-block-card { background: var(--bg); border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
 .formula-pill { font-family: monospace; direction: ltr; text-align: center; background: var(--tint); color: var(--accent); padding: 8px 12px; border-radius: 12px; font-weight: 700; font-size: 13.5px; }
 
+/* مسرح المحاكاة التفاعلية بنمط الخطوات */
 .sim-stage {
-  margin-top: 14px;
-  background: #0b1222;
+  margin-top: 16px;
+  background: #09101f;
   color: #f8fafc;
   border: 1px solid rgba(129, 140, 248, 0.35);
-  border-radius: 18px;
-  padding: 16px;
+  border-radius: 20px;
+  padding: 18px;
 }
-.sim-img-thumb {
-  max-height: 150px;
+.sim-canvas-box {
+  background: #10192d;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+.sim-uploaded-img {
+  max-height: 160px;
   max-width: 100%;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.16);
   display: block;
-  margin: 10px auto;
+  margin: 0 auto 10px;
   object-fit: contain;
 }
-@keyframes pulseFlow {
+.sim-desc-box {
+  background: #131e36;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-bottom: 12px;
+}
+.steps-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.step-chip {
+  background: #17233d;
+  color: #cbd5e1;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 11px;
+  padding: 7px 12px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.step-chip.active {
+  background: #10b981;
+  color: #062118;
+  border-color: #34d399;
+}
+.ctrl-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+@keyframes dashStream {
   0% { stroke-dashoffset: 0; }
-  100% { stroke-dashoffset: -72; }
+  100% { stroke-dashoffset: -64; }
 }
-.animated-wire {
-  stroke-dasharray: 12 6;
-  animation: pulseFlow var(--flow-dur, 1.2s) linear infinite;
+.stream-line {
+  stroke-dasharray: 10 6;
+  animation: dashStream var(--stream-dur, 1.1s) linear infinite;
 }
-.animated-wire.paused {
+.stream-line.paused {
   animation-play-state: paused;
 }
 
@@ -598,6 +645,10 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 
   let studioAttach = { imageDataUrl: '', imageName: '', pdfName: '', extUrl: '' };
   let lastGeneratedSimHtml = '';
+  let activeSimSteps = [];
+  let currentSimStepIdx = 0;
+  let simAutoTimer = null;
+  let simPaused = false;
 
   const DEFAULT_LOGIC_BLOCKS = [
     {
@@ -800,6 +851,10 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 
   function switchHubTab(tabName) {
     activeHubTab = tabName;
+    if (tabName !== 'logic' && simAutoTimer) {
+      clearInterval(simAutoTimer);
+      simAutoTimer = null;
+    }
     ['lessons', 'logic', 'quiz', 'diag'].forEach(t => {
       const btn = document.getElementById('tab-' + t);
       if (btn) btn.classList.toggle('active', t === tabName);
@@ -873,6 +928,40 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     }
   }
 
+  function deriveStepsFromCommand(title, cmdText) {
+    const combined = (title + ' ' + cmdText).toLowerCase();
+    if (combined.includes('مولد') || combined.includes('توازي') || combined.includes('محرك')) {
+      return [
+        { label: '1. البداية', desc: 'المفاتيح مفتوحة، فلا يمر تيار في الدائرة والآلتان ساكنتان.', activeLines: [], speedLabel: '0 rpm' },
+        { label: '2. تيار مجال المحرك', desc: 'إغلاق مفتاح المحرك يمرر تيار المجال لتكوين الفيض المغناطيسي للمحرك.', activeLines: ['fieldM'], speedLabel: '300 rpm' },
+        { label: '3. تيار المنتج', desc: 'تغذية منتج المحرك يولّد عزم الدوران ويبدأ المحرك بالتسارع.', activeLines: ['fieldM', 'armM'], speedLabel: '950 rpm' },
+        { label: '4. دوران المولد', desc: 'المحرك يدير عضو إنتاج المولد عبر الوصلة الميكانيكية بالسرعة الاسمية.', activeLines: ['fieldM', 'armM', 'shaft'], speedLabel: '1500 rpm' },
+        { label: '5. تيار مجال المولد', desc: 'تغذية ملف مجال المولد المستقل يثبّت الفيض المغناطيسي للمولد.', activeLines: ['fieldM', 'armM', 'shaft', 'fieldG'], speedLabel: '1500 rpm' },
+        { label: '6. جهد المولد', desc: 'تتولّد القوة الدافعة الكهربائية E_g ويظهر الجهد على أطراف المولد.', activeLines: ['fieldM', 'armM', 'shaft', 'fieldG', 'outG'], speedLabel: '1500 rpm' }
+      ];
+    }
+
+    const customLines = cmdText
+      .split(/\n|،|,| ثم | وبعدها /)
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    if (customLines.length >= 2) {
+      return customLines.slice(0, 6).map((line, i) => ({
+        label: `${i + 1}. خطوة ${i + 1}`,
+        desc: line,
+        activeLines: ['fieldM', 'armM', 'shaft', 'fieldG', 'outG'].slice(0, i + 1),
+        speedLabel: `${(i + 1) * 250} rpm`
+      }));
+    }
+
+    return [
+      { label: '1. البداية', desc: `تهيئة دائرة «${title}» وتحضير العناصر والمفاتيح.`, activeLines: [], speedLabel: '0%' },
+      { label: '2. بدء التدفق', desc: `تنفيذ الأمر: ${cmdText || 'بدء سريان الإشارة/التيار'}.`, activeLines: ['fieldM', 'armM'], speedLabel: '50%' },
+      { label: '3. التشغيل الكامل', desc: 'استقرار المسار وبلوغ الحالة التشغيلية المطلوبة.', activeLines: ['fieldM', 'armM', 'shaft', 'fieldG', 'outG'], speedLabel: '100%' }
+    ];
+  }
+
   function renderSmartHub() {
     const container = document.getElementById('smartHubContainer');
     if (!container) return;
@@ -880,8 +969,8 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     if (activeHubTab === 'logic') {
       container.innerHTML = `
         <div class="panel-card">
-          <h2 style="margin:0 0 8px;">🧠 كتل المنطق والمعادلات + استوديو المحاكاة والأنميشن HTML</h2>
-          <p style="margin:0 0 10px; color:var(--muted); font-size:13.5px;">أرفق صورة أو ملف PDF أو رابطاً كهربائياً، واكتب أمرك لتحويله إلى أنميشن HTML تفاعلي أو كتلة حفظ سريعة.</p>
+          <h2 style="margin:0 0 8px;">🧠 كتل المنطق والمعادلات + مولد الأنميشن الخطوي التفاعلي</h2>
+          <p style="margin:0 0 10px; color:var(--muted); font-size:13.5px;">أرفق صورة مخطط أو ملف PDF أو رابطاً خارجياً، واكتب أمرك ليحوّله إلى أنميشن خطوات متحرك بأزرار السابق والتالي.</p>
 
           <div class="attach-toolbar">
             <button type="button" class="attach-btn ${studioAttach.imageName ? 'has-file' : ''}" onclick="document.getElementById('studioImgInput').click()">🖼️ إضافة صورة</button>
@@ -893,16 +982,16 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
           <div id="attachPreviewStrip" class="attach-preview-strip"></div>
 
           <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:10px;">
-            <input type="text" id="lbTitleInput" placeholder="عنوان الموضوع أو الملف (مثلاً: مولد تغذية منفصلة)">
+            <input type="text" id="lbTitleInput" placeholder="عنوان الموضوع (مثلاً: مولد تغذية منفصلة يدار بمحرك توازي)">
             <input type="text" id="lbFormulaInput" placeholder="المعادلة أو الرمز (مثلاً: E_g = K · Φ · n)" dir="ltr">
           </div>
 
-          <textarea id="lbCommandInput" style="margin-top:10px;" placeholder="اكتب الأمر هنا (مثلاً: سوّه أنميشن HTML يوضح حركة التيار والمجال، أو قسّمه إلى خطوات منطقية للحفظ)..."></textarea>
+          <textarea id="lbCommandInput" style="margin-top:10px;" placeholder="اكتب الأمر هنا (مثلاً: سوّه أنميشن خطوات لمسار التيار والسرعة من البداية إلى جهد المولد)..."></textarea>
 
           <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
-            <button class="btn small" onclick="runCommandSimulation('html')">🎬 أنميشن HTML تفاعلي</button>
-            <button class="btn ghost small" onclick="runCommandSimulation('logic')">🧩 تحويل إلى كتلة حفظ منطقية</button>
-            <button class="btn ghost small" id="saveSimAsLessonBtn" style="display:none;" onclick="saveGeneratedSimToLibrary()">💾 حفظ الأنيميشن كدرس HTML</button>
+            <button type="button" class="btn small" onclick="runCommandSimulation('html')">🎬 أنميشن HTML تفاعلي</button>
+            <button type="button" class="btn ghost small" onclick="runCommandSimulation('logic')">🧩 تحويل إلى كتلة حفظ منطقية</button>
+            <button type="button" class="btn ghost small" id="saveSimAsLessonBtn" style="display:none;" onclick="saveGeneratedSimToLibrary()">💾 حفظ الأنيميشن كدرس HTML</button>
           </div>
 
           <div id="simStageBox" class="sim-stage" style="display:none;"></div>
@@ -983,62 +1072,13 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     }
   }
 
-  function buildStandaloneHtmlDoc(title, formula, cmdText, imgUrl, pdfName, extUrl) {
-    const imgBlock = imgUrl
-      ? `<div style="text-align:center; margin:12px 0;"><img src="${imgUrl}" style="max-width:100%; max-height:190px; border-radius:12px; border:1px solid #334155;"></div>`
-      : '';
-    const extraInfo = [
-      pdfName ? `📄 PDF: ${pdfName}` : '',
-      extUrl ? `🔗 رابط: ${extUrl}` : ''
-    ].filter(Boolean).join(' | ');
-
-    return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><style>
-      body{margin:0;font-family:"IBM Plex Sans Arabic",sans-serif;background:#0b1222;color:#f8fafc;padding:18px;}
-      .hdr{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
-      .pill{background:#312e81;color:#e0e7ff;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:700;}
-      .cmd{background:#111a2e;padding:10px 12px;border-radius:12px;font-size:13px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.08);}
-      .ctrl{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:13px;}
-      svg{width:100%;height:140px;background:#111a2e;border-radius:14px;border:1px solid rgba(255,255,255,0.08);}
-      @keyframes flowMove{0%{stroke-dashoffset:0}100%{stroke-dashoffset:-72}}
-      .wire{stroke-dasharray:12 6;animation:flowMove 1.2s linear infinite;}
-    </style></head><body>
-      <div class="hdr"><strong>🎬 ${escapeHtml(title)}</strong><span class="pill">${escapeHtml(formula)}</span></div>
-      <div class="cmd"><strong>الأمر:</strong> ${escapeHtml(cmdText)}</div>
-      ${imgBlock}
-      <div class="ctrl">
-        <span>سرعة الحركة: <b id="spdTxt">60%</b></span>
-        <input id="spdSlider" type="range" min="15" max="100" value="60" style="flex:1;">
-        <button id="pauseBtn" style="padding:6px 12px;border:0;border-radius:8px;background:#4f46e5;color:#fff;font-weight:700;cursor:pointer;">إيقاف/تشغيل</button>
-      </div>
-      <svg id="simSvg" viewBox="0 0 420 140">
-        <rect x="30" y="25" width="360" height="82" rx="18" fill="none" stroke="#818cf8" stroke-width="3.5" class="wire" id="wireRect"/>
-        <circle cx="210" cy="66" r="22" fill="#f59e0b"/>
-        <text x="210" y="71" text-anchor="middle" fill="#0f172a" font-weight="bold" font-size="13">M / I</text>
-        <text x="210" y="128" text-anchor="middle" fill="#94a3b8" font-size="11">${escapeHtml(extraInfo || 'محاكاة حركة التيار والمجال')}</text>
-      </svg>
-      <script>
-        const sl = document.getElementById('spdSlider');
-        const tx = document.getElementById('spdTxt');
-        const wr = document.getElementById('wireRect');
-        const pb = document.getElementById('pauseBtn');
-        let paused = false;
-        sl.addEventListener('input', () => {
-          tx.textContent = sl.value + '%';
-          const dur = Math.max(0.35, (2.2 - (Number(sl.value)/100)*1.7)).toFixed(2) + 's';
-          wr.style.animationDuration = dur;
-        });
-        pb.addEventListener('click', () => {
-          paused = !paused;
-          wr.style.animationPlayState = paused ? 'paused' : 'running';
-        });
-      <\/script>
-    </body></html>`;
-  }
-
   function runCommandSimulation(mode) {
-    const title = document.getElementById('lbTitleInput').value.trim() || 'مخطط وأنميشن دائرة / مفهوم';
-    const formula = document.getElementById('lbFormulaInput').value.trim() || 'V = I · R';
-    const cmdText = document.getElementById('lbCommandInput').value.trim() || 'أنميشن يوضح حركة التدفق والتحكم بالسرعة والجهد';
+    const titleEl = document.getElementById('lbTitleInput');
+    const formulaEl = document.getElementById('lbFormulaInput');
+    const cmdEl = document.getElementById('lbCommandInput');
+    const title = (titleEl && titleEl.value.trim()) || 'مولد تيار مستمر ذو تغذية منفصلة يدار بمحرك توازي';
+    const formula = (formulaEl && formulaEl.value.trim()) || 'E_g = K · Φ · n';
+    const cmdText = (cmdEl && cmdEl.value.trim()) || 'رسم متحرك خطوة بخطوة لمسار التيار والسرعة في الدائرة';
 
     if (mode === 'logic') {
       const attachSummary = [
@@ -1065,68 +1105,155 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
       return;
     }
 
+    activeSimSteps = deriveStepsFromCommand(title, cmdText);
+    currentSimStepIdx = 0;
+    simPaused = false;
+
     const stage = document.getElementById('simStageBox');
     const saveBtn = document.getElementById('saveSimAsLessonBtn');
+    if (!stage) return;
     stage.style.display = 'block';
     if (saveBtn) saveBtn.style.display = 'inline-flex';
 
-    lastGeneratedSimHtml = buildStandaloneHtmlDoc(
-      title,
-      formula,
-      cmdText,
-      studioAttach.imageDataUrl,
-      studioAttach.pdfName,
-      studioAttach.extUrl
-    );
-
-    const metaParts = [
-      studioAttach.imageName ? `🖼️ صورة: ${escapeHtml(studioAttach.imageName)}` : '',
-      studioAttach.pdfName ? `📄 PDF: ${escapeHtml(studioAttach.pdfName)}` : '',
-      studioAttach.extUrl ? `🔗 رابط: <a href="${escapeHtml(studioAttach.extUrl)}" target="_blank" style="color:#38bdf8;">${escapeHtml(studioAttach.extUrl)}</a>` : ''
-    ].filter(Boolean).join(' &nbsp;|&nbsp; ');
-
     stage.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
-        <strong>🎬 ${escapeHtml(title)}</strong>
-        <span class="formula-pill" style="padding:4px 10px; font-size:12px;">${escapeHtml(formula)}</span>
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+        <div>
+          <div style="font-size:18px; font-weight:700;">${escapeHtml(title)}</div>
+          <div style="font-size:12.5px; color:#94a3b8;">${escapeHtml(cmdText)}</div>
+        </div>
+        <span class="formula-pill" style="padding:5px 11px; font-size:12px;">${escapeHtml(formula)}</span>
       </div>
-      <div style="font-size:13px; color:#cbd5e1; margin-bottom:10px;"><strong>الأمر:</strong> ${escapeHtml(cmdText)}</div>
-      ${studioAttach.imageDataUrl ? `<img src="${studioAttach.imageDataUrl}" class="sim-img-thumb" alt="المرفق">` : ''}
-      <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px; font-size:13px;">
-        <span>سرعة التدفق: <b id="stageSpdLabel">60%</b></span>
-        <input id="stageSpdRange" type="range" min="15" max="100" value="60" style="flex:1;" oninput="updateStageSpeed(this.value)">
-        <button type="button" class="btn small" onclick="toggleStageAnim()">إيقاف/تشغيل</button>
+
+      <div class="sim-canvas-box">
+        ${studioAttach.imageDataUrl ? `<img src="${studioAttach.imageDataUrl}" class="sim-uploaded-img" alt="المخطط المرفق">` : ''}
+        <svg viewBox="0 0 520 155" style="width:100%; height:155px; background:#0b1324; border-radius:12px; display:block;">
+          <line x1="30" y1="24" x2="490" y2="24" stroke="#ef4444" stroke-width="2.5"/>
+          <text x="16" y="28" fill="#fca5a5" font-size="11" font-weight="bold">P</text>
+          <line x1="30" y1="42" x2="490" y2="42" stroke="#3b82f6" stroke-width="2.5"/>
+          <text x="16" y="46" fill="#93c5fd" font-size="11" font-weight="bold">N</text>
+
+          <path id="line_fieldM" d="M 90 24 L 90 78 L 125 78 L 125 112 L 90 112 L 90 42" fill="none" stroke="#f59e0b" stroke-width="3" opacity="0.22"/>
+          <path id="line_armM" d="M 165 24 L 165 86" fill="none" stroke="#34d399" stroke-width="3" opacity="0.22"/>
+          <line id="line_shaft" x1="186" y1="92" x2="324" y2="92" stroke="#fbbf24" stroke-width="4" opacity="0.22"/>
+          <path id="line_fieldG" d="M 380 24 L 380 78 L 415 78 L 415 112 L 380 112 L 380 42" fill="none" stroke="#c084fc" stroke-width="3" opacity="0.22"/>
+          <path id="line_outG" d="M 345 92 L 465 92 L 465 24" fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.22"/>
+
+          <circle cx="165" cy="92" r="21" fill="#172540" stroke="#34d399" stroke-width="2.5"/>
+          <text x="165" y="97" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">M</text>
+
+          <rect x="225" y="64" width="70" height="22" rx="6" fill="#1e293b" stroke="#64748b" stroke-width="1.2"/>
+          <text id="simSpeedText" x="260" y="79" text-anchor="middle" fill="#38bdf8" font-size="11" font-weight="bold">0 rpm</text>
+
+          <circle cx="345" cy="92" r="21" fill="#172540" stroke="#38bdf8" stroke-width="2.5"/>
+          <text x="345" y="97" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">G</text>
+        </svg>
       </div>
-      <svg viewBox="0 0 420 130" style="width:100%; height:130px; background:#111a2e; border-radius:14px; border:1px solid rgba(255,255,255,0.08);">
-        <rect x="28" y="20" width="364" height="78" rx="18" fill="none" stroke="#818cf8" stroke-width="3.5" class="animated-wire" id="stageWire"/>
-        <circle cx="210" cy="59" r="22" fill="#f59e0b"/>
-        <text x="210" y="64" text-anchor="middle" fill="#0f172a" font-weight="bold" font-size="13">M / I</text>
-        <text x="210" y="116" text-anchor="middle" fill="#94a3b8" font-size="11">أنميشن تفاعلي حي — جاهز للحفظ كدرس HTML</text>
-      </svg>
-      ${metaParts ? `<div style="margin-top:8px; font-size:12px; color:#94a3b8;">${metaParts}</div>` : ''}
+
+      <div class="sim-desc-box" id="simStepDesc"></div>
+
+      <div class="steps-pills" id="simStepsPills">
+        ${activeSimSteps.map((st, idx) => `
+          <button type="button" class="step-chip ${idx === 0 ? 'active' : ''}" id="simStepBtn_${idx}" onclick="selectSimStep(${idx}, true)">${escapeHtml(st.label)}</button>
+        `).join('')}
+      </div>
+
+      <div class="ctrl-row">
+        <button type="button" class="btn ghost small" onclick="stepSim(-1)">السابق</button>
+        <button type="button" class="btn small" id="simPauseToggleBtn" onclick="toggleSimAuto()">إيقاف مؤقت</button>
+        <button type="button" class="btn ghost small" onclick="stepSim(1)">التالي</button>
+        <button type="button" class="btn ghost small" onclick="resetSimSteps()">إعادة</button>
+        <span style="font-size:12.5px; color:#cbd5e1; margin-right:auto;">السرعة:</span>
+        <input type="range" min="15" max="100" value="65" style="width:110px;" oninput="changeSimStreamSpeed(this.value)">
+      </div>
     `;
 
+    selectSimStep(0, false);
+    startSimAuto();
+    rebuildSavedSimHtml(title, formula, cmdText);
     showToast('تم تشغيل الأنميشن التفاعلي بنجاح 🎬');
   }
 
-  function updateStageSpeed(val) {
-    const lbl = document.getElementById('stageSpdLabel');
-    const wire = document.getElementById('stageWire');
-    if (lbl) lbl.textContent = val + '%';
-    if (wire) {
-      const dur = Math.max(0.35, (2.2 - (Number(val) / 100) * 1.7)).toFixed(2) + 's';
-      wire.style.setProperty('--flow-dur', dur);
+  function selectSimStep(idx, manual) {
+    if (!activeSimSteps.length) return;
+    currentSimStepIdx = (idx + activeSimSteps.length) % activeSimSteps.length;
+    const step = activeSimSteps[currentSimStepIdx];
+
+    const descEl = document.getElementById('simStepDesc');
+    const spdEl = document.getElementById('simSpeedText');
+    if (descEl) descEl.textContent = step.desc;
+    if (spdEl) spdEl.textContent = step.speedLabel || '';
+
+    activeSimSteps.forEach((_, i) => {
+      const btn = document.getElementById('simStepBtn_' + i);
+      if (btn) btn.classList.toggle('active', i === currentSimStepIdx);
+    });
+
+    const allLineIds = ['line_fieldM', 'line_armM', 'line_shaft', 'line_fieldG', 'line_outG'];
+    allLineIds.forEach(lid => {
+      const el = document.getElementById(lid);
+      if (!el) return;
+      const isOn = step.activeLines.includes(lid.replace('line_', ''));
+      el.style.opacity = isOn ? '1' : '0.2';
+      el.classList.toggle('stream-line', isOn);
+      el.classList.toggle('paused', simPaused || !isOn);
+    });
+
+    if (manual) {
+      const title = (document.getElementById('lbTitleInput') && document.getElementById('lbTitleInput').value.trim()) || 'أنميشن تفاعلي';
+      const formula = (document.getElementById('lbFormulaInput') && document.getElementById('lbFormulaInput').value.trim()) || 'V = I · R';
+      const cmdText = (document.getElementById('lbCommandInput') && document.getElementById('lbCommandInput').value.trim()) || '';
+      rebuildSavedSimHtml(title, formula, cmdText);
     }
   }
 
-  function toggleStageAnim() {
-    const wire = document.getElementById('stageWire');
-    if (wire) wire.classList.toggle('paused');
+  function stepSim(delta) {
+    selectSimStep(currentSimStepIdx + delta, true);
+  }
+
+  function resetSimSteps() {
+    simPaused = false;
+    const pauseBtn = document.getElementById('simPauseToggleBtn');
+    if (pauseBtn) pauseBtn.textContent = 'إيقاف مؤقت';
+    selectSimStep(0, true);
+    startSimAuto();
+  }
+
+  function startSimAuto() {
+    if (simAutoTimer) clearInterval(simAutoTimer);
+    simAutoTimer = setInterval(() => {
+      if (!simPaused && activeSimSteps.length > 0 && activeHubTab === 'logic') {
+        selectSimStep(currentSimStepIdx + 1, false);
+      }
+    }, 2400);
+  }
+
+  function toggleSimAuto() {
+    simPaused = !simPaused;
+    const pauseBtn = document.getElementById('simPauseToggleBtn');
+    if (pauseBtn) pauseBtn.textContent = simPaused ? 'استئناف' : 'إيقاف مؤقت';
+    selectSimStep(currentSimStepIdx, false);
+  }
+
+  function changeSimStreamSpeed(val) {
+    const dur = Math.max(0.35, (2.0 - (Number(val) / 100) * 1.5)).toFixed(2) + 's';
+    document.querySelectorAll('.stream-line').forEach(el => {
+      el.style.setProperty('--stream-dur', dur);
+    });
+  }
+
+  function rebuildSavedSimHtml(title, formula, cmdText) {
+    const stageEl = document.getElementById('simStageBox');
+    if (!stageEl) return;
+    lastGeneratedSimHtml = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)}</title><style>body{margin:0;background:#09101f;color:#f8fafc;font-family:"IBM Plex Sans Arabic",sans-serif;padding:16px;}</style></head><body>${stageEl.innerHTML}</body></html>`;
   }
 
   function saveGeneratedSimToLibrary() {
+    const title = (document.getElementById('lbTitleInput') && document.getElementById('lbTitleInput').value.trim()) || 'أنميشن تفاعلي جديد';
+    const formula = (document.getElementById('lbFormulaInput') && document.getElementById('lbFormulaInput').value.trim()) || 'V = I · R';
+    const cmdText = (document.getElementById('lbCommandInput') && document.getElementById('lbCommandInput').value.trim()) || 'أنميشن مولّد من استوديو هدهد';
+    rebuildSavedSimHtml(title, formula, cmdText);
     if (!lastGeneratedSimHtml) return showToast('ولّد أنميشناً أولاً', 'error');
-    const title = document.getElementById('lbTitleInput').value.trim() || 'أنميشن تفاعلي جديد';
+
     const targetCat = lib.categories.find(c => c.id === 'elec') || lib.categories[0] || { id: 'general' };
     const links = studioAttach.extUrl ? [{ label: 'ملف / رابط خارجي', url: studioAttach.extUrl }] : [];
     lib.files.push({
@@ -1134,7 +1261,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
       type: 'html',
       catId: targetCat.id,
       title,
-      note: document.getElementById('lbCommandInput').value.trim() || 'أنميشن مولّد من استوديو هدهد',
+      note: cmdText,
       tags: ['أنميشن', 'محاكاة'],
       links,
       content: lastGeneratedSimHtml,
