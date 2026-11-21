@@ -1,10 +1,27 @@
 {
-  "rules": {
-    ".read": false,
-    ".write": false,
-    "data": {
-      ".read": true,
-      ".write": "auth != null && auth.token.email == 'ضع_ايميلك_هنا@gmail.com'"
+  "name": "هدهد - المنصة التعليمية الذكية",
+  "short_name": "هدهد",
+  "description": "منصة التعلم والمراجعة الذكية للتمهيدي",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#4f46e5",
+  "background_color": "#f4f7fb",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3750/3750079.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3750/3750079.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
     }
-  }
+  ]
 }
