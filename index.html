@@ -475,7 +475,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
       </label>
       <div id="fileUploadBox">
         <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-          <p>📁 اسحب الملف هنا أو اضغط للاختيار</p>
+          <p>📁 اسحب الملف هنا أو اضغط للاختيار (يدعم الملفات الكبيرة حتى 25 MB)</p>
           <p style="font-size:12px; margin-top:5px;" id="fileNameDisplay">لم يتم اختيار ملف</p>
         </div>
         <input type="file" id="fileInput" hidden onchange="handleFileSelect(this.files[0])">
@@ -523,6 +523,8 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 const DAY = 86400000;
 const EXAM_DATE = new Date('2027-02-01T00:00:00');
 const REVIEW_STEPS = [1, 3, 7, 14, 30];
+const MAX_LARGE_FILE_BYTES = 25 * 1024 * 1024; // 25 MB
+const LARGE_FILE_THRESHOLD = 450 * 1024; // أي ملف أكبر من 450 KB يُخزن في IndexedDB
 const LEVELS = [
   [0, 'بيضة', '🥚'],
   [100, 'فرخ', '🐣'],
@@ -535,8 +537,59 @@ const $ = id => document.getElementById(id);
 const readJson = (k, d) => {
   try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (e) { return d; }
 };
-const writeJson = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const writeJson = (k, v) => {
+  try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {}
+};
 const dayKey = t => new Date(t).toISOString().slice(0, 10);
+
+/* تخزين الملفات الكبيرة محلياً عبر IndexedDB */
+let largeFilesDb = null;
+function openLargeFilesDb() {
+  return new Promise((resolve, reject) => {
+    if (largeFilesDb) return resolve(largeFilesDb);
+    if (!('indexedDB' in window)) return reject(new Error('IndexedDB غير مدعوم'));
+    const req = indexedDB.open('hudhud_large_files_db', 1);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('files')) {
+        db.createObjectStore('files', { keyPath: 'id' });
+      }
+    };
+    req.onsuccess = (e) => {
+      largeFilesDb = e.target.result;
+      resolve(largeFilesDb);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function saveLargeFileContent(id, type, content) {
+  const db = await openLargeFilesDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('files', 'readwrite');
+    tx.objectStore('files').put({ id, type, content, updatedAt: Date.now() });
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function getLargeFileContent(id) {
+  const db = await openLargeFilesDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('files', 'readonly');
+    const req = tx.objectStore('files').get(id);
+    req.onsuccess = () => resolve(req.result ? req.result.content : null);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function deleteLargeFileContent(id) {
+  try {
+    const db = await openLargeFilesDb();
+    const tx = db.transaction('files', 'readwrite');
+    tx.objectStore('files').delete(id);
+  } catch (e) {}
+}
 
 let simAutoTimer = null;
 
@@ -1087,6 +1140,7 @@ window.cmdReview = (id, ok) => {
 function handleQuizPdfUpload(file) {
   if (!file) return;
   if (!file.name.toLowerCase().endsWith('.pdf')) return showToast('يرجى اختيار ملف بصيغة PDF', 'error');
+  if (file.size > MAX_LARGE_FILE_BYTES) return showToast('الحد الأقصى لملف PDF هو 25 MB', 'error');
   const sizeKb = Math.round(file.size / 1024);
   quizPdfMeta = {
     name: file.name,
@@ -1095,15 +1149,12 @@ function handleQuizPdfUpload(file) {
   };
   writeJson('hudhud_quiz_pdf_meta', quizPdfMeta);
 
-  if (file.size <= 1500 * 1024) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      quizPdfBase64Cache = String(e.target.result || '').split(',')[1] || '';
-    };
-    reader.readAsDataURL(file);
-  } else {
-    quizPdfBase64Cache = '';
-  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    quizPdfBase64Cache = String(e.target.result || '').split(',')[1] || '';
+    if (activeHubTab === 'quiz') renderSmartHub();
+  };
+  reader.readAsDataURL(file);
 
   showToast(`تم إرفاق ملف PDF «${file.name}» للاختبارات 📄`);
   generateUnlimitedQuiz(false);
@@ -1444,7 +1495,7 @@ function renderSmartHub() {
           </div>
           <div style="background:var(--bg); padding:14px; border-radius:14px; border:1px solid var(--line);">
             <div style="font-size:12px; color:var(--muted);">حجم الكاش المحلي للدروس</div>
-            <div style="font-weight:700; margin-top:4px;">${cacheSizeKb} KB</div>
+            <div style="font-weight:700; margin-top:4px;">${cacheSizeKb} KB (والملفات الكبيرة في IndexedDB)</div>
           </div>
           <div style="background:var(--bg); padding:14px; border-radius:14px; border:1px solid var(--line);">
             <div style="font-size:12px; color:var(--muted);">روابط ناقصة أو غير صالحة</div>
@@ -1588,6 +1639,21 @@ function updateViewerDoneBtn() {
   btn.className = isDone ? 'btn success small' : 'btn ghost small';
 }
 
+/* تحضير نسخة خفيفة لقاعدة البيانات كي لا تتضخم بملفات كبيرة */
+function buildLightFirebasePayload() {
+  const lightFiles = (lib.files || []).map(f => {
+    if (f.idbStored) {
+      const { content, ...rest } = f;
+      return rest;
+    }
+    return f;
+  });
+  return {
+    ...lib,
+    files: lightFiles
+  };
+}
+
 async function loadData() {
   const cachedData = localStorage.getItem('hudhud_lib_cache');
   if (cachedData) {
@@ -1604,10 +1670,31 @@ async function loadData() {
     const r = await fetch(FIREBASE_URL + 'data.json');
     const data = await r.json();
     if (data) {
-      lib.files = data.files || [];
+      const localFilesMap = new Map((lib.files || []).map(f => [f.id, f]));
+      lib.files = (data.files || []).map(remoteFile => {
+        const localFile = localFilesMap.get(remoteFile.id);
+        if (remoteFile.idbStored && localFile && localFile.content) {
+          return { ...remoteFile, content: localFile.content };
+        }
+        return remoteFile;
+      });
+      // الإبقاء على أي ملفات محلية كبيرة أُضيفت على هذا الجهاز ولم تُكتب في data.json
+      (lib.files || []).forEach(lf => {
+        if (lf.idbStored && !(data.files || []).some(rf => rf.id === lf.id)) {
+          // محفوظة في lib.files
+        }
+      });
+      (data.files || []).forEach(rf => {
+        // مدموجة أعلاه
+      });
+      const mergedIds = new Set(lib.files.map(f => f.id));
+      localFilesMap.forEach((lf, id) => {
+        if (!mergedIds.has(id) && lf.idbStored) lib.files.push(lf);
+      });
+
       lib.categories = (data.categories && data.categories.length) ? data.categories : DEFAULT_CATS;
       if (data.settings) lib.settings = data.settings;
-      writeJson('hudhud_lib_cache', lib);
+      writeJson('hudhud_lib_cache', buildLightFirebasePayload());
       $('siteTitle').textContent = lib.settings.siteName || 'هدهد';
       render();
       checkUrlHash();
@@ -1623,6 +1710,8 @@ async function loadData() {
 }
 
 async function saveData() {
+  const lightPayload = buildLightFirebasePayload();
+  writeJson('hudhud_lib_cache', lightPayload);
   try {
     const u = firebase.auth().currentUser;
     if (!u) throw new Error('no auth');
@@ -1630,12 +1719,11 @@ async function saveData() {
     const r = await fetch(FIREBASE_URL + 'data.json?auth=' + encodeURIComponent(token), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(lib)
+      body: JSON.stringify(lightPayload)
     });
     if (!r.ok) throw new Error('HTTP ' + r.status);
-    writeJson('hudhud_lib_cache', lib);
   } catch (e) {
-    showToast('فشل الحفظ. تأكد من تسجيل الدخول وصلاحيات القاعدة.', 'error');
+    showToast('تم الحفظ محلياً؛ تحقق من تسجيل الدخول وصلاحيات القاعدة للمزامنة السحابية.', 'error');
   }
 }
 
@@ -1794,8 +1882,9 @@ function renderFilesList(container, files, title, showCatBadge) {
       const noteHtml = f.note ? `<div class="lesson-tip-box"><span class="lesson-tip-label">💡 ملاحظة:</span>${escapeHtml(f.note)}</div>` : '';
       const tagsHtml = (f.tags && f.tags.length) ? `<div class="file-tags">${f.tags.map(t => `<span class="tag-pill">#${escapeHtml(t)}</span>`).join('')}</div>` : '';
       const linksHtml = buildExtLinksHtml(f.links);
+      const sizeBadge = f.sizeKb ? `<span class="cat-badge">${f.sizeKb >= 1024 ? (f.sizeKb / 1024).toFixed(1) + ' MB' : f.sizeKb + ' KB'}</span>` : '';
       html += `<div class="file-card ${isDone ? 'completed' : ''}" onclick="openViewer('${f.id}')">
-        <div class="file-header"><div class="file-badges"><span class="cat-badge">#${idx + 1}</span><div class="file-icon ${iconClass}">${icon}</div>${showCatBadge && cat ? `<span class="cat-badge">${cat.icon} ${escapeHtml(cat.name)}</span>` : ''}${isDone ? `<span class="done-badge">✓ منجز</span>` : ''}</div><button class="star-btn ${isFav ? 'active' : ''}" onclick="toggleFav('${f.id}', event)">${isFav ? '★' : '☆'}</button></div>
+        <div class="file-header"><div class="file-badges"><span class="cat-badge">#${idx + 1}</span><div class="file-icon ${iconClass}">${icon}</div>${sizeBadge}${showCatBadge && cat ? `<span class="cat-badge">${cat.icon} ${escapeHtml(cat.name)}</span>` : ''}${isDone ? `<span class="done-badge">✓ منجز</span>` : ''}</div><button class="star-btn ${isFav ? 'active' : ''}" onclick="toggleFav('${f.id}', event)">${isFav ? '★' : '☆'}</button></div>
         <div><h3 class="file-title">${escapeHtml(f.title)}</h3>${noteHtml}${linksHtml}${tagsHtml}<div class="file-date">${new Date(f.added).toLocaleDateString('ar-IQ')}</div></div>
         ${isAdmin ? `<div class="file-actions"><button class="btn ghost small" onclick="editFile('${f.id}', event)">تعديل</button><button class="btn ghost small" style="color:var(--danger); border-color:var(--danger)" onclick="deleteFile('${f.id}', event)">حذف</button></div>` : ''}
       </div>`;
@@ -1825,13 +1914,20 @@ function stepLesson(delta) {
   if (nextItem) openViewer(nextItem.id);
 }
 
-function openViewer(id) {
+async function openViewer(id) {
   const f = lib.files.find(x => x.id === id);
   if (!f) return;
   if (!currentOrderedList.some(x => x.id === id)) {
     currentOrderedList = lib.files.filter(x => x.catId === f.catId).sort((a, b) => (a.added || 0) - (b.added || 0));
   }
-  currentViewerFile = f;
+
+  let fileContent = f.content;
+  if (!fileContent && f.idbStored) {
+    fileContent = await getLargeFileContent(f.id);
+    if (fileContent) f.content = fileContent;
+  }
+
+  currentViewerFile = { ...f, content: fileContent || '' };
   history.replaceState(null, '', '#file=' + f.id);
   $('viewerTitle').textContent = f.title;
   updateViewerDoneBtn();
@@ -1857,38 +1953,44 @@ function openViewer(id) {
   dlBtn.style.display = 'none';
   body.innerHTML = '';
 
+  if (!fileContent && ['html', 'pdf'].includes(f.type)) {
+    body.innerHTML = `<div style="display:flex;height:100%;align-items:center;justify-content:center;padding:24px;text-align:center;color:#0f172a;"><div><h3>الملف الكبير محفوظ على جهازك الأصلي فقط</h3><p>إذا فتحت المنصة من متصفح أو جهاز آخر، أعد رفع الملف مرة واحدة ليُخزن في IndexedDB على هذا الجهاز.</p></div></div>`;
+    document.body.classList.add('viewing');
+    return;
+  }
+
   if (f.type === 'html') {
     const ifr = document.createElement('iframe');
     ifr.setAttribute('sandbox', 'allow-scripts allow-forms allow-popups allow-modals');
-    ifr.srcdoc = f.content;
+    ifr.srcdoc = fileContent;
     body.appendChild(ifr);
     codeBtn.style.display = 'inline-flex';
     dlBtn.style.display = 'inline-flex';
     codeBtn.textContent = 'الكود';
     codeBtn.onclick = () => {
       if (body.querySelector('iframe')) {
-        body.innerHTML = `<pre>${escapeHtml(f.content)}</pre>`;
+        body.innerHTML = `<pre>${escapeHtml(fileContent)}</pre>`;
         codeBtn.textContent = 'الصفحة';
       } else {
         body.innerHTML = '';
         const newIfr = document.createElement('iframe');
         newIfr.setAttribute('sandbox', 'allow-scripts allow-forms allow-popups allow-modals');
-        newIfr.srcdoc = f.content;
+        newIfr.srcdoc = fileContent;
         body.appendChild(newIfr);
         codeBtn.textContent = 'الكود';
       }
     };
   } else if (f.type === 'pdf') {
-    body.innerHTML = `<iframe src="data:application/pdf;base64,${f.content}"></iframe>`;
+    body.innerHTML = `<iframe src="data:application/pdf;base64,${fileContent}"></iframe>`;
     dlBtn.style.display = 'inline-flex';
   } else if (f.type === 'image') {
-    body.innerHTML = `<img src="${f.content}">`;
+    body.innerHTML = `<img src="${fileContent}">`;
   } else if (f.type === 'youtube') {
-    let vid = f.content.split('v=')[1] || f.content.split('/').pop();
+    let vid = fileContent.split('v=')[1] || fileContent.split('/').pop();
     if (vid.includes('&')) vid = vid.split('&')[0];
     body.innerHTML = `<iframe src="https://www.youtube.com/embed/${vid}" allowfullscreen></iframe>`;
   } else if (f.type === 'mp4') {
-    body.innerHTML = `<video src="${f.content}" controls autoplay></video>`;
+    body.innerHTML = `<video src="${fileContent}" controls autoplay></video>`;
   }
   document.body.classList.add('viewing');
 }
@@ -1900,7 +2002,7 @@ function toggleFullscreen() {
 }
 
 function downloadFile() {
-  if (!currentViewerFile) return;
+  if (!currentViewerFile || !currentViewerFile.content) return;
   let blob, filename;
   if (currentViewerFile.type === 'html') {
     blob = new Blob([currentViewerFile.content], { type: 'text/html;charset=utf-8' });
@@ -2005,7 +2107,7 @@ function openAddModal() {
     $('catSec').style.display = 'flex';
   } else {
     $('modalTitle').textContent = 'إضافة درس جديد';
-    $('fileNameDisplay').textContent = 'لم يتم اختيار ملف';
+    $('fileNameDisplay').textContent = 'لم يتم اختيار ملف (الحد الأقصى 25 MB)';
     $('fileTitle').value = '';
     $('fileNote').value = '';
     $('fileTags').value = '';
@@ -2073,7 +2175,7 @@ function editFile(id, event) {
   linksContainer.innerHTML = '';
   if (Array.isArray(f.links)) f.links.forEach(lk => addLinkRow(lk.label, lk.url));
   toggleFileInput();
-  if (['image', 'youtube', 'mp4'].includes(f.type)) $('urlInput').value = f.content;
+  if (['image', 'youtube', 'mp4'].includes(f.type)) $('urlInput').value = f.content || '';
   else $('fileNameDisplay').textContent = 'الملف الحالي محفوظ (اختر ملف جديد للتغيير)';
   const sel = $('catSelect');
   sel.innerHTML = '';
@@ -2101,13 +2203,21 @@ dropZone.addEventListener('drop', e => handleFileSelect(e.dataTransfer.files[0])
 
 function handleFileSelect(file) {
   if (!file) return;
+  if (file.size > MAX_LARGE_FILE_BYTES) {
+    $('errorMsg').textContent = 'حجم الملف أكبر من الحد المسموح (25 MB)';
+    return;
+  }
+  $('errorMsg').textContent = '';
   pendingFileData = file;
-  $('fileNameDisplay').textContent = file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
+  const sizeLabel = file.size >= 1024 * 1024
+    ? (file.size / (1024 * 1024)).toFixed(2) + ' MB'
+    : Math.round(file.size / 1024) + ' KB';
+  $('fileNameDisplay').textContent = `${file.name} (${sizeLabel})`;
   if (!$('fileTitle').value) $('fileTitle').value = file.name.replace(/\.[^/.]+$/, "");
   saveFormDraft();
 }
 
-function saveFile() {
+async function saveFile() {
   const type = $('fileType').value;
   const catId = $('catSelect').value;
   const title = $('fileTitle').value.trim();
@@ -2117,34 +2227,93 @@ function saveFile() {
   const links = collectLinksFromForm();
   if (!title) { $('errorMsg').textContent = 'اكتب اسم المحتوى'; return; }
 
-  const doSave = (content) => {
-    if (editingFileId) lib.files = lib.files.map(f => f.id === editingFileId ? { ...f, type, catId, title, note, tags, links, content } : f);
-    else { lib.files.push({ id: 'f' + Date.now(), type, catId, title, note, tags, links, content, added: Date.now() }); clearFormDraft(); }
-    saveData().then(() => { closeModal(); render(); showToast(editingFileId ? 'تم التعديل' : 'تم الحفظ'); });
+  const finalizeRecord = async (record) => {
+    if (editingFileId) {
+      lib.files = lib.files.map(f => f.id === editingFileId ? record : f);
+    } else {
+      lib.files.push(record);
+      clearFormDraft();
+    }
+    await saveData();
+    closeModal();
+    render();
+    showToast(editingFileId ? 'تم التعديل بنجاح' : 'تم حفظ الملف بنجاح ✅');
   };
 
   if (['image', 'youtube', 'mp4'].includes(type)) {
     const url = $('urlInput').value.trim();
     if (!url) { $('errorMsg').textContent = 'ضع الرابط'; return; }
-    doSave(url);
-  } else {
-    if (!pendingFileData) {
-      if (editingFileId) { const existing = lib.files.find(f => f.id === editingFileId); doSave(existing.content); return; }
-      $('errorMsg').textContent = 'اختر الملف أولاً';
+    const existing = editingFileId ? lib.files.find(f => f.id === editingFileId) : null;
+    await finalizeRecord({
+      id: existing ? existing.id : 'f' + Date.now(),
+      type, catId, title, note, tags, links,
+      content: url,
+      added: existing ? existing.added : Date.now()
+    });
+    return;
+  }
+
+  if (!pendingFileData) {
+    if (editingFileId) {
+      const existing = lib.files.find(f => f.id === editingFileId);
+      await finalizeRecord({ ...existing, type, catId, title, note, tags, links });
       return;
     }
-    if (pendingFileData.size > 800 * 1024) { $('errorMsg').textContent = 'حجم الملف كبير جداً (الحد 800 كيلوبايت)'; return; }
-    const reader = new FileReader();
-    reader.onload = (e) => { const res = e.target.result; if (type === 'html') doSave(res); else doSave(res.split(',')[1]); };
-    if (type === 'html') reader.readAsText(pendingFileData);
-    else reader.readAsDataURL(pendingFileData);
+    $('errorMsg').textContent = 'اختر الملف أولاً';
+    return;
   }
+
+  if (pendingFileData.size > MAX_LARGE_FILE_BYTES) {
+    $('errorMsg').textContent = 'حجم الملف كبير جداً (الحد الأقصى 25 ميجابايت)';
+    return;
+  }
+
+  const fileId = editingFileId || ('f' + Date.now());
+  const existing = editingFileId ? lib.files.find(f => f.id === editingFileId) : null;
+  const sizeKb = Math.max(1, Math.round(pendingFileData.size / 1024));
+  const isLarge = pendingFileData.size > LARGE_FILE_THRESHOLD;
+
+  const reader = new FileReader();
+  reader.onerror = () => { $('errorMsg').textContent = 'تعذر قراءة الملف من الجهاز'; };
+  reader.onload = async (e) => {
+    const res = e.target.result;
+    const processedContent = type === 'html' ? res : String(res).split(',')[1];
+    try {
+      if (isLarge) {
+        await saveLargeFileContent(fileId, type, processedContent);
+        await finalizeRecord({
+          id: fileId,
+          type, catId, title, note, tags, links,
+          sizeKb,
+          idbStored: true,
+          content: processedContent,
+          added: existing ? existing.added : Date.now()
+        });
+      } else {
+        await deleteLargeFileContent(fileId);
+        await finalizeRecord({
+          id: fileId,
+          type, catId, title, note, tags, links,
+          sizeKb,
+          idbStored: false,
+          content: processedContent,
+          added: existing ? existing.added : Date.now()
+        });
+      }
+    } catch (err) {
+      $('errorMsg').textContent = 'حدث خطأ أثناء حفظ الملف الكبير محلياً';
+    }
+  };
+
+  if (type === 'html') reader.readAsText(pendingFileData);
+  else reader.readAsDataURL(pendingFileData);
 }
 
 function deleteFile(id, event) {
   event.stopPropagation();
   if (!confirm('هل أنت متأكد من الحذف؟')) return;
   lib.files = lib.files.filter(f => f.id !== id);
+  deleteLargeFileContent(id);
   saveData().then(() => { render(); showToast('تم الحذف'); });
 }
 
