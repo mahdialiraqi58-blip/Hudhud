@@ -1,44 +1,10 @@
 {
-  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
-  "id": "./",
-  "name": "هدهد - المنصة التعليمية الذكية",
-  "short_name": "هدهد",
-  "description": "منصة تعليمية ذكية تفاعلية لدعم الطلاب وتسهيل التعلم.",
-  "lang": "ar",
-  "dir": "rtl",
-  "start_url": "./",
-  "scope": "./",
-  "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
-  "orientation": "portrait-primary",
-  "background_color": "#070d19",
-  "theme_color": "#4f46e5",
-  "categories": ["education"],
-  "prefer_related_applications": false,
-  "icons": [
-    {
-      "src": "./icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./icons/icon-512-maskable.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "./icons/hudhud-icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "data": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email == 'ضع_ايميلك_هنا@gmail.com'"
     }
-  ]
+  }
 }
