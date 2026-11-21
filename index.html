@@ -181,88 +181,144 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
 
 .panel-card { background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
 
-/* تصميم خانة الاختبارات الاحترافية */
+/* تصميم استوديو الاختبارات العالمي (مرتكز على نص الملف والصفحات فقط) */
 .quiz-studio-header {
   display: flex; justify-content: space-between; align-items: flex-start;
-  flex-wrap: wrap; gap: 12px; margin-bottom: 16px;
-  padding-bottom: 14px; border-bottom: 1px solid var(--line);
+  flex-wrap: wrap; gap: 14px; margin-bottom: 18px;
+  padding-bottom: 16px; border-bottom: 1px solid var(--line);
+}
+.quiz-pro-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--tint); color: var(--accent);
+  font-size: 11.5px; font-weight: 700; padding: 4px 11px;
+  border-radius: 99px; margin-bottom: 6px;
 }
 .quiz-mode-switch {
-  display: inline-flex; gap: 6px; background: var(--bg);
-  padding: 5px; border-radius: 14px; border: 1px solid var(--line);
+  display: inline-flex; gap: 5px; background: var(--bg);
+  padding: 5px; border-radius: 15px; border: 1px solid var(--line); flex-wrap: wrap;
 }
 .quiz-mode-btn {
   border: 0; background: transparent; color: var(--muted);
-  font: inherit; font-size: 13px; font-weight: 700;
-  padding: 7px 14px; border-radius: 10px; cursor: pointer; transition: 0.2s;
+  font: inherit; font-size: 12.5px; font-weight: 700;
+  padding: 8px 14px; border-radius: 11px; cursor: pointer; transition: 0.2s;
 }
 .quiz-mode-btn.active { background: var(--accent); color: var(--accent-ink); box-shadow: var(--shadow-sm); }
 
-.quiz-pdf-box {
-  background: linear-gradient(135deg, var(--tint), transparent);
-  border: 1px solid rgba(79, 70, 229, 0.28);
-  border-radius: 18px; padding: 16px; margin-bottom: 16px;
+.quiz-source-workbench {
+  background: linear-gradient(145deg, rgba(79, 70, 229, 0.06), rgba(16, 185, 129, 0.04));
+  border: 1px solid rgba(79, 70, 229, 0.22);
+  border-radius: 20px; padding: 18px; margin-bottom: 18px;
 }
-.quiz-pdf-top {
+.quiz-source-top {
   display: flex; flex-wrap: wrap; align-items: center;
-  justify-content: space-between; gap: 10px; margin-bottom: 12px;
+  justify-content: space-between; gap: 10px; margin-bottom: 14px;
 }
-.quiz-pdf-chip {
+.quiz-file-badge {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--surface-solid); border: 1px solid var(--line);
-  border-radius: 12px; padding: 6px 12px; font-size: 13px; font-weight: 700;
+  border-radius: 13px; padding: 7px 13px; font-size: 13px; font-weight: 700;
 }
-.quiz-page-range-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 10px; align-items: end; background: var(--surface-solid);
-  border: 1px solid var(--line); border-radius: 14px; padding: 12px;
-}
-.quiz-page-range-grid input[type="number"] {
-  padding: 9px 12px; border: 1px solid var(--line); border-radius: 11px;
-  background: var(--bg); color: var(--ink); font: inherit; font-weight: 700; width: 100%;
-}
-.quiz-excerpt-preview {
-  margin-top: 12px; background: var(--bg); border-right: 3px solid var(--success);
-  border-radius: 12px; padding: 10px 14px; font-size: 12.5px; color: var(--muted);
-  max-height: 115px; overflow-y: auto; line-height: 1.6;
+.quiz-isolated-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(16, 185, 129, 0.14); color: var(--success);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 99px; padding: 4px 11px; font-size: 11.5px; font-weight: 700;
 }
 
-.quiz-builder-bar {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 12px; background: var(--bg); border: 1px solid var(--line);
-  border-radius: 18px; padding: 14px; margin-bottom: 16px; align-items: end;
+.quiz-controls-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 12px; align-items: end; background: var(--surface-solid);
+  border: 1px solid var(--line); border-radius: 16px; padding: 14px;
 }
-.quiz-meta-strip {
+.quiz-controls-grid input[type="number"], .quiz-controls-grid select {
+  padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px;
+  background: var(--bg); color: var(--ink); font: inherit; font-weight: 700; width: 100%;
+}
+
+.quiz-text-inspector {
+  margin-top: 14px; background: var(--surface-solid);
+  border: 1px solid var(--line); border-right: 4px solid var(--accent);
+  border-radius: 15px; padding: 13px 15px;
+}
+.quiz-inspector-head {
   display: flex; justify-content: space-between; align-items: center;
-  flex-wrap: wrap; gap: 10px; background: var(--bg); border: 1px solid var(--line);
-  border-radius: 14px; padding: 10px 14px; margin-bottom: 14px;
-  font-size: 13px; font-weight: 700;
+  flex-wrap: wrap; gap: 8px; margin-bottom: 8px;
 }
+.quiz-text-stream {
+  font-size: 12.5px; color: var(--muted); max-height: 135px;
+  overflow-y: auto; line-height: 1.75; white-space: pre-line;
+  background: var(--bg); padding: 10px 12px; border-radius: 11px;
+}
+.page-pill {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  color: var(--accent); background: var(--tint);
+  padding: 1px 7px; border-radius: 6px; margin-left: 6px;
+}
+
+.quiz-session-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 12px; background: var(--bg); border: 1px solid var(--line);
+  border-radius: 16px; padding: 12px 16px; margin-bottom: 16px;
+}
+.quiz-progress-mini { flex: 1; min-width: 180px; }
+.quiz-progress-track { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; margin-top: 6px; }
+.quiz-progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--success)); transition: width 0.3s ease; }
+
 .quiz-q-card {
   background: var(--bg); border: 1px solid var(--line);
-  border-radius: 18px; padding: 18px; transition: border-color 0.2s;
+  border-radius: 20px; padding: 20px; transition: border-color 0.2s, transform 0.2s;
+}
+.quiz-q-card.answered-ok { border-color: rgba(16, 185, 129, 0.45); }
+.quiz-q-card.answered-bad { border-color: rgba(239, 68, 68, 0.45); }
+
+.quiz-q-top {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 8px; margin-bottom: 10px;
 }
 .quiz-q-badge {
-  display: inline-block; font-size: 11.5px; font-weight: 700;
-  color: var(--accent); background: var(--tint); padding: 3px 10px;
-  border-radius: 8px; margin-bottom: 8px;
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11.5px; font-weight: 700;
+  color: var(--accent); background: var(--tint); padding: 4px 10px;
+  border-radius: 8px;
 }
+.quiz-q-type {
+  font-size: 11px; font-weight: 700; color: var(--muted);
+  background: var(--surface-solid); border: 1px solid var(--line);
+  padding: 3px 9px; border-radius: 8px;
+}
+.quiz-q-prompt {
+  font-weight: 700; margin-bottom: 12px; font-size: 15.5px;
+  line-height: 1.65; color: var(--ink);
+}
+.quiz-quote-box {
+  background: var(--surface-solid); border: 1px dashed rgba(79, 70, 229, 0.35);
+  border-radius: 12px; padding: 10px 13px; margin-bottom: 12px;
+  font-size: 13px; color: var(--ink); line-height: 1.65;
+}
+
 .quiz-option-btn {
   width: 100%; text-align: right; background: var(--surface-solid);
-  border: 1px solid var(--line); color: var(--ink); padding: 11px 14px;
-  border-radius: 12px; font: inherit; font-size: 13.5px; font-weight: 600;
-  cursor: pointer; transition: 0.2s;
+  border: 1px solid var(--line); color: var(--ink); padding: 12px 15px;
+  border-radius: 13px; font: inherit; font-size: 13.5px; font-weight: 600;
+  cursor: pointer; transition: 0.18s; line-height: 1.55;
 }
-.quiz-option-btn:hover { border-color: var(--accent); transform: translateX(-2px); }
-.quiz-option-btn.correct { background: rgba(16, 185, 129, 0.16); border-color: var(--success); color: var(--success); }
+.quiz-option-btn:hover { border-color: var(--accent); transform: translateX(-3px); }
+.quiz-option-btn.correct { background: rgba(16, 185, 129, 0.16); border-color: var(--success); color: var(--success); font-weight: 700; }
 .quiz-option-btn.wrong { background: rgba(239, 68, 68, 0.14); border-color: var(--danger); color: var(--danger); }
+
+.quiz-evidence-box {
+  margin-top: 12px; background: var(--surface-solid);
+  border: 1px solid var(--line); border-radius: 13px;
+  padding: 11px 14px; font-size: 13px; line-height: 1.65;
+}
+
 .quiz-result-box {
-  margin-top: 18px; background: linear-gradient(135deg, var(--tint), transparent);
-  border: 1px solid var(--accent); border-radius: 18px; padding: 20px; text-align: center;
+  margin-top: 20px; background: linear-gradient(135deg, var(--tint), rgba(16, 185, 129, 0.08));
+  border: 1px solid var(--accent); border-radius: 20px; padding: 22px; text-align: center;
 }
 .quiz-history-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-.quiz-history-chip { background: var(--bg); border: 1px solid var(--line); border-radius: 11px; padding: 6px 12px; font-size: 12.5px; font-weight: 700; }
-.remove-link-btn { background: rgba(239, 68, 68, 0.12); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 10px; padding: 7px 10px; cursor: pointer; font-weight: bold; font-size: 12px; }
+.quiz-history-chip { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 7px 12px; font-size: 12.5px; font-weight: 700; }
+.remove-link-btn { background: rgba(239, 68, 68, 0.12); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 10px; padding: 7px 11px; cursor: pointer; font-weight: bold; font-size: 12px; }
 
 .viewer { position: fixed; inset: 0; z-index: 200; background: var(--bg); display: none; flex-direction: column; }
 .viewing .viewer { display: flex; }
@@ -728,18 +784,21 @@ let currentViewerFile = null;
 let currentOrderedList = [];
 let deferredInstallPrompt = null;
 
-/* ======================================================
-   إعادة بناء خانة الاختبارات التدريبية الذكية بالكامل:
-   - تركيز مباشر على ملف الـ PDF المختار
-   - تحديد نطاق الصفحات (من صفحة إلى صفحة)
-   - استخراج نصوص الصفحات وتوليد أسئلة دقيقة منها
-   ====================================================== */
+/* =========================================================================
+   محرك الاختبارات العالمي (مرتكز حصرياً على نص الملف ونطاق الصفحات المحددة)
+   - لا يخلط أبداً بين الملف المختار وبقية ملفات أو أقسام المنصة
+   - يولّد أسئلة مباشرة من النص الموجود في الصفحات المحددة فقط:
+     1) إكمال عبارة / نص من الصفحة
+     2) تحديد رقم الصفحة التي ورد فيها مقطع نصي معين من الملف
+     3) اختبار صحة عبارة / معلومة حرفية من نص الصفحة
+   ========================================================================= */
 let quizSettings = readJson('hudhud_quiz_settings', {
-  mode: 'file', // 'file' للتركيز على الملف المرفق | 'section' لقسم من المنصة
-  catId: 'all',
+  sourceType: 'upload', // 'upload' ملف مرفوع هنا | 'library' ملف PDF محفوظ في المنصة
+  libraryFileId: '',
   count: 8,
   pageFrom: 1,
   pageTo: 5,
+  difficulty: 'mixed', // 'mixed' | 'recall' | 'locate'
   seed: 1
 });
 
@@ -752,64 +811,6 @@ let currentQuizQuestions = [];
 let quizAnswers = {};
 let quizHistory = readJson('hudhud_quiz_history', []);
 let quizRecordedCurrentRun = false;
-
-const SECTION_BANK = [
-  {
-    catHint: 'elec',
-    question: 'ما الفائدة الأساسية من التغذية المنفصلة لملف المجال في مولد التيار المستمر؟',
-    options: [
-      'تثبيت الفيض المغناطيسي وعدم تأثره بتغيرات تيار المنتج',
-      'زيادة مقاومة ملف المنتج تلقائياً عند التحميل',
-      'تحويل التيار المستمر إلى متناوب داخل عضو الإنتاج'
-    ],
-    correct: 0,
-    explain: 'فصل تغذية المجال يجعل الفيض المغناطيسي مستقراً ومستقلاً عن تيار الحمل.'
-  },
-  {
-    catHint: 'elec',
-    question: 'في مولد التيار المستمر ذي التغذية المنفصلة، كيف يُحسب جهد الأطراف V_t عند التحميل؟',
-    options: [
-      'V_t = E_g - I_a · R_a',
-      'V_t = E_g + I_a · R_a',
-      'V_t = I_a / R_a'
-    ],
-    correct: 0,
-    explain: 'جهد الأطراف يساوي القوة الدافعة المتولدة مطروحاً منه هبوط الجهد الداخلي I_a · R_a.'
-  },
-  {
-    catHint: 'elec',
-    question: 'ماذا يحدث لسرعة محرك التيار المستمر التوازي عند ثبوت الجهد وزيادة تيار المجال قليلاً؟',
-    options: [
-      'تنخفض السرعة بسبب ازدياد الفيض المغناطيسي',
-      'ترتفع السرعة بشكل لا نهائي فور إغلاق المفتاح',
-      'تنعدم القوة الدافعة العكسية تماماً'
-    ],
-    correct: 0,
-    explain: 'السرعة تتناسب عكسياً مع الفيض المغناطيسي، فزيادة الفيض تقلل السرعة.'
-  },
-  {
-    catHint: 'drawing',
-    question: 'ما الهدف الرئيسي من الالتزام بمعايير المقياس والخطوط في الرسم الصناعي؟',
-    options: [
-      'ضمان قراءة المخطط بدقة ووضوح دون التباس بين الأجزاء والرموز',
-      'إخفاء الأبعاد الحقيقية للعناصر الكهربائية',
-      'استبدال الحسابات الهندسية بالألوان فقط'
-    ],
-    correct: 0,
-    explain: 'الرموز والخطوط القياسية تجعل المخطط لغة هندسية موحدة ومفهومة في التنفيذ والصيانة.'
-  },
-  {
-    catHint: 'mech',
-    question: 'ما وظيفة الوصلة الميكانيكية بين المحرك الدائر والمولد الميكانيكي؟',
-    options: [
-      'نقل العزم الدوراني والسرعة الميكانيكية من المحرك إلى المولد',
-      'تخزين الطاقة الكهربائية داخل ملفات المجال',
-      'تحويل التيار المستمر إلى تيار ثلاثي الأطوار'
-    ],
-    correct: 0,
-    explain: 'المحرك يوفر الحركة الدورانية الميكانيكية التي يدير بها المولد لتوليد القوة الدافعة الكهربائية.'
-  }
-];
 
 const todayKey = 'hudhud_sessions_' + dayKey(Date.now());
 let todaySessions = parseInt(localStorage.getItem(todayKey) || '0', 10);
@@ -1162,6 +1163,17 @@ async function parsePdfFromBase64(base64Str) {
   return doc;
 }
 
+async function resolveSelectedLibraryPdfBase64(fileId) {
+  const f = lib.files.find(item => item.id === fileId && item.type === 'pdf');
+  if (!f) return null;
+  let content = f.content;
+  if (!content && f.idbStored) {
+    content = await getLargeFileContent(f.id);
+    if (content) f.content = content;
+  }
+  return content ? { file: f, base64: content } : { file: f, base64: '' };
+}
+
 async function extractPagesTextFromPdf(fromPage, toPage) {
   if (!quizPdfDocProxy && quizPdfBase64Cache) {
     await parsePdfFromBase64(quizPdfBase64Cache);
@@ -1182,18 +1194,23 @@ async function extractPagesTextFromPdf(fromPage, toPage) {
     try {
       const page = await quizPdfDocProxy.getPage(p);
       const tc = await page.getTextContent();
-      const str = (tc.items || []).map(it => it.str || '').join(' ').replace(/\s+/g, ' ').trim();
-      pageTexts.push({ pageNum: p, text: str });
+      const rawStr = (tc.items || []).map(it => it.str || '').join(' ');
+      const cleanStr = rawStr.replace(/\s+/g, ' ').trim();
+      pageTexts.push({ pageNum: p, text: cleanStr });
     } catch (e) {
       pageTexts.push({ pageNum: p, text: '' });
     }
   }
 
-  const combined = pageTexts.map(x => x.text).filter(Boolean).join('\n');
+  const combined = pageTexts
+    .filter(x => x.text)
+    .map(x => `[صفحة ${x.pageNum}] ${x.text}`)
+    .join('\n');
+
   return {
     text: combined,
     pageCount: end - start + 1,
-    status: combined.trim().length > 25 ? 'ok' : 'scanned_or_empty',
+    status: combined.trim().length > 20 ? 'ok' : 'scanned_or_empty',
     pages: pageTexts
   };
 }
@@ -1207,6 +1224,7 @@ async function handleQuizPdfUpload(file) {
   quizPdfMeta = {
     name: file.name,
     sizeKb,
+    sourceLabel: 'ملف مرفوع للاختبار',
     addedAt: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })
   };
   writeJson('hudhud_quiz_pdf_meta', quizPdfMeta);
@@ -1215,13 +1233,50 @@ async function handleQuizPdfUpload(file) {
   reader.onload = async (e) => {
     quizPdfBase64Cache = String(e.target.result || '').split(',')[1] || '';
     quizPdfDocProxy = null;
-    quizSettings.mode = 'file';
+    quizSettings.sourceType = 'upload';
+    writeJson('hudhud_quiz_settings', quizSettings);
     await parsePdfFromBase64(quizPdfBase64Cache);
     quizRangeExtractInfo = await extractPagesTextFromPdf(quizSettings.pageFrom, quizSettings.pageTo);
-    showToast(`تم إرفاق «${quizPdfMeta.name}» (${quizPdfTotalPages} صفحة) 📄`);
+    showToast(`تم تحميل «${quizPdfMeta.name}» (${quizPdfTotalPages} صفحة) 📄`);
     await buildAndRenderQuiz(false);
   };
   reader.readAsDataURL(file);
+}
+
+async function selectLibraryPdfForQuiz(fileId) {
+  quizSettings.sourceType = 'library';
+  quizSettings.libraryFileId = fileId;
+  writeJson('hudhud_quiz_settings', quizSettings);
+
+  if (!fileId) {
+    quizPdfMeta = null;
+    quizPdfBase64Cache = '';
+    quizPdfDocProxy = null;
+    quizPdfTotalPages = 0;
+    quizRangeExtractInfo = { text: '', pageCount: 0, status: 'idle', pages: [] };
+    await buildAndRenderQuiz(false);
+    return;
+  }
+
+  const resolved = await resolveSelectedLibraryPdfBase64(fileId);
+  if (!resolved) return;
+
+  quizPdfMeta = {
+    name: resolved.file.title + (resolved.file.title.toLowerCase().endsWith('.pdf') ? '' : '.pdf'),
+    sizeKb: resolved.file.sizeKb || 0,
+    sourceLabel: 'ملف من المنصة (معزول عن باقي الدروس)',
+    fileId: resolved.file.id
+  };
+  quizPdfBase64Cache = resolved.base64 || '';
+  quizPdfDocProxy = null;
+
+  if (quizPdfBase64Cache) {
+    await parsePdfFromBase64(quizPdfBase64Cache);
+    quizRangeExtractInfo = await extractPagesTextFromPdf(quizSettings.pageFrom, quizSettings.pageTo);
+  } else {
+    quizRangeExtractInfo = { text: '', pageCount: 0, status: 'missing_local_blob', pages: [] };
+  }
+  await buildAndRenderQuiz(true);
 }
 
 function removeQuizPdf() {
@@ -1231,20 +1286,20 @@ function removeQuizPdf() {
   quizPdfTotalPages = 0;
   quizRangeExtractInfo = { text: '', pageCount: 0, status: 'idle', pages: [] };
   localStorage.removeItem('hudhud_quiz_pdf_meta');
-  showToast('تمت إزالة ملف PDF من الاختبارات');
+  showToast('تمت إزالة الملف من الاختبار');
   buildAndRenderQuiz(false);
 }
 
 function previewQuizPdf() {
   if (!quizPdfMeta || !quizPdfBase64Cache) {
-    return showToast('اختر ملف PDF أولاً لعرض معاينته', 'error');
+    return showToast('اختر ملف PDF يحتوي على محتوى لعرض معاينته', 'error');
   }
   currentViewerFile = {
     id: 'quiz_pdf_preview',
     title: quizPdfMeta.name,
     type: 'pdf',
     content: quizPdfBase64Cache,
-    note: `معاينة ملف PDF المرفق — النطاق المحدد: صفحات ${quizSettings.pageFrom} إلى ${quizSettings.pageTo}`
+    note: `معاينة الملف المحدد حصرياً للاختبار — صفحات ${quizSettings.pageFrom} إلى ${quizSettings.pageTo}`
   };
   $('viewerTitle').textContent = quizPdfMeta.name;
   $('viewerNoteText').textContent = currentViewerFile.note;
@@ -1256,169 +1311,187 @@ function previewQuizPdf() {
   document.body.classList.add('viewing');
 }
 
-function setQuizMode(mode) {
-  quizSettings.mode = mode;
+async function setQuizSourceType(mode) {
+  quizSettings.sourceType = mode;
   writeJson('hudhud_quiz_settings', quizSettings);
-  buildAndRenderQuiz(true);
+  if (mode === 'library') {
+    const pdfs = lib.files.filter(f => f.type === 'pdf');
+    const chosenId = quizSettings.libraryFileId && pdfs.some(p => p.id === quizSettings.libraryFileId)
+      ? quizSettings.libraryFileId
+      : (pdfs[0] ? pdfs[0].id : '');
+    if (chosenId) {
+      await selectLibraryPdfForQuiz(chosenId);
+      return;
+    }
+  }
+  await buildAndRenderQuiz(false);
 }
 
 async function applyPageRangeAndGenerate() {
   const fromEl = $('quizPageFrom');
   const toEl = $('quizPageTo');
   const cntEl = $('quizCountSelect');
+  const diffEl = $('quizDiffSelect');
   if (fromEl) quizSettings.pageFrom = Math.max(1, parseInt(fromEl.value, 10) || 1);
   if (toEl) quizSettings.pageTo = Math.max(quizSettings.pageFrom, parseInt(toEl.value, 10) || quizSettings.pageFrom);
   if (cntEl) quizSettings.count = Number(cntEl.value) || 8;
+  if (diffEl) quizSettings.difficulty = diffEl.value || 'mixed';
   writeJson('hudhud_quiz_settings', quizSettings);
   await buildAndRenderQuiz(true);
 }
 
-function generateFocusedPdfQuestions(docName, extractInfo) {
-  const cleanTitle = docName.replace(/\.pdf$/i, '');
-  const rangeLabel = `صفحة ${quizSettings.pageFrom} إلى ${quizSettings.pageTo}`;
-  const questions = [];
-
-  // تقسيم النصوص المستخرجة من الصفحات إلى جمل وعبارات مفيدة
-  const rawSentences = (extractInfo.text || '')
-    .split(/[\n.؟!؛:]+/)
-    .map(s => s.trim())
-    .filter(s => s.length >= 24 && s.length <= 165);
-
-  const pageSpecificSentences = [];
-  (extractInfo.pages || []).forEach(pObj => {
-    const parts = (pObj.text || '')
-      .split(/[\n.؟!؛:]+/)
-      .map(s => s.trim())
-      .filter(s => s.length >= 24 && s.length <= 155);
-    parts.forEach(part => pageSpecificSentences.push({ pageNum: pObj.pageNum, text: part }));
-  });
-
-  // 1) أسئلة مبنية مباشرة على جمل وعبارات من الصفحات المحددة
-  pageSpecificSentences.forEach((item, idx) => {
-    const others = rawSentences.filter(s => s !== item.text);
-    const d1 = others[idx % others.length] || `معلومة مختلفة غير واردة في صفحة ${item.pageNum}`;
-    const d2 = others[(idx + 2) % others.length] || 'عبارة خارج نطاق الصفحات المحددة في الملف';
-    const opts = shuffleArray([
-      { text: item.text, ok: true },
-      { text: d1, ok: false },
-      { text: d2, ok: false }
-    ]);
-    questions.push({
-      badge: `📄 ${cleanTitle} • صفحة ${item.pageNum}`,
-      question: `أي من العبارات التالية وردت في الصفحة (${item.pageNum}) من ملف «${cleanTitle}»؟`,
-      options: opts.map(o => o.text),
-      correct: opts.findIndex(o => o.ok),
-      explain: `وردت في الصفحة ${item.pageNum}: «${item.text}»`
-    });
-  });
-
-  // 2) أسئلة ربط الصفحة بالمحتوى داخل النطاق المحدد
-  pageSpecificSentences.slice(0, 6).forEach((item, idx) => {
-    const shortSnippet = item.text.slice(0, 75) + (item.text.length > 75 ? '...' : '');
-    const wrongPages = [
-      `خارج النطاق (${rangeLabel}) في الملف`,
-      `في صفحة غير مرتبطة بهذا المقطع`
-    ];
-    const opts = shuffleArray([
-      { text: `ضمن النطاق المحدد (${rangeLabel}) في «${cleanTitle}»`, ok: true },
-      { text: wrongPages[idx % wrongPages.length], ok: false },
-      { text: 'معلومة من قسم آخر لا علاقة لها بالملف', ok: false }
-    ]);
-    questions.push({
-      badge: `🎯 نطاق ${rangeLabel}`,
-      question: `أين يقع المقطع التالي: «${shortSnippet}»؟`,
-      options: opts.map(o => o.text),
-      correct: opts.findIndex(o => o.ok),
-      explain: `هذا المقطع موجود في الصفحة ${item.pageNum} ضمن نطاق ${rangeLabel}.`
-    });
-  });
-
-  // 3) أسئلة مركّزة على نطاق الصفحات والملف المرفق (تعمل حتى لو كان الملف صوراً ممسوحة ضوئياً)
-  const focusedTemplates = [
-    {
-      badge: `📌 تركيز الملف (${rangeLabel})`,
-      question: `ما النطاق المحدد حالياً لاختبارك في ملف «${cleanTitle}»؟`,
-      options: [
-        `من صفحة ${quizSettings.pageFrom} إلى صفحة ${quizSettings.pageTo}`,
-        'اختبار عشوائي من كل الأقسام والمواد الأخرى',
-        'صفحة عشوائية واحدة خارج الملف'
-      ],
-      correct: 0,
-      explain: `الاختبار مضبوط الآن للتركيز على صفحات ${rangeLabel} من ملف «${cleanTitle}».`
-    },
-    {
-      badge: `📌 تركيز الملف (${rangeLabel})`,
-      question: `كيف تراجع صفحات (${rangeLabel}) من «${cleanTitle}» بأعلى كفاءة قبل يوم 1/2/2027؟`,
-      options: [
-        'التركيز على مفاهيم وتعريفات وقوانين هذه الصفحات تحديداً ثم إعادة الاختبار',
-        'الانتقال إلى مواد أخرى قبل إتمام صفحات النطاق',
-        'حفظ الإجابات دون فهم سبب اختيارها'
-      ],
-      correct: 0,
-      explain: `إتقان صفحات ${rangeLabel} أولاً يبني فهماً متدرجاً ومنظماً للملف.`
-    },
-    {
-      badge: `📌 تركيز الملف (${rangeLabel})`,
-      question: `ماذا تفعل إذا أخطأت في سؤال يخص صفحات (${rangeLabel}) من ملف «${cleanTitle}»؟`,
-      options: [
-        'الرجوع مباشرة إلى تلك الصفحات في الملف وتثبيت الفكرة قبل توليد جولة جديدة',
-        'تجاهل الخطأ والاستمرار دون مراجعة الصفحة',
-        'تغيير الملف دون إكمال النطاق'
-      ],
-      correct: 0,
-      explain: 'مراجعة الصفحة المرتبطة بالخطأ فوراً تمنع تكراره في الاختبار التالي.'
-    }
-  ];
-
-  focusedTemplates.forEach(t => questions.push(t));
-  return questions;
+function tokenizeWords(str) {
+  return (str || '')
+    .replace(/[^\u0600-\u06FFa-zA-Z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .map(w => w.trim())
+    .filter(w => w.length >= 2);
 }
 
-function generateSectionQuestions(catId) {
-  const bankFiltered = catId === 'all'
-    ? SECTION_BANK
-    : SECTION_BANK.filter(q => q.catHint === catId);
+/* يولّد أسئلة مبنية حصرياً على النص الموجود في الصفحات المحددة من الملف فقط */
+function generateLiteralPageTextQuestions(docName, extractInfo) {
+  const cleanTitle = docName.replace(/\.pdf$/i, '');
+  const pagesWithText = (extractInfo.pages || []).filter(p => p.text && p.text.trim().length >= 25);
 
-  const bankShuffled = shuffleArray(bankFiltered.length ? bankFiltered : SECTION_BANK).map(q => {
-    const tagged = q.options.map((text, idx) => ({ text, ok: idx === q.correct }));
-    const shuf = shuffleArray(tagged);
-    return {
-      badge: '📚 بنك الأسئلة',
-      question: q.question,
-      options: shuf.map(o => o.text),
-      correct: shuf.findIndex(o => o.ok),
-      explain: q.explain
-    };
-  });
+  const segments = [];
+  pagesWithText.forEach(pObj => {
+    const chunks = pObj.text
+      .split(/[.؟!؛:\n]+/)
+      .map(c => c.replace(/\s+/g, ' ').trim())
+      .filter(c => c.length >= 28 && c.length <= 220);
 
-  const pool = catId === 'all' ? lib.files : lib.files.filter(f => f.catId === catId);
-  const allTitles = lib.files.map(f => f.title).filter(Boolean);
-  const distractors = [
-    'مقرر الجغرافيا الاقتصادية',
-    'قوانين الوراثة في الأحياء',
-    'تاريخ العمارة القديمة'
-  ];
-
-  const lessonQs = [];
-  pool.forEach(f => {
-    const cat = lib.categories.find(c => c.id === f.catId);
-    const catName = cat ? cat.name : 'المقرر الدراسي';
-    const wrongPool = shuffleArray([...allTitles.filter(t => t !== f.title), ...distractors]).slice(0, 2);
-    const opts = shuffleArray([
-      { text: catName, ok: true },
-      { text: wrongPool[0] || 'قسم خارج المنهج', ok: false },
-      { text: wrongPool[1] || 'مادة غير مقررة', ok: false }
-    ]);
-    lessonQs.push({
-      badge: `🗂️ ${catName}`,
-      question: `ضمن أي قسم يُصنّف درس «${f.title}»؟`,
-      options: opts.map(o => o.text),
-      correct: opts.findIndex(o => o.ok),
-      explain: `الدرس «${f.title}» يتبع لقسم «${catName}».`
+    chunks.forEach(chunk => {
+      segments.push({ pageNum: pObj.pageNum, text: chunk });
     });
+
+    // إذا كانت الصفحة كتلة نصية طويلة دون نقاط فاصلة كثيرة، نقسمها إلى مقاطع مترابطة
+    if (chunks.length === 0 && pObj.text.length >= 35) {
+      const words = pObj.text.split(/\s+/);
+      for (let i = 0; i < words.length; i += 16) {
+        const piece = words.slice(i, i + 16).join(' ').trim();
+        if (piece.length >= 28) {
+          segments.push({ pageNum: pObj.pageNum, text: piece });
+        }
+      }
+    }
   });
 
-  return shuffleArray([...bankShuffled, ...lessonQs]);
+  if (segments.length === 0) return [];
+
+  const allSegmentTexts = segments.map(s => s.text);
+  const questions = [];
+
+  // 1) سؤال إكمال النص الحرفي من الصفحة المحددة
+  segments.forEach((seg, idx) => {
+    const words = seg.text.split(/\s+/);
+    if (words.length >= 6) {
+      const splitIdx = Math.max(2, Math.min(words.length - 2, Math.floor(words.length * 0.6)));
+      const prefix = words.slice(0, splitIdx).join(' ');
+      const realEnding = words.slice(splitIdx).join(' ');
+
+      const wrongEndings = [];
+      for (let k = 1; k < segments.length && wrongEndings.length < 2; k++) {
+        const candWords = segments[(idx + k) % segments.length].text.split(/\s+/);
+        if (candWords.length >= 3) {
+          const candEnd = candWords.slice(Math.floor(candWords.length * 0.5)).join(' ');
+          if (candEnd && candEnd !== realEnding && !wrongEndings.includes(candEnd)) {
+            wrongEndings.push(candEnd);
+          }
+        }
+      }
+
+      if (wrongEndings.length >= 2) {
+        const opts = shuffleArray([
+          { text: realEnding, ok: true },
+          { text: wrongEndings[0], ok: false },
+          { text: wrongEndings[1], ok: false }
+        ]);
+        questions.push({
+          typeLabel: 'إكمال من النص',
+          badge: `📄 ${cleanTitle} • صفحة ${seg.pageNum}`,
+          prompt: `أكمل العبارة كما وردت في الصفحة (${seg.pageNum}) من الملف:`,
+          quote: `«${prefix} ...»`,
+          options: opts.map(o => o.text),
+          correct: opts.findIndex(o => o.ok),
+          explain: `النص الكامل في صفحة ${seg.pageNum}: «${seg.text}»`,
+          evidence: `المصدر: ${cleanTitle} — صفحة ${seg.pageNum}`
+        });
+      }
+    }
+  });
+
+  // 2) سؤال تحديد النص الوارد حرفياً في صفحة معينة ضمن النطاق المحدد
+  segments.forEach((seg, idx) => {
+    const otherPages = segments.filter(s => s.pageNum !== seg.pageNum && s.text !== seg.text);
+    const poolForWrong = otherPages.length >= 2
+      ? otherPages
+      : segments.filter((_, i) => i !== idx);
+
+    if (poolForWrong.length >= 2) {
+      const w1 = poolForWrong[idx % poolForWrong.length].text;
+      const w2 = poolForWrong[(idx + 1) % poolForWrong.length].text;
+      if (w1 !== seg.text && w2 !== seg.text && w1 !== w2) {
+        const opts = shuffleArray([
+          { text: seg.text, ok: true },
+          { text: w1, ok: false },
+          { text: w2, ok: false }
+        ]);
+        questions.push({
+          typeLabel: 'نص الصفحة',
+          badge: `📄 ${cleanTitle} • صفحة ${seg.pageNum}`,
+          prompt: `أي من النصوص التالية ورد حرفياً في الصفحة (${seg.pageNum})؟`,
+          quote: '',
+          options: opts.map(o => o.text),
+          correct: opts.findIndex(o => o.ok),
+          explain: `هذا المقطع موجود نصياً في صفحة ${seg.pageNum} من «${cleanTitle}».`,
+          evidence: `المصدر: ${cleanTitle} — صفحة ${seg.pageNum}`
+        });
+      }
+    }
+  });
+
+  // 3) سؤال مطابقة المقطع النصي مع رقم الصفحة الصحيحة داخل النطاق المحدد
+  if (pagesWithText.length >= 2) {
+    segments.forEach((seg, idx) => {
+      const otherPageNums = [...new Set(pagesWithText.map(p => p.pageNum).filter(n => n !== seg.pageNum))];
+      if (otherPageNums.length >= 1) {
+        const wrongChoices = [];
+        for (let m = 0; m < otherPageNums.length && wrongChoices.length < 2; m++) {
+          wrongChoices.push(`صفحة ${otherPageNums[(idx + m) % otherPageNums.length]}`);
+        }
+        if (wrongChoices.length < 2) {
+          wrongChoices.push(`صفحة غير واردة في نطاق (${quizSettings.pageFrom}–${quizSettings.pageTo})`);
+        }
+        const opts = shuffleArray([
+          { text: `صفحة ${seg.pageNum}`, ok: true },
+          { text: wrongChoices[0], ok: false },
+          { text: wrongChoices[1], ok: false }
+        ]);
+        questions.push({
+          typeLabel: 'تحديد الصفحة',
+          badge: `📄 ${cleanTitle} • نطاق ${quizSettings.pageFrom}–${quizSettings.pageTo}`,
+          prompt: `في أي صفحة من النطاق المحدد ورد هذا النص حرفياً؟`,
+          quote: `«${seg.text}»`,
+          options: opts.map(o => o.text),
+          correct: opts.findIndex(o => o.ok),
+          explain: `ورد هذا النص في الصفحة ${seg.pageNum} من ملف «${cleanTitle}».`,
+          evidence: `النص الكامل في صفحة ${seg.pageNum}: «${seg.text}»`
+        });
+      }
+    });
+  }
+
+  // فلترة حسب نوع الأسئلة المختار إن وجد
+  if (quizSettings.difficulty === 'recall') {
+    const rec = questions.filter(q => q.typeLabel !== 'تحديد الصفحة');
+    return rec.length ? rec : questions;
+  }
+  if (quizSettings.difficulty === 'locate') {
+    const loc = questions.filter(q => q.typeLabel === 'تحديد الصفحة');
+    return loc.length ? loc : questions;
+  }
+
+  return questions;
 }
 
 async function buildAndRenderQuiz(notify = false) {
@@ -1426,38 +1499,67 @@ async function buildAndRenderQuiz(notify = false) {
   writeJson('hudhud_quiz_settings', quizSettings);
 
   const targetCount = Math.max(3, Math.min(20, Number(quizSettings.count) || 8));
-  let sourcePool = [];
-
-  if (quizSettings.mode === 'file' && quizPdfMeta) {
-    if (quizPdfBase64Cache && !quizPdfDocProxy) {
-      await parsePdfFromBase64(quizPdfBase64Cache);
-    }
-    quizRangeExtractInfo = await extractPagesTextFromPdf(quizSettings.pageFrom, quizSettings.pageTo);
-    sourcePool = generateFocusedPdfQuestions(quizPdfMeta.name, quizRangeExtractInfo);
-  } else {
-    sourcePool = generateSectionQuestions(quizSettings.catId);
-  }
-
-  const list = [];
-  if (sourcePool.length > 0) {
-    while (list.length < targetCount) {
-      const batch = shuffleArray(sourcePool);
-      for (const item of batch) {
-        if (list.length >= targetCount) break;
-        list.push({ ...item, qNum: list.length + 1 });
-      }
-    }
-  }
-
-  currentQuizQuestions = list;
+  currentQuizQuestions = [];
   quizAnswers = {};
   quizRecordedCurrentRun = false;
 
-  if (notify) {
-    if (quizSettings.mode === 'file' && quizPdfMeta) {
-      showToast(`تم توليد اختبار من صفحات ${quizSettings.pageFrom}–${quizSettings.pageTo} لملف «${quizPdfMeta.name}» 🎯`);
+  if (quizSettings.sourceType === 'library') {
+    const pdfs = lib.files.filter(f => f.type === 'pdf');
+    if (pdfs.length > 0) {
+      const targetId = (quizSettings.libraryFileId && pdfs.some(p => p.id === quizSettings.libraryFileId))
+        ? quizSettings.libraryFileId
+        : pdfs[0].id;
+      quizSettings.libraryFileId = targetId;
+      writeJson('hudhud_quiz_settings', quizSettings);
+
+      const resolved = await resolveSelectedLibraryPdfBase64(targetId);
+      if (resolved) {
+        quizPdfMeta = {
+          name: resolved.file.title + (resolved.file.title.toLowerCase().endsWith('.pdf') ? '' : '.pdf'),
+          sizeKb: resolved.file.sizeKb || 0,
+          sourceLabel: 'ملف من المنصة (معزول عن باقي الدروس)',
+          fileId: resolved.file.id
+        };
+        if (resolved.base64) {
+          quizPdfBase64Cache = resolved.base64;
+          quizPdfDocProxy = null;
+          await parsePdfFromBase64(quizPdfBase64Cache);
+          quizRangeExtractInfo = await extractPagesTextFromPdf(quizSettings.pageFrom, quizSettings.pageTo);
+        } else {
+          quizPdfBase64Cache = '';
+          quizPdfDocProxy = null;
+          quizRangeExtractInfo = { text: '', pageCount: 0, status: 'missing_local_blob', pages: [] };
+        }
+      }
     } else {
-      showToast(`تم توليد اختبار جديد #${quizSettings.seed} ⚡`);
+      quizRangeExtractInfo = { text: '', pageCount: 0, status: 'no_library_pdf', pages: [] };
+    }
+  } else if (quizPdfMeta && quizPdfBase64Cache) {
+    if (!quizPdfDocProxy) {
+      await parsePdfFromBase64(quizPdfBase64Cache);
+    }
+    quizRangeExtractInfo = await extractPagesTextFromPdf(quizSettings.pageFrom, quizSettings.pageTo);
+  }
+
+  let pool = [];
+  if (quizPdfMeta && quizRangeExtractInfo.status === 'ok') {
+    pool = generateLiteralPageTextQuestions(quizPdfMeta.name, quizRangeExtractInfo);
+  }
+
+  // ترتيب الأسئلة واختيار العدد المطلوب دون إضافة أي أسئلة من خارج نص الملف
+  if (pool.length > 0) {
+    const shuffledPool = shuffleArray(pool);
+    const limit = Math.min(targetCount, shuffledPool.length);
+    for (let i = 0; i < limit; i++) {
+      currentQuizQuestions.push({ ...shuffledPool[i], qNum: i + 1 });
+    }
+  }
+
+  if (notify) {
+    if (currentQuizQuestions.length > 0) {
+      showToast(`تم توليد ${currentQuizQuestions.length} سؤالاً من نص الصفحات (${quizSettings.pageFrom}–${quizSettings.pageTo}) فقط 🎯`);
+    } else {
+      showToast('لم يتم العثور على نص مقروء كافٍ في الصفحات المحددة من هذا الملف', 'error');
     }
   }
 
@@ -1471,6 +1573,13 @@ function answerQuiz(qIdx, chosenIdx) {
 
   const box = $('qOpts_' + qIdx);
   const expEl = $('qExplain_' + qIdx);
+  const cardEl = $('qCard_' + qIdx);
+  const isOk = chosenIdx === q.correct;
+
+  if (cardEl) {
+    cardEl.classList.remove('answered-ok', 'answered-bad');
+    cardEl.classList.add(isOk ? 'answered-ok' : 'answered-bad');
+  }
   if (box) {
     box.querySelectorAll('.quiz-option-btn').forEach((b, i) => {
       b.classList.remove('correct', 'wrong');
@@ -1480,23 +1589,29 @@ function answerQuiz(qIdx, chosenIdx) {
   }
   if (expEl) {
     expEl.style.display = 'block';
-    expEl.textContent = (chosenIdx === q.correct ? '✅ إجابة صحيحة: ' : '❌ راجع التوضيح: ') + q.explain;
+    expEl.innerHTML = `<div style="font-weight:700; color:${isOk ? 'var(--success)' : 'var(--danger)'}; margin-bottom:4px;">${isOk ? '✅ إجابة مطابقة لنص الملف' : '❌ إجابة غير مطابقة — راجع النص المرجعي'}</div>
+      <div style="color:var(--ink);">${escapeHtml(q.explain)}</div>
+      <div style="font-size:11.5px; color:var(--muted); margin-top:4px;">${escapeHtml(q.evidence)}</div>`;
   }
 
   const answeredCount = Object.keys(quizAnswers).length;
   const scoreCount = Object.entries(quizAnswers).filter(([idx, val]) => currentQuizQuestions[Number(idx)]?.correct === val).length;
   const liveScoreEl = $('quizLiveScore');
+  const livePctEl = $('quizProgressFill');
   if (liveScoreEl) liveScoreEl.textContent = `المجاب: ${answeredCount} / ${currentQuizQuestions.length} | الدرجة: ${scoreCount}`;
+  if (livePctEl && currentQuizQuestions.length) {
+    livePctEl.style.width = Math.round((answeredCount / currentQuizQuestions.length) * 100) + '%';
+  }
 
   if (answeredCount === currentQuizQuestions.length && !quizRecordedCurrentRun) {
     quizRecordedCurrentRun = true;
     const pct = Math.round((scoreCount / currentQuizQuestions.length) * 100);
-    const modeLabel = (quizSettings.mode === 'file' && quizPdfMeta)
-      ? `${quizPdfMeta.name} (ص ${quizSettings.pageFrom}-${quizSettings.pageTo})`
-      : 'اختبار القسم';
+    const label = quizPdfMeta
+      ? `${quizPdfMeta.name} (ص ${quizSettings.pageFrom}–${quizSettings.pageTo})`
+      : 'اختبار ملف';
     quizHistory.unshift({
       run: quizSettings.seed,
-      label: modeLabel,
+      label,
       score: scoreCount,
       total: currentQuizQuestions.length,
       pct,
@@ -1525,131 +1640,169 @@ function renderSmartHub() {
     const scoreCount = Object.entries(quizAnswers).filter(([idx, val]) => currentQuizQuestions[Number(idx)]?.correct === val).length;
     const isFinished = currentQuizQuestions.length > 0 && answeredCount === currentQuizQuestions.length;
     const finalPct = currentQuizQuestions.length ? Math.round((scoreCount / currentQuizQuestions.length) * 100) : 0;
-    const isFileMode = quizSettings.mode === 'file';
+    const progPct = currentQuizQuestions.length ? Math.round((answeredCount / currentQuizQuestions.length) * 100) : 0;
+    const isLibraryMode = quizSettings.sourceType === 'library';
+    const libraryPdfs = lib.files.filter(f => f.type === 'pdf');
 
-    const extractStatusText = !quizPdfMeta
-      ? 'ارفع ملف PDF أولاً لتفعيل الأسئلة المركّزة على الملف وتحديد الصفحات.'
-      : (quizRangeExtractInfo.status === 'ok'
-          ? `✅ تم استخراج نص الصفحات (${quizSettings.pageFrom} إلى ${quizSettings.pageTo}) وتوليد أسئلة مباشرة من محتواها.`
-          : (quizPdfBase64Cache
-              ? `ℹ️ تم تحديد نطاق الصفحات (${quizSettings.pageFrom} إلى ${quizSettings.pageTo}) لملف «${quizPdfMeta.name}» (الملف مصوّر أو بدون نص قابل للنسخ، وتم تجهيز أسئلة مركّزة على نطاق الصفحات).`
-              : `ℹ️ الملف «${quizPdfMeta.name}» مسجّل؛ أعد اختياره من جهازك لاستخراج نصوص الصفحات (${quizSettings.pageFrom} إلى ${quizSettings.pageTo}) تلقائياً.`));
+    let statusBannerText = '';
+    if (!quizPdfMeta) {
+      statusBannerText = isLibraryMode
+        ? 'لا توجد ملفات PDF مضافة في المنصة حالياً؛ يمكنك رفع ملف PDF مباشرة من تبويب «رفع ملف جديد».'
+        : 'ارفع ملف PDF من جهازك ليقوم المحرك بقراءة الصفحات التي تحددها وتوليد أسئلة مباشرة من نصها فقط.';
+    } else if (quizRangeExtractInfo.status === 'ok') {
+      statusBannerText = `✅ تم استخراج النص الفعلي من الصفحات (${quizSettings.pageFrom} إلى ${quizSettings.pageTo}) وتوليد ${currentQuizQuestions.length} سؤالاً من هذا النطاق فقط (دون خلط أي ملفات أخرى).`;
+    } else if (quizRangeExtractInfo.status === 'missing_local_blob') {
+      statusBannerText = `⚠️ هذا الملف الكبير محفوظ على جهازك الأصلي فقط؛ أعد رفعه هنا ليتمكن المتصفح من قراءة نص صفحاته (${quizSettings.pageFrom}–${quizSettings.pageTo}).`;
+    } else {
+      statusBannerText = `⚠️ لم يُعثر على نص رقمي قابل للقراءة في الصفحات (${quizSettings.pageFrom} إلى ${quizSettings.pageTo}) — قد تكون هذه الصفحات صوراً ممسوحة ضوئياً بدون طبقة نصية.`;
+    }
+
+    const formattedPreviewHtml = (quizRangeExtractInfo.pages && quizRangeExtractInfo.pages.length)
+      ? quizRangeExtractInfo.pages
+          .filter(p => p.text)
+          .map(p => `<div style="margin-bottom:8px;"><span class="page-pill">صفحة ${p.pageNum}</span><span>${escapeHtml(p.text.slice(0, 260))}${p.text.length > 260 ? '...' : ''}</span></div>`)
+          .join('')
+      : '';
 
     container.innerHTML = `
       <div class="panel-card">
         <div class="quiz-studio-header">
           <div>
+            <div class="quiz-pro-pill">⚡ وضع التركيز النصي المعزول • ملف واحد وصفحات محددة</div>
             <h2 style="margin:0;">🎯 اختبار تدريبي ذكي</h2>
-            <p style="margin:4px 0 0; color:var(--muted); font-size:13.5px;">اختبارات منظمة تركّز على ملف الـ PDF ونطاق الصفحات المحدد دون خلط عشوائي.</p>
+            <p style="margin:4px 0 0; color:var(--muted); font-size:13.5px;">الأسئلة مبنية حصرياً على النص الموجود في الصفحات التي تختارها من الملف المحدد، دون أي خلط مع بقية ملفات المنصة.</p>
           </div>
           <div class="quiz-mode-switch">
-            <button type="button" class="quiz-mode-btn ${isFileMode ? 'active' : ''}" onclick="setQuizMode('file')">📄 تركيز على ملف PDF</button>
-            <button type="button" class="quiz-mode-btn ${!isFileMode ? 'active' : ''}" onclick="setQuizMode('section')">🗂️ اختبار قسم</button>
+            <button type="button" class="quiz-mode-btn ${!isLibraryMode ? 'active' : ''}" onclick="setQuizSourceType('upload')">📤 رفع ملف للاختبار</button>
+            <button type="button" class="quiz-mode-btn ${isLibraryMode ? 'active' : ''}" onclick="setQuizSourceType('library')">📁 اختيار ملف PDF من المنصة (${libraryPdfs.length})</button>
           </div>
         </div>
 
-        ${isFileMode ? `
-          <div class="quiz-pdf-box">
-            <div class="quiz-pdf-top">
-              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <div class="quiz-source-workbench">
+          <div class="quiz-source-top">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              ${!isLibraryMode ? `
                 <button type="button" class="btn small" onclick="$('quizPdfFileInput').click()">📄 اختيار / تغيير ملف PDF</button>
                 <input type="file" id="quizPdfFileInput" accept=".pdf" hidden onchange="handleQuizPdfUpload(this.files[0])">
-                ${quizPdfMeta
-                  ? `<span class="quiz-pdf-chip">📎 ${escapeHtml(quizPdfMeta.name)} (${quizPdfMeta.sizeKb} KB${quizPdfTotalPages ? ` • ${quizPdfTotalPages} ص` : ''})</span>
-                     ${quizPdfBase64Cache ? `<button type="button" class="btn ghost small" onclick="previewQuizPdf()">👁️ معاينة الملف</button>` : ''}
-                     <button type="button" class="remove-link-btn" onclick="removeQuizPdf()">✕ إزالة الملف</button>`
-                  : `<span style="font-size:12.5px; color:var(--muted);">لم يتم اختيار ملف PDF بعد.</span>`
-                }
-              </div>
-            </div>
-
-            <div class="quiz-page-range-grid">
-              <label style="margin:0;">من صفحة
-                <input type="number" id="quizPageFrom" min="1" ${quizPdfTotalPages ? `max="${quizPdfTotalPages}"` : ''} value="${quizSettings.pageFrom}">
-              </label>
-              <label style="margin:0;">إلى صفحة
-                <input type="number" id="quizPageTo" min="1" ${quizPdfTotalPages ? `max="${quizPdfTotalPages}"` : ''} value="${quizSettings.pageTo}">
-              </label>
-              <label style="margin:0;">عدد الأسئلة
-                <select id="quizCountSelect">
-                  <option value="5" ${Number(quizSettings.count) === 5 ? 'selected' : ''}>5 أسئلة</option>
-                  <option value="8" ${Number(quizSettings.count) === 8 ? 'selected' : ''}>8 أسئلة</option>
-                  <option value="12" ${Number(quizSettings.count) === 12 ? 'selected' : ''}>12 سؤالاً</option>
-                  <option value="15" ${Number(quizSettings.count) === 15 ? 'selected' : ''}>15 سؤالاً</option>
+              ` : `
+                <select style="max-width:290px; padding:8px 12px; font-weight:700;" onchange="selectLibraryPdfForQuiz(this.value)">
+                  <option value="">— اختر ملف PDF من المنصة —</option>
+                  ${libraryPdfs.map(p => `<option value="${p.id}" ${quizSettings.libraryFileId === p.id ? 'selected' : ''}>${escapeHtml(p.title)}</option>`).join('')}
                 </select>
-              </label>
-              <button type="button" class="btn" onclick="applyPageRangeAndGenerate()">⚡ توليد من الصفحات</button>
+              `}
+              ${quizPdfMeta ? `
+                <span class="quiz-file-badge">📎 ${escapeHtml(quizPdfMeta.name)}${quizPdfTotalPages ? ` • ${quizPdfTotalPages} صفحة` : ''}</span>
+                ${quizPdfBase64Cache ? `<button type="button" class="btn ghost small" onclick="previewQuizPdf()">👁️ معاينة</button>` : ''}
+                ${!isLibraryMode ? `<button type="button" class="remove-link-btn" onclick="removeQuizPdf()">✕ إزالة</button>` : ''}
+              ` : ''}
             </div>
-
-            <div class="quiz-excerpt-preview">
-              <div style="font-weight:700; color:var(--ink); margin-bottom:4px;">${escapeHtml(extractStatusText)}</div>
-              ${quizRangeExtractInfo.text
-                ? `<div>${escapeHtml(quizRangeExtractInfo.text.slice(0, 320))}${quizRangeExtractInfo.text.length > 320 ? '...' : ''}</div>`
-                : ''}
-            </div>
+            <span class="quiz-isolated-tag">🔒 معزول عن باقي المنصة</span>
           </div>
-        ` : `
-          <div class="quiz-builder-bar">
-            <label style="margin:0;">القسم المحدد
-              <select id="quizCatSelect" onchange="quizSettings.catId = this.value; writeJson('hudhud_quiz_settings', quizSettings); buildAndRenderQuiz(true);">
-                <option value="all" ${quizSettings.catId === 'all' ? 'selected' : ''}>كل الأقسام</option>
-                ${lib.categories.map(c => `<option value="${c.id}" ${quizSettings.catId === c.id ? 'selected' : ''}>${escapeHtml(c.icon + ' ' + c.name)}</option>`).join('')}
-              </select>
+
+          <div class="quiz-controls-grid">
+            <label style="margin:0;">من صفحة
+              <input type="number" id="quizPageFrom" min="1" ${quizPdfTotalPages ? `max="${quizPdfTotalPages}"` : ''} value="${quizSettings.pageFrom}">
+            </label>
+            <label style="margin:0;">إلى صفحة
+              <input type="number" id="quizPageTo" min="1" ${quizPdfTotalPages ? `max="${quizPdfTotalPages}"` : ''} value="${quizSettings.pageTo}">
             </label>
             <label style="margin:0;">عدد الأسئلة
-              <select id="quizCountSelect" onchange="quizSettings.count = Number(this.value) || 8; writeJson('hudhud_quiz_settings', quizSettings); buildAndRenderQuiz(true);">
+              <select id="quizCountSelect">
                 <option value="5" ${Number(quizSettings.count) === 5 ? 'selected' : ''}>5 أسئلة</option>
                 <option value="8" ${Number(quizSettings.count) === 8 ? 'selected' : ''}>8 أسئلة</option>
                 <option value="12" ${Number(quizSettings.count) === 12 ? 'selected' : ''}>12 سؤالاً</option>
+                <option value="16" ${Number(quizSettings.count) === 16 ? 'selected' : ''}>16 سؤالاً</option>
               </select>
             </label>
-            <button type="button" class="btn" onclick="buildAndRenderQuiz(true)">⚡ اختبار جديد</button>
+            <label style="margin:0;">نمط الأسئلة من النص
+              <select id="quizDiffSelect">
+                <option value="mixed" ${quizSettings.difficulty === 'mixed' ? 'selected' : ''}>متنوع (نص + صفحات)</option>
+                <option value="recall" ${quizSettings.difficulty === 'recall' ? 'selected' : ''}>إكمال ونص الصفحة فقط</option>
+                <option value="locate" ${quizSettings.difficulty === 'locate' ? 'selected' : ''}>تحديد الصفحة للنص</option>
+              </select>
+            </label>
+            <button type="button" class="btn" onclick="applyPageRangeAndGenerate()">⚡ توليد من الصفحات</button>
+          </div>
+
+          <div class="quiz-text-inspector">
+            <div class="quiz-inspector-head">
+              <strong style="font-size:12.5px; color:var(--ink);">📖 معاينة النص المستخرج من الصفحات (${quizSettings.pageFrom} – ${quizSettings.pageTo})</strong>
+              <span style="font-size:11.5px; color:var(--muted);">${escapeHtml(statusBannerText)}</span>
+            </div>
+            ${formattedPreviewHtml
+              ? `<div class="quiz-text-stream">${formattedPreviewHtml}</div>`
+              : `<div style="font-size:12.5px; color:var(--muted);">${escapeHtml(statusBannerText)}</div>`
+            }
+          </div>
+        </div>
+
+        <div class="quiz-session-bar">
+          <div class="quiz-progress-mini">
+            <div style="display:flex; justify-content:space-between; font-size:12.5px; font-weight:700;">
+              <span>${quizPdfMeta ? `الملف: ${escapeHtml(quizPdfMeta.name)} | صفحات ${quizSettings.pageFrom}–${quizSettings.pageTo}` : 'لم يُحدد ملف بعد'}</span>
+              <span id="quizLiveScore">المجاب: ${answeredCount} / ${currentQuizQuestions.length} | الدرجة: ${scoreCount}</span>
+            </div>
+            <div class="quiz-progress-track">
+              <div class="quiz-progress-fill" id="quizProgressFill" style="width:${progPct}%"></div>
+            </div>
+          </div>
+          <button type="button" class="btn ghost small" onclick="buildAndRenderQuiz(true)">↻ إعادة توليد الأسئلة</button>
+        </div>
+
+        ${currentQuizQuestions.length > 0 ? `
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            ${currentQuizQuestions.map((q, qIdx) => {
+              const chosen = quizAnswers[qIdx];
+              const hasChosen = chosen !== undefined;
+              const statusCls = hasChosen ? (chosen === q.correct ? 'answered-ok' : 'answered-bad') : '';
+              return `
+                <div class="quiz-q-card ${statusCls}" id="qCard_${qIdx}">
+                  <div class="quiz-q-top">
+                    <span class="quiz-q-badge">${escapeHtml(q.badge)}</span>
+                    <span class="quiz-q-type">${escapeHtml(q.typeLabel)}</span>
+                  </div>
+                  <div class="quiz-q-prompt">${qIdx + 1}. ${escapeHtml(q.prompt)}</div>
+                  ${q.quote ? `<div class="quiz-quote-box">${escapeHtml(q.quote)}</div>` : ''}
+                  <div style="display:flex; flex-direction:column; gap:8px;" id="qOpts_${qIdx}">
+                    ${q.options.map((opt, oIdx) => {
+                      let cls = 'quiz-option-btn';
+                      if (hasChosen) {
+                        if (oIdx === q.correct) cls += ' correct';
+                        else if (oIdx === chosen && chosen !== q.correct) cls += ' wrong';
+                      }
+                      return `<button type="button" class="${cls}" onclick="answerQuiz(${qIdx}, ${oIdx})">${escapeHtml(opt)}</button>`;
+                    }).join('')}
+                  </div>
+                  <div id="qExplain_${qIdx}" class="quiz-evidence-box" style="display:${hasChosen ? 'block' : 'none'};">
+                    <div style="font-weight:700; color:${hasChosen && chosen === q.correct ? 'var(--success)' : 'var(--danger)'}; margin-bottom:4px;">
+                      ${hasChosen ? (chosen === q.correct ? '✅ إجابة مطابقة لنص الملف' : '❌ إجابة غير مطابقة — راجع النص المرجعي') : ''}
+                    </div>
+                    <div style="color:var(--ink);">${escapeHtml(q.explain)}</div>
+                    <div style="font-size:11.5px; color:var(--muted); margin-top:4px;">${escapeHtml(q.evidence)}</div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        ` : `
+          <div style="text-align:center; padding:32px 16px; background:var(--bg); border:1px dashed var(--line); border-radius:18px; color:var(--muted);">
+            <div style="font-size:16px; font-weight:700; color:var(--ink); margin-bottom:6px;">لا توجد أسئلة جاهزة حالياً من نص الصفحات المحددة</div>
+            <div style="font-size:13px;">${escapeHtml(statusBannerText)}</div>
           </div>
         `}
 
-        <div class="quiz-meta-strip">
-          <span>${isFileMode && quizPdfMeta ? `المصدر: ${escapeHtml(quizPdfMeta.name)} (ص ${quizSettings.pageFrom}–${quizSettings.pageTo})` : `الجولة #${quizSettings.seed}`}</span>
-          <span id="quizLiveScore">المجاب: ${answeredCount} / ${currentQuizQuestions.length} | الدرجة: ${scoreCount}</span>
-        </div>
-
-        <div style="display:flex; flex-direction:column; gap:14px;">
-          ${currentQuizQuestions.map((q, qIdx) => {
-            const chosen = quizAnswers[qIdx];
-            const hasChosen = chosen !== undefined;
-            return `
-              <div class="quiz-q-card">
-                ${q.badge ? `<span class="quiz-q-badge">${escapeHtml(q.badge)}</span>` : ''}
-                <div style="font-weight:700; margin-bottom:10px; font-size:15px;">${qIdx + 1}. ${escapeHtml(q.question)}</div>
-                <div style="display:flex; flex-direction:column; gap:8px;" id="qOpts_${qIdx}">
-                  ${q.options.map((opt, oIdx) => {
-                    let cls = 'quiz-option-btn';
-                    if (hasChosen) {
-                      if (oIdx === q.correct) cls += ' correct';
-                      else if (oIdx === chosen && chosen !== q.correct) cls += ' wrong';
-                    }
-                    return `<button type="button" class="${cls}" onclick="answerQuiz(${qIdx}, ${oIdx})">${escapeHtml(opt)}</button>`;
-                  }).join('')}
-                </div>
-                <div id="qExplain_${qIdx}" style="display:${hasChosen ? 'block' : 'none'}; margin-top:10px; font-size:13px; font-weight:600; color:var(--accent);">
-                  ${hasChosen ? ((chosen === q.correct ? '✅ إجابة صحيحة: ' : '❌ راجع التوضيح: ') + escapeHtml(q.explain)) : ''}
-                </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-
         ${isFinished ? `
           <div class="quiz-result-box">
-            <div style="font-size:20px; font-weight:700;">نتيجة الاختبار: ${scoreCount} من ${currentQuizQuestions.length} (${finalPct}%)</div>
+            <div style="font-size:21px; font-weight:700;">نتيجة الاختبار: ${scoreCount} من ${currentQuizQuestions.length} (${finalPct}%)</div>
             <div style="font-size:13.5px; color:var(--muted); margin-top:6px;">
-              ${finalPct >= 80 ? 'ممتاز جداً! مستوى ممتاز في هذا النطاق.' : (finalPct >= 50 ? 'جيد جداً، جرّب جولة جديدة لتثبيت المعلومات أكثر.' : 'راجع الصفحات المحددة ثم أعد الاختبار بثقة.')}
+              ${finalPct >= 80 ? 'ممتاز جداً! أتقنت النص الموجود في هذه الصفحات.' : (finalPct >= 50 ? 'جيد جداً، راجع المقاطع التي أخطأت فيها ثم أعد التوليد.' : 'راجع نص الصفحات المحددة بدقة ثم جرّب جولة جديدة.')}
             </div>
-            <button type="button" class="btn" style="margin-top:12px;" onclick="buildAndRenderQuiz(true)">⚡ جولة جديدة</button>
+            <button type="button" class="btn" style="margin-top:14px;" onclick="buildAndRenderQuiz(true)">⚡ جولة أسئلة جديدة من نفس الصفحات</button>
           </div>
         ` : ''}
 
         ${quizHistory.length > 0 ? `
-          <div style="margin-top:18px; padding-top:14px; border-top:1px solid var(--line);">
+          <div style="margin-top:20px; padding-top:14px; border-top:1px solid var(--line);">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <strong style="font-size:13.5px;">📊 سجل المحاولات السابقة</strong>
               <button type="button" class="remove-link-btn" onclick="clearQuizHistory()">مسح السجل</button>
