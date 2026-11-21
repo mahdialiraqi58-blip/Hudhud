@@ -1,17 +1,42 @@
 {
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "id": "./",
   "name": "هدهد - المنصة التعليمية الذكية",
   "short_name": "هدهد",
+  "description": "منصة تعليمية ذكية تفاعلية لدعم الطلاب وتسهيل التعلم.",
   "lang": "ar",
   "dir": "rtl",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
   "background_color": "#070d19",
   "theme_color": "#4f46e5",
+  "categories": ["education"],
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%23312e81'/%3E%3Ctext x='256' y='340' font-size='280' text-anchor='middle'%3E%F0%9F%90%A6%3C/text%3E%3C/svg%3E",
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
       "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icons/hudhud-icon.svg",
+      "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
     }
