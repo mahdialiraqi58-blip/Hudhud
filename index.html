@@ -15,7 +15,6 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
-/* Custom Scrollbar */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 10px; }
@@ -102,7 +101,6 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
 }
 .install-app-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
 
-/* Smart Hub Tabs */
 .hub-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
 .hub-tab { background: var(--surface); border: 1px solid var(--line); color: var(--ink); padding: 9px 15px; border-radius: 14px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; box-shadow: var(--shadow-sm); }
 .hub-tab:hover { border-color: var(--accent); transform: translateY(-1px); }
@@ -183,11 +181,16 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
 
 /* Smart Labs & Logic Blocks */
 .panel-card { background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
+.attach-toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+.attach-btn { background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 8px 13px; border-radius: 12px; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
+.attach-btn:hover, .attach-btn.has-file { border-color: var(--accent); color: var(--accent); background: var(--tint); }
+.attach-preview-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.attach-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--bg); border: 1px solid var(--line); padding: 5px 10px; border-radius: 10px; font-size: 12px; font-weight: 600; }
 .logic-block-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-top: 14px; }
 .logic-block-card { background: var(--bg); border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
 .formula-pill { font-family: monospace; direction: ltr; text-align: center; background: var(--tint); color: var(--accent); padding: 8px 12px; border-radius: 12px; font-weight: 700; font-size: 13.5px; }
-.sim-preview-box { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: #fff; min-height: 220px; margin-top: 12px; }
-.sim-preview-box iframe { position: static; width: 100%; height: 240px; }
+.sim-preview-box { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: #fff; min-height: 260px; margin-top: 12px; }
+.sim-preview-box iframe { position: static; width: 100%; height: 300px; }
 .quiz-option-btn { width: 100%; text-align: right; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 10px 14px; border-radius: 12px; font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: 0.2s; }
 .quiz-option-btn:hover { border-color: var(--accent); }
 .quiz-option-btn.correct { background: rgba(16, 185, 129, 0.16); border-color: var(--success); color: var(--success); }
@@ -321,10 +324,9 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     </div>
   </div>
 
-  <!-- شريط الأنظمة الذكية -->
   <div class="hub-tabs">
     <button class="hub-tab active" id="tab-lessons" onclick="switchHubTab('lessons')">📚 الدروس والأقسام</button>
-    <button class="hub-tab" id="tab-logic" onclick="switchHubTab('logic')">🧠 كتل الحفظ والمحاكيات</button>
+    <button class="hub-tab" id="tab-logic" onclick="switchHubTab('logic')">🧠 كتل الحفظ والمحاكاة</button>
     <button class="hub-tab" id="tab-quiz" onclick="switchHubTab('quiz')">🎯 اختبار تدريبي ذكي</button>
     <button class="hub-tab" id="tab-diag" onclick="switchHubTab('diag')">🛠️ التشخيص والنسخ الاحتياطي</button>
   </div>
@@ -569,7 +571,10 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   let currentOrderedList = [];
   let deferredInstallPrompt = null;
 
-  // كتل المنطق والمعادلات المحفوظة محلياً
+  // مرفقات الاستوديو (صورة، PDF، رابط خارجي) + أنميشن HTML المولد
+  let studioAttach = { imageDataUrl: '', imageName: '', pdfName: '', extUrl: '' };
+  let lastGeneratedSimHtml = '';
+
   const DEFAULT_LOGIC_BLOCKS = [
     {
       id: 'lb1',
@@ -586,7 +591,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   ];
   let logicBlocks = JSON.parse(localStorage.getItem('hudhud_logic_blocks') || 'null') || DEFAULT_LOGIC_BLOCKS;
 
-  // جلسات الدراسة اليومية
   const todayKey = 'hudhud_sessions_' + new Date().toISOString().slice(0, 10);
   let todaySessions = parseInt(localStorage.getItem(todayKey) || '0', 10);
 
@@ -789,6 +793,51 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     }
   }
 
+  function renderAttachmentsStrip() {
+    const strip = document.getElementById('attachPreviewStrip');
+    if (!strip) return;
+    const chips = [];
+    if (studioAttach.imageName) chips.push(`<span class="attach-chip">🖼️ ${escapeHtml(studioAttach.imageName)} <button type="button" class="remove-link-btn" style="padding:2px 6px;" onclick="clearStudioAttach('image')">✕</button></span>`);
+    if (studioAttach.pdfName) chips.push(`<span class="attach-chip">📄 ${escapeHtml(studioAttach.pdfName)} <button type="button" class="remove-link-btn" style="padding:2px 6px;" onclick="clearStudioAttach('pdf')">✕</button></span>`);
+    if (studioAttach.extUrl) chips.push(`<span class="attach-chip">🔗 ${escapeHtml(studioAttach.extUrl)} <button type="button" class="remove-link-btn" style="padding:2px 6px;" onclick="clearStudioAttach('url')">✕</button></span>`);
+    strip.innerHTML = chips.join('');
+  }
+
+  function clearStudioAttach(kind) {
+    if (kind === 'image') { studioAttach.imageDataUrl = ''; studioAttach.imageName = ''; }
+    if (kind === 'pdf') { studioAttach.pdfName = ''; }
+    if (kind === 'url') { studioAttach.extUrl = ''; }
+    renderAttachmentsStrip();
+  }
+
+  function handleStudioImageUpload(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      studioAttach.imageDataUrl = e.target.result;
+      studioAttach.imageName = file.name;
+      renderAttachmentsStrip();
+      showToast('تم إرفاق الصورة بالمحاكي 🖼️');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleStudioPdfUpload(file) {
+    if (!file) return;
+    studioAttach.pdfName = file.name;
+    renderAttachmentsStrip();
+    showToast('تم إرفاق ملف PDF بالمحاكي 📄');
+  }
+
+  function promptStudioExternalLink() {
+    const entered = prompt('أدخل رابط الملف أو المخطط الكهربائي الخارجي (https://...):', studioAttach.extUrl || 'https://');
+    if (entered && entered.trim()) {
+      studioAttach.extUrl = normalizeUrl(entered.trim());
+      renderAttachmentsStrip();
+      showToast('تم إرفاق الرابط الخارجي 🔗');
+    }
+  }
+
   function renderSmartHub() {
     const container = document.getElementById('smartHubContainer');
     if (!container) return;
@@ -796,19 +845,34 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     if (activeHubTab === 'logic') {
       container.innerHTML = `
         <div class="panel-card">
-          <h2 style="margin:0 0 8px;">🧠 كتل المنطق والمعادلات + مولد المحاكاة الفوري</h2>
-          <p style="margin:0 0 14px; color:var(--muted); font-size:13.5px;">حوّل القوانين والمفاهيم إلى كتل منطقية للحفظ السريع، أو ولّد رسماً ومخططاً تفاعلياً فورياً.</p>
+          <h2 style="margin:0 0 8px;">🧠 كتل المنطق والمعادلات + استوديو المحاكاة والأنميشن HTML</h2>
+          <p style="margin:0 0 10px; color:var(--muted); font-size:13.5px;">أرفق صورة أو ملف PDF أو رابطاً كهربائياً، واكتب أمرك لتحويله إلى أنميشن HTML تفاعلي أو كتلة حفظ سريعة.</p>
+
+          <div class="attach-toolbar">
+            <button type="button" class="attach-btn ${studioAttach.imageName ? 'has-file' : ''}" onclick="document.getElementById('studioImgInput').click()">🖼️ إضافة صورة</button>
+            <button type="button" class="attach-btn ${studioAttach.pdfName ? 'has-file' : ''}" onclick="document.getElementById('studioPdfInput').click()">📄 إضافة ملف PDF</button>
+            <button type="button" class="attach-btn ${studioAttach.extUrl ? 'has-file' : ''}" onclick="promptStudioExternalLink()">🔗 رابط خارجي (ملف كهربائي)</button>
+            <input type="file" id="studioImgInput" accept="image/*" hidden onchange="handleStudioImageUpload(this.files[0])">
+            <input type="file" id="studioPdfInput" accept=".pdf" hidden onchange="handleStudioPdfUpload(this.files[0])">
+          </div>
+          <div id="attachPreviewStrip" class="attach-preview-strip"></div>
+
           <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:10px;">
-            <input type="text" id="lbTitleInput" placeholder="عنوان الكتلة (مثلاً: قانون أوم أو محرك توازي)">
-            <input type="text" id="lbFormulaInput" placeholder="المعادلة أو الرمز (مثلاً: V = I · R)" dir="ltr">
+            <input type="text" id="lbTitleInput" placeholder="عنوان الموضوع أو الملف (مثلاً: مولد تغذية منفصلة)">
+            <input type="text" id="lbFormulaInput" placeholder="المعادلة أو الرمز (مثلاً: E_g = K · Φ · n)" dir="ltr">
           </div>
-          <textarea id="lbStepsInput" style="margin-top:10px;" placeholder="خطوات الحل أو الفهم المنطقي (كل خطوة في سطر)..."></textarea>
+
+          <textarea id="lbCommandInput" style="margin-top:10px;" placeholder="اكتب الأمر هنا (مثلاً: سوّه أنميشن HTML يوضح حركة التيار والمجال، أو قسّمه إلى خطوات منطقية للحفظ)..."></textarea>
+
           <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
-            <button class="btn small" onclick="addLogicBlock()">+ حفظ كتلة منطقية</button>
-            <button class="btn ghost small" onclick="generateQuickSimulation()">⚡ توليد محاكاة تفاعلية فورية</button>
+            <button class="btn small" onclick="runCommandSimulation('html')">🎬 أنميشن HTML تفاعلي</button>
+            <button class="btn ghost small" onclick="runCommandSimulation('logic')">🧩 تحويل إلى كتلة حفظ منطقية</button>
+            <button class="btn ghost small" id="saveSimAsLessonBtn" style="display:none;" onclick="saveGeneratedSimToLibrary()">💾 حفظ الأنيميشن كدرس HTML</button>
           </div>
+
           <div id="simPreviewBox" class="sim-preview-box" style="display:none;"></div>
         </div>
+
         <div class="logic-block-grid">
           ${logicBlocks.map(b => `
             <div class="logic-block-card">
@@ -822,6 +886,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
           `).join('')}
         </div>
       `;
+      renderAttachmentsStrip();
     } else if (activeHubTab === 'quiz') {
       const questions = buildDynamicQuestions();
       container.innerHTML = `
@@ -883,20 +948,136 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     }
   }
 
-  function addLogicBlock() {
-    const title = document.getElementById('lbTitleInput').value.trim();
-    const formula = document.getElementById('lbFormulaInput').value.trim();
-    const steps = document.getElementById('lbStepsInput').value.trim();
-    if (!title || !formula) return showToast('اكتب عنوان الكتلة والمعادلة أولاً', 'error');
-    logicBlocks.unshift({
-      id: 'lb_' + Date.now(),
-      title,
-      formula,
-      steps: steps || 'مراجعة الفكرة الأساسية والربط بالقوانين.'
+  function runCommandSimulation(mode) {
+    const title = document.getElementById('lbTitleInput').value.trim() || 'مخطط وأنميشن دائرة / مفهوم';
+    const formula = document.getElementById('lbFormulaInput').value.trim() || 'V = I · R';
+    const cmdText = document.getElementById('lbCommandInput').value.trim() || 'أنميشن يوضح حركة التدفق والتحكم بالسرعة والجهد';
+
+    if (mode === 'logic') {
+      const attachSummary = [
+        studioAttach.imageName ? `صورة: ${studioAttach.imageName}` : '',
+        studioAttach.pdfName ? `PDF: ${studioAttach.pdfName}` : '',
+        studioAttach.extUrl ? `رابط: ${studioAttach.extUrl}` : ''
+      ].filter(Boolean).join(' | ');
+
+      const stepsFormatted = [
+        `الأمر: ${cmdText}`,
+        attachSummary ? `المرفقات: ${attachSummary}` : 'التركيز على الفكرة الأساسية والقانون.',
+        'الخطوة النهائية: مراجعة الوحدات والتطبيق العملي قبل الامتحان.'
+      ].join('\n');
+
+      logicBlocks.unshift({
+        id: 'lb_' + Date.now(),
+        title,
+        formula,
+        steps: stepsFormatted
+      });
+      localStorage.setItem('hudhud_logic_blocks', JSON.stringify(logicBlocks));
+      showToast('تم إنشاء كتلة الحفظ المنطقية 🧠');
+      renderSmartHub();
+      return;
+    }
+
+    const box = document.getElementById('simPreviewBox');
+    const saveBtn = document.getElementById('saveSimAsLessonBtn');
+    box.style.display = 'block';
+    if (saveBtn) saveBtn.style.display = 'inline-flex';
+
+    const imgSectionHtml = studioAttach.imageDataUrl
+      ? `<div style="margin-bottom:10px; text-align:center;"><img src="${studioAttach.imageDataUrl}" style="max-height:110px; border-radius:10px; border:1px solid #334155;"></div>`
+      : '';
+
+    const metaNotes = [
+      studioAttach.pdfName ? `📄 ملف PDF مرفق: ${escapeHtml(studioAttach.pdfName)}` : '',
+      studioAttach.extUrl ? `🔗 رابط خارجي: <a href="${escapeHtml(studioAttach.extUrl)}" target="_blank" style="color:#38bdf8;">${escapeHtml(studioAttach.extUrl)}</a>` : ''
+    ].filter(Boolean).join(' &nbsp;|&nbsp; ');
+
+    lastGeneratedSimHtml = `<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<style>
+  body { margin:0; font-family:"IBM Plex Sans Arabic",sans-serif; background:#070d19; color:#f8fafc; padding:16px; }
+  .top { display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+  .badge { background:#312e81; color:#e0e7ff; padding:4px 10px; border-radius:8px; font-size:12px; font-weight:700; }
+  .cmd { font-size:12.5px; color:#cbd5e1; background:#111a2e; padding:8px 12px; border-radius:10px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.08); }
+  .ctrl { display:flex; align-items:center; gap:10px; margin-bottom:10px; font-size:13px; }
+  svg { width:100%; height:135px; background:#111a2e; border-radius:14px; border:1px solid rgba(255,255,255,0.08); }
+  .meta { margin-top:8px; font-size:12px; color:#94a3b8; }
+</style>
+</head>
+<body>
+  <div class="top">
+    <strong>🎬 ${escapeHtml(title)}</strong>
+    <span class="badge">${escapeHtml(formula)}</span>
+  </div>
+  <div class="cmd"><strong>الأمر:</strong> ${escapeHtml(cmdText)}</div>
+  ${imgSectionHtml}
+  <div class="ctrl">
+    <label>سرعة الحركة / شدة المجال: <span id="spdVal">60</span>%</label>
+    <input id="spdRange" type="range" min="15" max="100" value="60" style="flex:1;">
+    <button id="toggleAnimBtn" style="padding:5px 12px; border-radius:8px; border:0; background:#4f46e5; color:#fff; cursor:pointer; font-weight:700;">إيقاف/تشغيل</button>
+  </div>
+  <svg id="sceneSvg" viewBox="0 0 420 135">
+    <rect x="35" y="25" width="350" height="80" rx="18" fill="none" stroke="#818cf8" stroke-width="3.5" stroke-dasharray="12 7">
+      <animate id="flowAnim" attributeName="stroke-dashoffset" from="0" to="-76" dur="1.2s" repeatCount="indefinite"/>
+    </rect>
+    <circle cx="210" cy="65" r="24" fill="#f59e0b">
+      <animateTransform id="rotorAnim" attributeName="transform" type="rotate" from="0 210 65" to="360 210 65" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <line x1="194" y1="65" x2="226" y2="65" stroke="#0f172a" stroke-width="3"/>
+    <text x="210" y="123" text-anchor="middle" fill="#a5b4fc" font-size="11">مسار التدفق والحركة التفاعلية</text>
+  </svg>
+  ${metaNotes ? `<div class="meta">${metaNotes}</div>` : ''}
+  <script>
+    const rng = document.getElementById('spdRange');
+    const lbl = document.getElementById('spdVal');
+    const flow = document.getElementById('flowAnim');
+    const rotor = document.getElementById('rotorAnim');
+    const svgEl = document.getElementById('sceneSvg');
+    const btn = document.getElementById('toggleAnimBtn');
+    let paused = false;
+
+    rng.addEventListener('input', () => {
+      lbl.textContent = rng.value;
+      const factor = Number(rng.value) / 100;
+      flow.setAttribute('dur', Math.max(0.35, (2.2 - factor * 1.7)).toFixed(2) + 's');
+      rotor.setAttribute('dur', Math.max(0.5, (3.2 - factor * 2.5)).toFixed(2) + 's');
     });
-    localStorage.setItem('hudhud_logic_blocks', JSON.stringify(logicBlocks));
-    showToast('تم حفظ الكتلة المنطقية 🧠');
-    renderSmartHub();
+
+    btn.addEventListener('click', () => {
+      paused = !paused;
+      if (paused) svgEl.pauseAnimations();
+      else svgEl.unpauseAnimations();
+    });
+  <\/script>
+</body>
+</html>`;
+
+    box.innerHTML = `<iframe srcdoc="${escapeHtml(lastGeneratedSimHtml)}"></iframe>`;
+    showToast('تم توليد الأنميشن التفاعلي بنجاح 🎬');
+  }
+
+  function saveGeneratedSimToLibrary() {
+    if (!lastGeneratedSimHtml) return showToast('ولّد أنميشناً أولاً', 'error');
+    const title = document.getElementById('lbTitleInput').value.trim() || 'أنميشن تفاعلي جديد';
+    const targetCat = lib.categories.find(c => c.id === 'elec') || lib.categories[0] || { id: 'general' };
+    const links = studioAttach.extUrl ? [{ label: 'ملف / رابط خارجي', url: studioAttach.extUrl }] : [];
+    lib.files.push({
+      id: 'f' + Date.now(),
+      type: 'html',
+      catId: targetCat.id,
+      title,
+      note: document.getElementById('lbCommandInput').value.trim() || 'أنميشن مولّد من استوديو هدهد',
+      tags: ['أنميشن', 'محاكاة'],
+      links,
+      content: lastGeneratedSimHtml,
+      added: Date.now()
+    });
+    saveData().then(() => {
+      showToast('تم حفظ الأنيميشن ضمن الدروس التفاعلية 💾');
+      render();
+    });
   }
 
   function deleteLogicBlock(id) {
@@ -904,41 +1085,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     localStorage.setItem('hudhud_logic_blocks', JSON.stringify(logicBlocks));
     showToast('تم حذف الكتلة');
     renderSmartHub();
-  }
-
-  function generateQuickSimulation() {
-    const title = document.getElementById('lbTitleInput').value.trim() || 'محاكاة مسار التيار والجهد';
-    const formula = document.getElementById('lbFormulaInput').value.trim() || 'V = I · R';
-    const box = document.getElementById('simPreviewBox');
-    box.style.display = 'block';
-    const simHtml = `
-      <!doctype html><html lang="ar" dir="rtl"><body style="margin:0; font-family:sans-serif; background:#0f172a; color:#f8fafc; padding:16px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-          <strong>⚡ ${escapeHtml(title)}</strong>
-          <span style="background:#312e81; padding:4px 10px; border-radius:8px; font-size:12px;">${escapeHtml(formula)}</span>
-        </div>
-        <label style="font-size:12px; color:#94a3b8;">تحكم بسرعة التدفق / الجهد: <span id="valLbl">50</span>%</label>
-        <input id="spd" type="range" min="10" max="100" value="50" style="width:100%; margin:8px 0 12px;">
-        <svg viewBox="0 0 400 110" style="width:100%; height:110px; background:#1e293b; border-radius:12px;">
-          <rect x="30" y="25" width="340" height="60" rx="14" fill="none" stroke="#818cf8" stroke-width="3" stroke-dasharray="10 6">
-            <animate id="dashAnim" attributeName="stroke-dashoffset" from="0" to="-64" dur="1.5s" repeatCount="indefinite"/>
-          </rect>
-          <circle cx="200" cy="55" r="18" fill="#f59e0b"/>
-          <text x="200" y="60" text-anchor="middle" fill="#0f172a" font-weight="bold" font-size="13">M / L</text>
-        </svg>
-        <script>
-          const s = document.getElementById('spd');
-          const a = document.getElementById('dashAnim');
-          const lbl = document.getElementById('valLbl');
-          s.addEventListener('input', () => {
-            lbl.textContent = s.value;
-            const dur = (2.6 - (Number(s.value) / 100) * 2.1).toFixed(2) + 's';
-            a.setAttribute('dur', dur);
-          });
-        <\/script>
-      </body></html>
-    `;
-    box.innerHTML = `<iframe srcdoc="${escapeHtml(simHtml)}"></iframe>`;
   }
 
   function buildDynamicQuestions() {
