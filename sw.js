@@ -1,5 +1,5 @@
 /* sw.js — هدهد */
-const VERSION = 'v3';
+const VERSION = 'v4';
 const STATIC_CACHE = `hudhud-static-${VERSION}`;
 const RUNTIME_CACHE = `hudhud-runtime-${VERSION}`;
 const FILES_CACHE = `hudhud-files-${VERSION}`;
