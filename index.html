@@ -19,7 +19,7 @@
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
 :root {
-  --bg: #f4f7fb; --surface: rgba(255, 255, 255, 0.86); --surface-solid: #ffffff;
+  --bg: #f4f7fb; --surface: rgba(255, 255, 255, 0.88); --surface-solid: #ffffff;
   --ink: #0f172a; --muted: #64748b; --accent: #4f46e5; --accent-hover: #4338ca;
   --accent-ink: #ffffff; --tint: #e0e7ff; --line: rgba(15, 23, 42, 0.08);
   --danger: #ef4444; --success: #10b981; --warn: #f59e0b; --star: #fbbf24;
@@ -28,13 +28,13 @@
   --base-font: 16px;
 }
 [data-theme="dark"] {
-  --bg: #070d19; --surface: rgba(17, 26, 46, 0.84); --surface-solid: #111a2e;
+  --bg: #070d19; --surface: rgba(17, 26, 46, 0.86); --surface-solid: #111a2e;
   --ink: #f8fafc; --muted: #94a3b8; --accent: #818cf8; --accent-hover: #6366f1;
   --accent-ink: #070d19; --tint: rgba(129, 140, 248, 0.16); --line: rgba(248, 250, 252, 0.09);
   --danger: #f87171; --success: #34d399; --warn: #fbbf24; --star: #fbbf24;
 }
 [data-theme="comfort"] {
-  --bg: #f5efe4; --surface: rgba(252, 248, 240, 0.9); --surface-solid: #fcf8f0;
+  --bg: #f5efe4; --surface: rgba(252, 248, 240, 0.92); --surface-solid: #fcf8f0;
   --ink: #2c241b; --muted: #6e5f4f; --accent: #b45309; --accent-hover: #92400e;
   --accent-ink: #ffffff; --tint: rgba(180, 83, 9, 0.14); --line: rgba(44, 36, 27, 0.10);
 }
@@ -100,7 +100,7 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
 .install-app-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
 
 .hub-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-.hub-tab { background: var(--surface); border: 1px solid var(--line); color: var(--ink); padding: 9px 15px; border-radius: 14px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; box-shadow: var(--shadow-sm); }
+.hub-tab { background: var(--surface); border: 1px solid var(--line); color: var(--ink); padding: 9px 16px; border-radius: 14px; font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; box-shadow: var(--shadow-sm); }
 .hub-tab:hover { border-color: var(--accent); transform: translateY(-1px); }
 .hub-tab.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 
@@ -177,63 +177,74 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
 .file-actions { display: flex; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line); }
 .file-actions button { flex: 1; }
 
-.panel-card { background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
-.ai-config-box { background: var(--bg); border: 1px solid var(--line); border-radius: 16px; padding: 12px; margin-bottom: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; align-items: end; }
-.attach-toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
-.attach-btn { background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 8px 13px; border-radius: 12px; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
-.attach-btn:hover, .attach-btn.has-file { border-color: var(--accent); color: var(--accent); background: var(--tint); }
-.attach-preview-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-.attach-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--bg); border: 1px solid var(--line); padding: 5px 10px; border-radius: 10px; font-size: 12px; font-weight: 600; }
-.logic-block-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-top: 14px; }
-.logic-block-card { background: var(--bg); border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
-.formula-pill { font-family: monospace; direction: ltr; text-align: center; background: var(--tint); color: var(--accent); padding: 8px 12px; border-radius: 12px; font-weight: 700; font-size: 13.5px; }
+.panel-card { background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
 
-.sim-stage {
-  margin-top: 16px;
-  background: #09101f;
-  color: #f8fafc;
-  border: 1px solid rgba(129, 140, 248, 0.35);
-  border-radius: 20px;
-  padding: 18px;
-}
-.sim-canvas-box {
-  background: #10192d;
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  border-radius: 16px;
+/* تنسيق الاختبارات غير المحدودة */
+.quiz-builder-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 18px;
   padding: 14px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+  align-items: end;
 }
-.sim-uploaded-img {
-  max-height: 165px;
-  max-width: 100%;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.16);
-  display: block;
-  margin: 0 auto 10px;
-  object-fit: contain;
-}
-.sim-desc-box {
-  background: #131e36;
-  border: 1px solid rgba(148, 163, 184, 0.2);
+.quiz-meta-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: var(--bg);
+  border: 1px solid var(--line);
   border-radius: 14px;
-  padding: 12px 14px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #e2e8f0;
-  margin-bottom: 12px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  font-weight: 700;
 }
-.steps-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-.step-chip { background: #17233d; color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 11px; padding: 7px 12px; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-.step-chip.active { background: #10b981; color: #062118; border-color: #34d399; }
-.ctrl-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-@keyframes dashStream { 0% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -64; } }
-.stream-line { stroke-dasharray: 10 6; animation: dashStream var(--stream-dur, 1.1s) linear infinite; }
-.stream-line.paused { animation-play-state: paused; }
-
-.quiz-option-btn { width: 100%; text-align: right; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 10px 14px; border-radius: 12px; font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-.quiz-option-btn:hover { border-color: var(--accent); }
+.quiz-option-btn {
+  width: 100%;
+  text-align: right;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  padding: 11px 14px;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.quiz-option-btn:hover:not(:disabled) { border-color: var(--accent); transform: translateX(-2px); }
 .quiz-option-btn.correct { background: rgba(16, 185, 129, 0.16); border-color: var(--success); color: var(--success); }
 .quiz-option-btn.wrong { background: rgba(239, 68, 68, 0.14); border-color: var(--danger); color: var(--danger); }
+.quiz-result-box {
+  margin-top: 18px;
+  background: linear-gradient(135deg, var(--tint), transparent);
+  border: 1px solid var(--accent);
+  border-radius: 18px;
+  padding: 18px;
+  text-align: center;
+}
+.quiz-history-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.quiz-history-chip {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.remove-link-btn { background: rgba(239, 68, 68, 0.12); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 10px; padding: 8px 10px; cursor: pointer; font-weight: bold; }
 
 .viewer { position: fixed; inset: 0; z-index: 200; background: var(--bg); display: none; flex-direction: column; }
 .viewing .viewer { display: flex; }
@@ -262,7 +273,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 .link-row { display: grid; grid-template-columns: 1fr 1.4fr auto; gap: 6px; align-items: center; }
 @media (max-width: 480px) { .link-row { grid-template-columns: 1fr; } }
 .link-row input { padding: 9px 10px; font-size: 13px; }
-.remove-link-btn { background: rgba(239, 68, 68, 0.12); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 10px; padding: 8px 10px; cursor: pointer; font-weight: bold; }
 
 .drop-zone { border: 2px dashed var(--line); border-radius: 16px; padding: 22px; text-align: center; cursor: pointer; transition: 0.2s; background: var(--bg); }
 .drop-zone.dragover { border-color: var(--accent); background: var(--tint); }
@@ -365,7 +375,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 
   <div class="hub-tabs">
     <button class="hub-tab active" id="tab-lessons" onclick="switchHubTab('lessons')">📚 الدروس والأقسام</button>
-    <button class="hub-tab" id="tab-logic" onclick="switchHubTab('logic')">🧠 كتل الحفظ والمحاكاة</button>
     <button class="hub-tab" id="tab-quiz" onclick="switchHubTab('quiz')">🎯 اختبار تدريبي ذكي</button>
     <button class="hub-tab" id="tab-diag" onclick="switchHubTab('diag')">🛠️ التشخيص والنسخ الاحتياطي</button>
   </div>
@@ -610,33 +619,107 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   let currentOrderedList = [];
   let deferredInstallPrompt = null;
 
-  let studioAttach = { imageDataUrl: '', imageName: '', pdfName: '', extUrl: '' };
-  let aiConfig = JSON.parse(localStorage.getItem('hudhud_ai_config') || 'null') || {
-    provider: 'openrouter',
-    model: 'google/gemini-2.5-flash',
-    apiKey: ''
+  /* حالة الاختبارات غير المحدودة */
+  let quizSettings = JSON.parse(localStorage.getItem('hudhud_quiz_settings') || 'null') || {
+    catId: 'all',
+    count: 10,
+    seed: 1
   };
-  let lastGeneratedSimHtml = '';
-  let activeSimSteps = [];
-  let currentSimStepIdx = 0;
-  let simAutoTimer = null;
-  let simPaused = false;
+  let currentQuizQuestions = [];
+  let quizAnswers = {};
+  let quizHistory = JSON.parse(localStorage.getItem('hudhud_quiz_history') || '[]');
+  let quizRecordedCurrentRun = false;
 
-  const DEFAULT_LOGIC_BLOCKS = [
+  const QUESTION_BANK = [
     {
-      id: 'lb1',
-      title: 'مولد تيار مستمر ذو تغذية منفصلة',
-      formula: 'E_g = K · Φ · n   |   V_t = E_g - I_a · R_a',
-      steps: '1. تغذية ملف المجال بمصدر مستقل لتثبيت الفيض Φ.\n2. دوران المنتج بسرعة n يولّد القوة الدافعة E_g.\n3. عند التحميل يظهر هبوط الجهد I_a · R_a.'
+      catHint: 'elec',
+      question: 'ما الفائدة الأساسية من التغذية المنفصلة لملف المجال في مولد التيار المستمر؟',
+      options: [
+        'تثبيت الفيض المغناطيسي وعدم تأثره بتغيرات تيار المنتج',
+        'زيادة مقاومة ملف المنتج تلقائياً عند التحميل',
+        'تحويل التيار المستمر إلى متناوب داخل عضو الإنتاج'
+      ],
+      correct: 0,
+      explain: 'فصل تغذية المجال يجعل الفيض المغناطيسي مستقراً ومستقلاً عن تيار الحمل.'
     },
     {
-      id: 'lb2',
-      title: 'القدرة الكهربائية في دوائر التيار المستمر',
-      formula: 'P = V · I = I² · R = V² / R',
-      steps: '1. تحديد الكميات المعطاة في المسألة.\n2. اختيار الصيغة المباشرة لتقليل خطوات التعويض.\n3. الانتباه لوحدات القياس (فولت، أمبير، أوم، واط).'
+      catHint: 'elec',
+      question: 'في مولد التيار المستمر ذي التغذية المنفصلة، كيف يُحسب جهد الأطراف V_t عند التحميل؟',
+      options: [
+        'V_t = E_g - I_a · R_a',
+        'V_t = E_g + I_a · R_a',
+        'V_t = I_a / R_a'
+      ],
+      correct: 0,
+      explain: 'جهد الأطراف يساوي القوة الدافعة المتولدة مطروحاً منه هبوط الجهد الداخلي I_a · R_a.'
+    },
+    {
+      catHint: 'elec',
+      question: 'ماذا يحدث لسرعة محرك التيار المستمر التوازي عند ثبوت الجهد وزيادة تيار المجال قليلاً؟',
+      options: [
+        'تنخفض السرعة بسبب ازدياد الفيض المغناطيسي',
+        'ترتفع السرعة بشكل لا نهائي فور إغلاق المفتاح',
+        'تنعدم القوة الدافعة العكسية تماماً'
+      ],
+      correct: 0,
+      explain: 'السرعة تتناسب عكسياً مع الفيض المغناطيسي (n ∝ E_b / Φ)، فزيادة الفيض تقلل السرعة.'
+    },
+    {
+      catHint: 'elec',
+      question: 'أي من العلاقات التالية تمثل القدرة الكهربائية المستهلكة في مقاومة؟',
+      options: [
+        'P = V · I = I² · R = V² / R',
+        'P = V / I = R · t',
+        'P = I / (V · R)'
+      ],
+      correct: 0,
+      explain: 'القدرة الكهربائية بالواط تساوي حاصل ضرب الجهد بالتيار أو مربع التيار في المقاومة أو مربع الجهد على المقاومة.'
+    },
+    {
+      catHint: 'drawing',
+      question: 'ما الهدف الرئيسي من الالتزام بمعايير المقياس والخطوط في الرسم الصناعي؟',
+      options: [
+        'ضمان قراءة المخطط بدقة ووضوح دون التباس بين الأجزاء والرموز',
+        'إخفاء الأبعاد الحقيقية للعناصر الكهربائية',
+        'استبدال الحسابات الهندسية بالألوان فقط'
+      ],
+      correct: 0,
+      explain: 'الرموز والخطوط القياسية تجعل المخطط لغة هندسية موحدة ومفهومة في التنفيذ والصيانة.'
+    },
+    {
+      catHint: 'drawing',
+      question: 'في المخططات الكهربائية، ما أهمية التمييز بين مسارات التغذية والقياس والتحكم؟',
+      options: [
+        'تسهيل تتبع المسارات وفحص الأعطال بسرعة وأمان',
+        'رفع جهد المصدر إلى الضعف تلقائياً',
+        'إلغاء الحاجة إلى أجهزة القياس'
+      ],
+      correct: 0,
+      explain: 'تنظيم المسارات والرموز يسرّع فهم الدائرة وتشخيص الأعطال أثناء المراجعة والعمل.'
+    },
+    {
+      catHint: 'mech',
+      question: 'ما وظيفة الوصلة الميكانيكية بين المحرك الدائر والمولد الميكانيكي؟',
+      options: [
+        'نقل العزم الدوراني والسرعة الميكانيكية من المحرك إلى المولد',
+        'تخزين الطاقة الكهربائية داخل ملفات المجال',
+        'تحويل التيار المستمر إلى تيار ثلاثي الأطوار'
+      ],
+      correct: 0,
+      explain: 'المحرك يوفر الحركة الدورانية الميكانيكية التي يدير بها المولد لتوليد القوة الدافعة الكهربائية.'
+    },
+    {
+      catHint: 'mech',
+      question: 'ماذا يعني ثبات سرعة الدوران (rpm) عند تشغيل آلة ضمن حدودها الاسمية؟',
+      options: [
+        'استقرار الأداء والجهد المتولد ضمن النطاق التصميمي الآمن',
+        'توقف سريان التيار في الدائرة كلياً',
+        'ارتفاع درجة الحرارة إلى حد الخطر فوراً'
+      ],
+      correct: 0,
+      explain: 'العمل بالسرعة الاسمية يحافظ على استقرار التشغيل ومنظومة التبريد والجهد.'
     }
   ];
-  let logicBlocks = JSON.parse(localStorage.getItem('hudhud_logic_blocks') || 'null') || DEFAULT_LOGIC_BLOCKS;
 
   const todayKey = 'hudhud_sessions_' + new Date().toISOString().slice(0, 10);
   let todaySessions = parseInt(localStorage.getItem(todayKey) || '0', 10);
@@ -651,7 +734,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   window.addEventListener('load', () => {
     setTimeout(() => {
       document.getElementById('preloader').classList.add('hidden');
-    }, 600);
+    }, 550);
   });
 
   window.addEventListener('scroll', () => {
@@ -823,11 +906,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 
   function switchHubTab(tabName) {
     activeHubTab = tabName;
-    if (tabName !== 'logic' && simAutoTimer) {
-      clearInterval(simAutoTimer);
-      simAutoTimer = null;
-    }
-    ['lessons', 'logic', 'quiz', 'diag'].forEach(t => {
+    ['lessons', 'quiz', 'diag'].forEach(t => {
       const btn = document.getElementById('tab-' + t);
       if (btn) btn.classList.toggle('active', t === tabName);
     });
@@ -840,249 +919,268 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     } else {
       lessonsView.style.display = 'none';
       smartHub.style.display = 'block';
+      if (tabName === 'quiz' && currentQuizQuestions.length === 0) {
+        generateUnlimitedQuiz(false);
+      }
       renderSmartHub();
     }
   }
 
-  function saveAiSettings() {
-    const provEl = document.getElementById('aiProviderSelect');
-    const modEl = document.getElementById('aiModelInput');
-    const keyEl = document.getElementById('aiKeyInput');
-    aiConfig = {
-      provider: provEl ? provEl.value : 'openrouter',
-      model: (modEl && modEl.value.trim()) || 'google/gemini-2.5-flash',
-      apiKey: keyEl ? keyEl.value.trim() : ''
-    };
-    localStorage.setItem('hudhud_ai_config', JSON.stringify(aiConfig));
-  }
-
-  function renderAttachmentsStrip() {
-    const strip = document.getElementById('attachPreviewStrip');
-    if (!strip) return;
-    const chips = [];
-    if (studioAttach.imageName) chips.push(`<span class="attach-chip">🖼️ ${escapeHtml(studioAttach.imageName)} <button type="button" class="remove-link-btn" style="padding:2px 6px;" onclick="clearStudioAttach('image')">✕</button></span>`);
-    if (studioAttach.pdfName) chips.push(`<span class="attach-chip">📄 ${escapeHtml(studioAttach.pdfName)} <button type="button" class="remove-link-btn" style="padding:2px 6px;" onclick="clearStudioAttach('pdf')">✕</button></span>`);
-    if (studioAttach.extUrl) chips.push(`<span class="attach-chip">🔗 ${escapeHtml(studioAttach.extUrl)} <button type="button" class="remove-link-btn" style="padding:2px 6px;" onclick="clearStudioAttach('url')">✕</button></span>`);
-    strip.innerHTML = chips.join('');
-  }
-
-  function clearStudioAttach(kind) {
-    if (kind === 'image') { studioAttach.imageDataUrl = ''; studioAttach.imageName = ''; }
-    if (kind === 'pdf') { studioAttach.pdfName = ''; }
-    if (kind === 'url') { studioAttach.extUrl = ''; }
-    renderAttachmentsStrip();
-  }
-
-  function handleStudioImageUpload(file) {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const maxW = 760;
-        const scale = img.width > maxW ? maxW / img.width : 1;
-        canvas.width = Math.round(img.width * scale);
-        canvas.height = Math.round(img.height * scale);
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        studioAttach.imageDataUrl = canvas.toDataURL('image/jpeg', 0.84);
-        studioAttach.imageName = file.name;
-        renderAttachmentsStrip();
-        showToast('تم إرفاق الصورة وتجهيزها للتحليل والأنميشن 🖼️');
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function handleStudioPdfUpload(file) {
-    if (!file) return;
-    studioAttach.pdfName = file.name;
-    renderAttachmentsStrip();
-    showToast('تم إرفاق ملف PDF بالمحاكي 📄');
-  }
-
-  function promptStudioExternalLink() {
-    const entered = prompt('أدخل رابط الملف أو المخطط الكهربائي الخارجي (https://...):', studioAttach.extUrl || 'https://');
-    if (entered && entered.trim()) {
-      studioAttach.extUrl = normalizeUrl(entered.trim());
-      renderAttachmentsStrip();
-      showToast('تم إرفاق الرابط الخارجي 🔗');
+  /* مولد الاختبارات غير المحدودة */
+  function shuffleArray(arr) {
+    const copy = [...arr];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
     }
+    return copy;
   }
 
-  function deriveStepsFromCommand(title, cmdText) {
-    const combined = (title + ' ' + cmdText).toLowerCase();
-    if (combined.includes('مولد') || combined.includes('توازي') || combined.includes('محرك')) {
-      return [
-        { label: '1. البداية', desc: 'المفاتيح مفتوحة، فلا يمر تيار في الدائرة والآلتان ساكنتان.', activeLines: [], speedLabel: '0 rpm' },
-        { label: '2. تيار مجال المحرك', desc: 'إغلاق مفتاح المحرك يمرر تيار المجال لتكوين الفيض المغناطيسي للمحرك.', activeLines: ['fieldM'], speedLabel: '300 rpm' },
-        { label: '3. تيار المنتج', desc: 'تغذية منتج المحرك يولّد عزم الدوران ويبدأ المحرك بالتسارع.', activeLines: ['fieldM', 'armM'], speedLabel: '950 rpm' },
-        { label: '4. دوران المولد', desc: 'المحرك يدير عضو إنتاج المولد عبر الوصلة الميكانيكية بالسرعة الاسمية.', activeLines: ['fieldM', 'armM', 'shaft'], speedLabel: '1500 rpm' },
-        { label: '5. تيار مجال المولد', desc: 'تغذية ملف مجال المولد المستقل يثبّت الفيض المغناطيسي للمولد.', activeLines: ['fieldM', 'armM', 'shaft', 'fieldG'], speedLabel: '1500 rpm' },
-        { label: '6. جهد المولد', desc: 'تتولّد القوة الدافعة الكهربائية E_g ويظهر الجهد على أطراف المولد.', activeLines: ['fieldM', 'armM', 'shaft', 'fieldG', 'outG'], speedLabel: '1500 rpm' }
-      ];
-    }
+  function buildLessonQuestions(catId) {
+    const pool = catId === 'all'
+      ? lib.files
+      : lib.files.filter(f => f.catId === catId);
 
-    const customLines = cmdText
-      .split(/\n|،|,| ثم | وبعدها /)
-      .map(s => s.trim())
-      .filter(Boolean);
-
-    if (customLines.length >= 2) {
-      return customLines.slice(0, 6).map((line, i) => ({
-        label: `${i + 1}. خطوة ${i + 1}`,
-        desc: line,
-        activeLines: ['fieldM', 'armM', 'shaft', 'fieldG', 'outG'].slice(0, i + 1),
-        speedLabel: `${(i + 1) * 250} rpm`
-      }));
-    }
-
-    return [
-      { label: '1. البداية', desc: `تهيئة دائرة «${title}» وتحضير العناصر والمفاتيح.`, activeLines: [], speedLabel: '0%' },
-      { label: '2. بدء التدفق', desc: `تنفيذ الأمر: ${cmdText || 'بدء سريان الإشارة/التيار'}.`, activeLines: ['fieldM', 'armM'], speedLabel: '50%' },
-      { label: '3. التشغيل الكامل', desc: 'استقرار المسار وبلوغ الحالة التشغيلية المطلوبة.', activeLines: ['fieldM', 'armM', 'shaft', 'fieldG', 'outG'], speedLabel: '100%' }
+    const allTitles = lib.files.map(f => f.title).filter(Boolean);
+    const distractors = [
+      'مقرر الجغرافيا الاقتصادية والسياحية',
+      'قوانين الوراثة في علم الأحياء',
+      'تاريخ العمارة الإغريقية القديمة',
+      'تحليل التربة والأسمدة العضوية'
     ];
-  }
 
-  async function callUnifiedAiForSteps(title, formula, cmdText) {
-    if (!aiConfig.apiKey) return null;
-    const promptText = `أنت مساعد هندسي وتعليمي. حلل الطلب والصورة المرفقة إن وجدت وأعد JSON فقط بالشكل التالي:
-{"steps":[{"label":"1. ...","desc":"...","speedLabel":"..."}]}
-الموضوع: ${title}
-المعادلة/الرمز: ${formula}
-الأمر: ${cmdText}
-${studioAttach.pdfName ? 'ملف PDF مرفق: ' + studioAttach.pdfName : ''}
-${studioAttach.extUrl ? 'رابط خارجي مرفق: ' + studioAttach.extUrl : ''}`;
+    const generated = [];
+    pool.forEach((f, i) => {
+      const cat = lib.categories.find(c => c.id === f.catId);
+      const catName = cat ? cat.name : 'المقرر الدراسي';
+      const otherTitles = allTitles.filter(t => t !== f.title);
+      const wrongPool = shuffleArray([...otherTitles, ...distractors]).slice(0, 2);
 
-    const userContent = [{ type: 'text', text: promptText }];
-    if (studioAttach.imageDataUrl) {
-      userContent.push({ type: 'image_url', image_url: { url: studioAttach.imageDataUrl } });
-    }
-
-    const endpoint = aiConfig.provider === 'openai'
-      ? 'https://api.openai.com/v1/chat/completions'
-      : 'https://openrouter.ai/api/v1/chat/completions';
-
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${aiConfig.apiKey}`
-    };
-    if (aiConfig.provider === 'openrouter') {
-      headers['HTTP-Referer'] = window.location.origin || 'https://hudhud.app';
-      headers['X-Title'] = 'Hudhud Smart Learning';
-    }
-
-    const resp = await fetch(endpoint, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        model: aiConfig.model || 'google/gemini-2.5-flash',
-        messages: [{ role: 'user', content: userContent }],
-        temperature: 0.3
-      })
+      if (i % 2 === 0) {
+        const rawOpts = [
+          { text: catName, ok: true },
+          { text: wrongPool[0] || 'قسم خارج المنهج', ok: false },
+          { text: wrongPool[1] || 'مادة غير مقررة', ok: false }
+        ];
+        const shuffledOpts = shuffleArray(rawOpts);
+        generated.push({
+          question: `ضمن أي قسم يُصنّف درس «${f.title}»؟`,
+          options: shuffledOpts.map(o => o.text),
+          correct: shuffledOpts.findIndex(o => o.ok),
+          explain: `الدرس «${f.title}» تابع لقسم «${catName}».`
+        });
+      } else {
+        const tipText = f.note && f.note.trim()
+          ? f.note.trim()
+          : `مراجعة الدرس «${f.title}» ضمن قسم «${catName}» والاستعداد للامتحان التمهيدي.`;
+        const rawOpts = [
+          { text: tipText, ok: true },
+          { text: 'إهمال مراجعة الدرس تماماً لعدم أهميته', ok: false },
+          { text: 'حذف الدرس من الخطة الدراسية', ok: false }
+        ];
+        const shuffledOpts = shuffleArray(rawOpts);
+        generated.push({
+          question: `ما الفكرة أو التوجيه المرتبط بدرس «${f.title}»؟`,
+          options: shuffledOpts.map(o => o.text),
+          correct: shuffledOpts.findIndex(o => o.ok),
+          explain: tipText
+        });
+      }
     });
 
-    if (!resp.ok) throw new Error('AI API error');
-    const data = await resp.json();
-    const rawText = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
-    const cleaned = rawText.replace(/```json|```/gi, '').trim();
-    const parsed = JSON.parse(cleaned);
-    if (!Array.isArray(parsed.steps) || parsed.steps.length === 0) throw new Error('Invalid steps');
+    return generated;
+  }
 
-    const linePool = ['fieldM', 'armM', 'shaft', 'fieldG', 'outG'];
-    return parsed.steps.slice(0, 8).map((s, idx) => ({
-      label: s.label || `${idx + 1}. خطوة ${idx + 1}`,
-      desc: s.desc || '',
-      speedLabel: s.speedLabel || `${(idx + 1) * 20}%`,
-      activeLines: linePool.slice(0, Math.min(linePool.length, idx + 1))
-    }));
+  function generateUnlimitedQuiz(notify = true) {
+    quizSettings.seed = (quizSettings.seed || 1) + 1;
+    localStorage.setItem('hudhud_quiz_settings', JSON.stringify(quizSettings));
+
+    const bankFiltered = quizSettings.catId === 'all'
+      ? QUESTION_BANK
+      : QUESTION_BANK.filter(q => q.catHint === quizSettings.catId);
+
+    const bankShuffled = shuffleArray(bankFiltered.length ? bankFiltered : QUESTION_BANK).map(q => {
+      const taggedOpts = q.options.map((text, idx) => ({ text, ok: idx === q.correct }));
+      const shuf = shuffleArray(taggedOpts);
+      return {
+        question: q.question,
+        options: shuf.map(o => o.text),
+        correct: shuf.findIndex(o => o.ok),
+        explain: q.explain
+      };
+    });
+
+    const lessonQs = buildLessonQuestions(quizSettings.catId);
+    const combined = shuffleArray([...bankShuffled, ...lessonQs]);
+
+    const targetCount = Math.max(3, Math.min(20, Number(quizSettings.count) || 10));
+    const list = [];
+    if (combined.length > 0) {
+      while (list.length < targetCount) {
+        const batch = shuffleArray(combined);
+        for (const item of batch) {
+          if (list.length >= targetCount) break;
+          list.push({ ...item, qNum: list.length + 1 });
+        }
+      }
+    }
+
+    currentQuizQuestions = list;
+    quizAnswers = {};
+    quizRecordedCurrentRun = false;
+    if (notify) showToast(`تم توليد اختبار جديد رقم #${quizSettings.seed} (${list.length} أسئلة) ⚡`);
+    if (activeHubTab === 'quiz') renderSmartHub();
+  }
+
+  function onQuizFilterChange() {
+    const catEl = document.getElementById('quizCatSelect');
+    const cntEl = document.getElementById('quizCountSelect');
+    if (catEl) quizSettings.catId = catEl.value;
+    if (cntEl) quizSettings.count = Number(cntEl.value) || 10;
+    localStorage.setItem('hudhud_quiz_settings', JSON.stringify(quizSettings));
+    generateUnlimitedQuiz(true);
+  }
+
+  function answerQuiz(qIdx, chosenIdx) {
+    const q = currentQuizQuestions[qIdx];
+    if (!q) return;
+    quizAnswers[qIdx] = chosenIdx;
+
+    const box = document.getElementById('qOpts_' + qIdx);
+    const expEl = document.getElementById('qExplain_' + qIdx);
+    if (box) {
+      const btns = box.querySelectorAll('.quiz-option-btn');
+      btns.forEach((b, i) => {
+        b.classList.remove('correct', 'wrong');
+        if (i === q.correct) b.classList.add('correct');
+        else if (i === chosenIdx && chosenIdx !== q.correct) b.classList.add('wrong');
+      });
+    }
+    if (expEl) {
+      expEl.style.display = 'block';
+      expEl.textContent = (chosenIdx === q.correct ? '✅ إجابة صحيحة: ' : '❌ راجع التوضيح: ') + q.explain;
+    }
+
+    const answeredCount = Object.keys(quizAnswers).length;
+    const scoreCount = Object.entries(quizAnswers).filter(([idx, val]) => currentQuizQuestions[Number(idx)] && currentQuizQuestions[Number(idx)].correct === val).length;
+    const liveScoreEl = document.getElementById('quizLiveScore');
+    if (liveScoreEl) liveScoreEl.textContent = `المجاب: ${answeredCount} / ${currentQuizQuestions.length} | الدرجة: ${scoreCount}`;
+
+    if (answeredCount === currentQuizQuestions.length && !quizRecordedCurrentRun) {
+      quizRecordedCurrentRun = true;
+      const pct = Math.round((scoreCount / currentQuizQuestions.length) * 100);
+      quizHistory.unshift({
+        run: quizSettings.seed,
+        score: scoreCount,
+        total: currentQuizQuestions.length,
+        pct,
+        time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })
+      });
+      quizHistory = quizHistory.slice(0, 8);
+      localStorage.setItem('hudhud_quiz_history', JSON.stringify(quizHistory));
+      if (pct >= 70) {
+        confetti({ particleCount: 80, spread: 65, origin: { y: 0.65 } });
+      }
+      renderSmartHub();
+    }
+  }
+
+  function clearQuizHistory() {
+    quizHistory = [];
+    localStorage.removeItem('hudhud_quiz_history');
+    showToast('تم مسح سجل الاختبارات');
+    renderSmartHub();
   }
 
   function renderSmartHub() {
     const container = document.getElementById('smartHubContainer');
     if (!container) return;
 
-    if (activeHubTab === 'logic') {
+    if (activeHubTab === 'quiz') {
+      const answeredCount = Object.keys(quizAnswers).length;
+      const scoreCount = Object.entries(quizAnswers).filter(([idx, val]) => currentQuizQuestions[Number(idx)] && currentQuizQuestions[Number(idx)].correct === val).length;
+      const isFinished = currentQuizQuestions.length > 0 && answeredCount === currentQuizQuestions.length;
+      const finalPct = currentQuizQuestions.length ? Math.round((scoreCount / currentQuizQuestions.length) * 100) : 0;
+
       container.innerHTML = `
         <div class="panel-card">
-          <h2 style="margin:0 0 8px;">🧠 كتل المنطق والمعادلات + مولد الأنميشن بالذكاء الاصطناعي</h2>
-          <p style="margin:0 0 10px; color:var(--muted); font-size:13.5px;">أرفق صورة مخطط أو ملف PDF أو رابطاً خارجياً، واختر مزود الذكاء الاصطناعي أو اكتب أمرك لتوليد أنميشن خطوات متحرك.</p>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+            <div>
+              <h2 style="margin:0;">🎯 اختبار تدريبي ذكي — جولات غير محدودة</h2>
+              <p style="margin:4px 0 0; color:var(--muted); font-size:13.5px;">ولّد عدداً غير محدود من الاختبارات العشوائية من دروسك والبنك الهندسي استعداداً ليوم 1/2/2027.</p>
+            </div>
+            <button type="button" class="btn" onclick="generateUnlimitedQuiz(true)">⚡ اختبار جديد غير محدود</button>
+          </div>
 
-          <div class="ai-config-box">
-            <label style="margin:0;">مزود الذكاء الاصطناعي
-              <select id="aiProviderSelect" onchange="saveAiSettings()">
-                <option value="openrouter" ${aiConfig.provider === 'openrouter' ? 'selected' : ''}>OpenRouter (متعدد النماذج)</option>
-                <option value="openai" ${aiConfig.provider === 'openai' ? 'selected' : ''}>OpenAI</option>
+          <div class="quiz-builder-bar">
+            <label style="margin:0;">القسم المستهدف
+              <select id="quizCatSelect" onchange="onQuizFilterChange()">
+                <option value="all" ${quizSettings.catId === 'all' ? 'selected' : ''}>كل الأقسام والدروس</option>
+                ${lib.categories.map(c => `<option value="${c.id}" ${quizSettings.catId === c.id ? 'selected' : ''}>${escapeHtml(c.icon + ' ' + c.name)}</option>`).join('')}
               </select>
             </label>
-            <label style="margin:0;">اسم النموذج
-              <input type="text" id="aiModelInput" value="${escapeHtml(aiConfig.model || 'google/gemini-2.5-flash')}" dir="ltr" onchange="saveAiSettings()">
+            <label style="margin:0;">عدد الأسئلة
+              <select id="quizCountSelect" onchange="onQuizFilterChange()">
+                <option value="5" ${Number(quizSettings.count) === 5 ? 'selected' : ''}>5 أسئلة</option>
+                <option value="10" ${Number(quizSettings.count) === 10 ? 'selected' : ''}>10 أسئلة</option>
+                <option value="15" ${Number(quizSettings.count) === 15 ? 'selected' : ''}>15 سؤالاً</option>
+                <option value="20" ${Number(quizSettings.count) === 20 ? 'selected' : ''}>20 سؤالاً</option>
+              </select>
             </label>
-            <label style="margin:0;">مفتاح API (اختياري — يعمل بدونه بمحرك القواعد)
-              <input type="password" id="aiKeyInput" value="${escapeHtml(aiConfig.apiKey || '')}" placeholder="sk-or-... أو sk-..." dir="ltr" onchange="saveAiSettings()">
-            </label>
+            <button type="button" class="btn ghost" onclick="generateUnlimitedQuiz(true)">🔀 خلط الأسئلة الآن</button>
           </div>
 
-          <div class="attach-toolbar">
-            <button type="button" class="attach-btn ${studioAttach.imageName ? 'has-file' : ''}" onclick="document.getElementById('studioImgInput').click()">🖼️ إضافة صورة</button>
-            <button type="button" class="attach-btn ${studioAttach.pdfName ? 'has-file' : ''}" onclick="document.getElementById('studioPdfInput').click()">📄 إضافة ملف PDF</button>
-            <button type="button" class="attach-btn ${studioAttach.extUrl ? 'has-file' : ''}" onclick="promptStudioExternalLink()">🔗 رابط خارجي (ملف كهربائي)</button>
-            <input type="file" id="studioImgInput" accept="image/*" hidden onchange="handleStudioImageUpload(this.files[0])">
-            <input type="file" id="studioPdfInput" accept=".pdf" hidden onchange="handleStudioPdfUpload(this.files[0])">
-          </div>
-          <div id="attachPreviewStrip" class="attach-preview-strip"></div>
-
-          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:10px;">
-            <input type="text" id="lbTitleInput" placeholder="عنوان الموضوع (مثلاً: مولد تغذية منفصلة يدار بمحرك توازي)">
-            <input type="text" id="lbFormulaInput" placeholder="المعادلة أو الرمز (مثلاً: E_g = K · Φ · n)" dir="ltr">
+          <div class="quiz-meta-strip">
+            <span>رقم الاختبار: #${quizSettings.seed}</span>
+            <span id="quizLiveScore">المجاب: ${answeredCount} / ${currentQuizQuestions.length} | الدرجة: ${scoreCount}</span>
           </div>
 
-          <textarea id="lbCommandInput" style="margin-top:10px;" placeholder="اكتب الأمر هنا (مثلاً: سوّه أنميشن خطوات لمسار التيار والسرعة من البداية إلى جهد المولد)..."></textarea>
-
-          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
-            <button type="button" class="btn small" onclick="runCommandSimulation('html')">🎬 أنميشن HTML تفاعلي</button>
-            <button type="button" class="btn ghost small" onclick="runCommandSimulation('logic')">🧩 تحويل إلى كتلة حفظ منطقية</button>
-            <button type="button" class="btn ghost small" id="saveSimAsLessonBtn" style="display:none;" onclick="saveGeneratedSimToLibrary()">💾 حفظ الأنيميشن كدرس HTML</button>
-          </div>
-
-          <div id="simStageBox" class="sim-stage" style="display:none;"></div>
-        </div>
-
-        <div class="logic-block-grid">
-          ${logicBlocks.map(b => `
-            <div class="logic-block-card">
-              <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-                <strong>${escapeHtml(b.title)}</strong>
-                ${b.id !== 'lb1' && b.id !== 'lb2' ? `<button class="remove-link-btn" onclick="deleteLogicBlock('${b.id}')">✕</button>` : ''}
-              </div>
-              <div class="formula-pill">${escapeHtml(b.formula)}</div>
-              <div style="font-size:13px; white-space:pre-line; color:var(--ink);">${escapeHtml(b.steps)}</div>
-            </div>
-          `).join('')}
-        </div>
-      `;
-      renderAttachmentsStrip();
-    } else if (activeHubTab === 'quiz') {
-      const questions = buildDynamicQuestions();
-      container.innerHTML = `
-        <div class="panel-card">
-          <h2 style="margin:0 0 8px;">🎯 اختبار تدريبي ذكي للامتحان التمهيدي</h2>
-          <p style="margin:0 0 16px; color:var(--muted); font-size:13.5px;">اختبر استيعابك فوراً مع شرح لسبب كل إجابة قبل موعد 1/2/2027.</p>
-          <div style="display:flex; flex-direction:column; gap:16px;">
-            ${questions.map((q, qIdx) => `
-              <div style="background:var(--bg); border:1px solid var(--line); border-radius:16px; padding:16px;">
-                <div style="font-weight:700; margin-bottom:10px;">${qIdx + 1}. ${escapeHtml(q.question)}</div>
-                <div style="display:flex; flex-direction:column; gap:8px;" id="qOpts_${qIdx}">
-                  ${q.options.map((opt, oIdx) => `
-                    <button type="button" class="quiz-option-btn" onclick="answerQuiz(${qIdx}, ${oIdx}, ${q.correct}, '${escapeHtml(q.explain)}')">${escapeHtml(opt)}</button>
-                  `).join('')}
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            ${currentQuizQuestions.map((q, qIdx) => {
+              const chosen = quizAnswers[qIdx];
+              const hasChosen = chosen !== undefined;
+              return `
+                <div style="background:var(--bg); border:1px solid var(--line); border-radius:16px; padding:16px;">
+                  <div style="font-weight:700; margin-bottom:10px;">${qIdx + 1}. ${escapeHtml(q.question)}</div>
+                  <div style="display:flex; flex-direction:column; gap:8px;" id="qOpts_${qIdx}">
+                    ${q.options.map((opt, oIdx) => {
+                      let cls = 'quiz-option-btn';
+                      if (hasChosen) {
+                        if (oIdx === q.correct) cls += ' correct';
+                        else if (oIdx === chosen && chosen !== q.correct) cls += ' wrong';
+                      }
+                      return `<button type="button" class="${cls}" onclick="answerQuiz(${qIdx}, ${oIdx})">${escapeHtml(opt)}</button>`;
+                    }).join('')}
+                  </div>
+                  <div id="qExplain_${qIdx}" style="display:${hasChosen ? 'block' : 'none'}; margin-top:10px; font-size:13px; font-weight:600; color:var(--accent);">
+                    ${hasChosen ? ((chosen === q.correct ? '✅ إجابة صحيحة: ' : '❌ راجع التوضيح: ') + escapeHtml(q.explain)) : ''}
+                  </div>
                 </div>
-                <div id="qExplain_${qIdx}" style="display:none; margin-top:10px; font-size:13px; font-weight:600; color:var(--accent);"></div>
-              </div>
-            `).join('')}
+              `;
+            }).join('')}
           </div>
+
+          ${isFinished ? `
+            <div class="quiz-result-box">
+              <div style="font-size:20px; font-weight:700;">نتيجة الاختبار #${quizSettings.seed}: ${scoreCount} من ${currentQuizQuestions.length} (${finalPct}%)</div>
+              <div style="font-size:13.5px; color:var(--muted); margin-top:6px;">
+                ${finalPct >= 80 ? 'ممتاز جداً! مستوى جاهزيتك عالٍ جداً.' : (finalPct >= 50 ? 'جيد جداً، جرّب اختباراً جديداً لتثبيت المعلومات أكثر.' : 'لا بأس؛ راجع الدرس ثم ولّد اختباراً جديداً للتدريب.')}
+              </div>
+              <button type="button" class="btn" style="margin-top:12px;" onclick="generateUnlimitedQuiz(true)">⚡ ابدأ اختباراً جديداً الآن</button>
+            </div>
+          ` : ''}
+
+          ${quizHistory.length > 0 ? `
+            <div style="margin-top:18px; padding-top:14px; border-top:1px solid var(--line);">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong style="font-size:13.5px;">📊 سجل آخر المحاولات</strong>
+                <button type="button" class="remove-link-btn" onclick="clearQuizHistory()">مسح السجل</button>
+              </div>
+              <div class="quiz-history-list">
+                ${quizHistory.map(h => `<span class="quiz-history-chip">اختبار #${h.run}: ${h.score}/${h.total} (${h.pct}%) • ${escapeHtml(h.time)}</span>`).join('')}
+              </div>
+            </div>
+          ` : ''}
         </div>
       `;
     } else if (activeHubTab === 'diag') {
@@ -1125,272 +1223,11 @@ ${studioAttach.extUrl ? 'رابط خارجي مرفق: ' + studioAttach.extUrl :
     }
   }
 
-  async function runCommandSimulation(mode) {
-    saveAiSettings();
-    const titleEl = document.getElementById('lbTitleInput');
-    const formulaEl = document.getElementById('lbFormulaInput');
-    const cmdEl = document.getElementById('lbCommandInput');
-    const title = (titleEl && titleEl.value.trim()) || 'مولد تيار مستمر ذو تغذية منفصلة يدار بمحرك توازي';
-    const formula = (formulaEl && formulaEl.value.trim()) || 'E_g = K · Φ · n';
-    const cmdText = (cmdEl && cmdEl.value.trim()) || 'رسم متحرك خطوة بخطوة لمسار التيار والسرعة في الدائرة';
-
-    if (mode === 'logic') {
-      const attachSummary = [
-        studioAttach.imageName ? `صورة: ${studioAttach.imageName}` : '',
-        studioAttach.pdfName ? `PDF: ${studioAttach.pdfName}` : '',
-        studioAttach.extUrl ? `رابط: ${studioAttach.extUrl}` : ''
-      ].filter(Boolean).join(' | ');
-
-      const stepsFormatted = [
-        `الأمر: ${cmdText}`,
-        attachSummary ? `المرفقات: ${attachSummary}` : 'التركيز على الفكرة الأساسية والقانون.',
-        'الخطوة النهائية: مراجعة الوحدات والتطبيق العملي قبل الامتحان.'
-      ].join('\n');
-
-      logicBlocks.unshift({
-        id: 'lb_' + Date.now(),
-        title,
-        formula,
-        steps: stepsFormatted
-      });
-      localStorage.setItem('hudhud_logic_blocks', JSON.stringify(logicBlocks));
-      showToast('تم إنشاء كتلة الحفظ المنطقية 🧠');
-      renderSmartHub();
-      return;
-    }
-
-    let stepsResult = null;
-    if (aiConfig.apiKey) {
-      showToast('جاري تحليل الصورة والأمر عبر الذكاء الاصطناعي...');
-      try {
-        stepsResult = await callUnifiedAiForSteps(title, formula, cmdText);
-      } catch (e) {
-        showToast('تعذر الاتصال بالـ API، تم التبديل للمحرك التفاعلي المباشر', 'error');
-      }
-    }
-
-    activeSimSteps = stepsResult || deriveStepsFromCommand(title, cmdText);
-    currentSimStepIdx = 0;
-    simPaused = false;
-
-    const stage = document.getElementById('simStageBox');
-    const saveBtn = document.getElementById('saveSimAsLessonBtn');
-    if (!stage) return;
-    stage.style.display = 'block';
-    if (saveBtn) saveBtn.style.display = 'inline-flex';
-
-    stage.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
-        <div>
-          <div style="font-size:18px; font-weight:700;">${escapeHtml(title)}</div>
-          <div style="font-size:12.5px; color:#94a3b8;">${escapeHtml(cmdText)}</div>
-        </div>
-        <span class="formula-pill" style="padding:5px 11px; font-size:12px;">${escapeHtml(formula)}</span>
-      </div>
-
-      <div class="sim-canvas-box">
-        ${studioAttach.imageDataUrl ? `<img src="${studioAttach.imageDataUrl}" class="sim-uploaded-img" alt="المخطط المرفق">` : ''}
-        <svg viewBox="0 0 520 155" style="width:100%; height:155px; background:#0b1324; border-radius:12px; display:block;">
-          <line x1="30" y1="24" x2="490" y2="24" stroke="#ef4444" stroke-width="2.5"/>
-          <text x="16" y="28" fill="#fca5a5" font-size="11" font-weight="bold">P</text>
-          <line x1="30" y1="42" x2="490" y2="42" stroke="#3b82f6" stroke-width="2.5"/>
-          <text x="16" y="46" fill="#93c5fd" font-size="11" font-weight="bold">N</text>
-
-          <path id="line_fieldM" d="M 90 24 L 90 78 L 125 78 L 125 112 L 90 112 L 90 42" fill="none" stroke="#f59e0b" stroke-width="3" opacity="0.22"/>
-          <path id="line_armM" d="M 165 24 L 165 86" fill="none" stroke="#34d399" stroke-width="3" opacity="0.22"/>
-          <line id="line_shaft" x1="186" y1="92" x2="324" y2="92" stroke="#fbbf24" stroke-width="4" opacity="0.22"/>
-          <path id="line_fieldG" d="M 380 24 L 380 78 L 415 78 L 415 112 L 380 112 L 380 42" fill="none" stroke="#c084fc" stroke-width="3" opacity="0.22"/>
-          <path id="line_outG" d="M 345 92 L 465 92 L 465 24" fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.22"/>
-
-          <circle cx="165" cy="92" r="21" fill="#172540" stroke="#34d399" stroke-width="2.5"/>
-          <text x="165" y="97" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">M</text>
-
-          <rect x="225" y="64" width="70" height="22" rx="6" fill="#1e293b" stroke="#64748b" stroke-width="1.2"/>
-          <text id="simSpeedText" x="260" y="79" text-anchor="middle" fill="#38bdf8" font-size="11" font-weight="bold">0 rpm</text>
-
-          <circle cx="345" cy="92" r="21" fill="#172540" stroke="#38bdf8" stroke-width="2.5"/>
-          <text x="345" y="97" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">G</text>
-        </svg>
-      </div>
-
-      <div class="sim-desc-box" id="simStepDesc"></div>
-
-      <div class="steps-pills" id="simStepsPills">
-        ${activeSimSteps.map((st, idx) => `
-          <button type="button" class="step-chip ${idx === 0 ? 'active' : ''}" id="simStepBtn_${idx}" onclick="selectSimStep(${idx}, true)">${escapeHtml(st.label)}</button>
-        `).join('')}
-      </div>
-
-      <div class="ctrl-row">
-        <button type="button" class="btn ghost small" onclick="stepSim(-1)">السابق</button>
-        <button type="button" class="btn small" id="simPauseToggleBtn" onclick="toggleSimAuto()">إيقاف مؤقت</button>
-        <button type="button" class="btn ghost small" onclick="stepSim(1)">التالي</button>
-        <button type="button" class="btn ghost small" onclick="resetSimSteps()">إعادة</button>
-        <span style="font-size:12.5px; color:#cbd5e1; margin-right:auto;">السرعة:</span>
-        <input type="range" min="15" max="100" value="65" style="width:110px;" oninput="changeSimStreamSpeed(this.value)">
-      </div>
-    `;
-
-    selectSimStep(0, false);
-    startSimAuto();
-    rebuildSavedSimHtml(title, formula, cmdText);
-    showToast(stepsResult ? 'تم توليد الأنميشن بالذكاء الاصطناعي بنجاح ✨' : 'تم تشغيل الأنميشن التفاعلي بنجاح 🎬');
-  }
-
-  function selectSimStep(idx, manual) {
-    if (!activeSimSteps.length) return;
-    currentSimStepIdx = (idx + activeSimSteps.length) % activeSimSteps.length;
-    const step = activeSimSteps[currentSimStepIdx];
-
-    const descEl = document.getElementById('simStepDesc');
-    const spdEl = document.getElementById('simSpeedText');
-    if (descEl) descEl.textContent = step.desc;
-    if (spdEl) spdEl.textContent = step.speedLabel || '';
-
-    activeSimSteps.forEach((_, i) => {
-      const btn = document.getElementById('simStepBtn_' + i);
-      if (btn) btn.classList.toggle('active', i === currentSimStepIdx);
-    });
-
-    const allLineIds = ['line_fieldM', 'line_armM', 'line_shaft', 'line_fieldG', 'line_outG'];
-    allLineIds.forEach(lid => {
-      const el = document.getElementById(lid);
-      if (!el) return;
-      const isOn = step.activeLines.includes(lid.replace('line_', ''));
-      el.style.opacity = isOn ? '1' : '0.2';
-      el.classList.toggle('stream-line', isOn);
-      el.classList.toggle('paused', simPaused || !isOn);
-    });
-
-    if (manual) {
-      const title = (document.getElementById('lbTitleInput') && document.getElementById('lbTitleInput').value.trim()) || 'أنميشن تفاعلي';
-      const formula = (document.getElementById('lbFormulaInput') && document.getElementById('lbFormulaInput').value.trim()) || 'V = I · R';
-      const cmdText = (document.getElementById('lbCommandInput') && document.getElementById('lbCommandInput').value.trim()) || '';
-      rebuildSavedSimHtml(title, formula, cmdText);
-    }
-  }
-
-  function stepSim(delta) { selectSimStep(currentSimStepIdx + delta, true); }
-
-  function resetSimSteps() {
-    simPaused = false;
-    const pauseBtn = document.getElementById('simPauseToggleBtn');
-    if (pauseBtn) pauseBtn.textContent = 'إيقاف مؤقت';
-    selectSimStep(0, true);
-    startSimAuto();
-  }
-
-  function startSimAuto() {
-    if (simAutoTimer) clearInterval(simAutoTimer);
-    simAutoTimer = setInterval(() => {
-      if (!simPaused && activeSimSteps.length > 0 && activeHubTab === 'logic') {
-        selectSimStep(currentSimStepIdx + 1, false);
-      }
-    }, 2400);
-  }
-
-  function toggleSimAuto() {
-    simPaused = !simPaused;
-    const pauseBtn = document.getElementById('simPauseToggleBtn');
-    if (pauseBtn) pauseBtn.textContent = simPaused ? 'استئناف' : 'إيقاف مؤقت';
-    selectSimStep(currentSimStepIdx, false);
-  }
-
-  function changeSimStreamSpeed(val) {
-    const dur = Math.max(0.35, (2.0 - (Number(val) / 100) * 1.5)).toFixed(2) + 's';
-    document.querySelectorAll('.stream-line').forEach(el => {
-      el.style.setProperty('--stream-dur', dur);
-    });
-  }
-
-  function rebuildSavedSimHtml(title, formula, cmdText) {
-    const stageEl = document.getElementById('simStageBox');
-    if (!stageEl) return;
-    lastGeneratedSimHtml = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)}</title><style>body{margin:0;background:#09101f;color:#f8fafc;font-family:"IBM Plex Sans Arabic",sans-serif;padding:16px;}</style></head><body>${stageEl.innerHTML}</body></html>`;
-  }
-
-  function saveGeneratedSimToLibrary() {
-    const title = (document.getElementById('lbTitleInput') && document.getElementById('lbTitleInput').value.trim()) || 'أنميشن تفاعلي جديد';
-    const formula = (document.getElementById('lbFormulaInput') && document.getElementById('lbFormulaInput').value.trim()) || 'V = I · R';
-    const cmdText = (document.getElementById('lbCommandInput') && document.getElementById('lbCommandInput').value.trim()) || 'أنميشن مولّد من استوديو هدهد';
-    rebuildSavedSimHtml(title, formula, cmdText);
-    if (!lastGeneratedSimHtml) return showToast('ولّد أنميشناً أولاً', 'error');
-
-    const targetCat = lib.categories.find(c => c.id === 'elec') || lib.categories[0] || { id: 'general' };
-    const links = studioAttach.extUrl ? [{ label: 'ملف / رابط خارجي', url: studioAttach.extUrl }] : [];
-    lib.files.push({
-      id: 'f' + Date.now(),
-      type: 'html',
-      catId: targetCat.id,
-      title,
-      note: cmdText,
-      tags: ['أنميشن', 'محاكاة'],
-      links,
-      content: lastGeneratedSimHtml,
-      added: Date.now()
-    });
-    saveData().then(() => {
-      showToast('تم حفظ الأنيميشن ضمن الدروس التفاعلية 💾');
-      render();
-    });
-  }
-
-  function deleteLogicBlock(id) {
-    logicBlocks = logicBlocks.filter(b => b.id !== id);
-    localStorage.setItem('hudhud_logic_blocks', JSON.stringify(logicBlocks));
-    showToast('تم حذف الكتلة');
-    renderSmartHub();
-  }
-
-  function buildDynamicQuestions() {
-    const base = [
-      {
-        question: 'ما الهدف الأساسي من التغذية المنفصلة لملف المجال في مولد التيار المستمر؟',
-        options: ['تثبيت الفيض المغناطيسي وعدم تأثره بتيار المنتج', 'إلغاء مقاومة ملفات المنتج تماماً', 'تحويل التيار المستمر إلى تيار متناوب داخل الحمل'],
-        correct: 0,
-        explain: 'فصل تغذية المجال يجعل الفيض المغناطيسي مستقراً ومستقلاً عن تغيرات تيار الحمل في المنتج.'
-      },
-      {
-        question: 'عند انتهاء جلسة التركيز الدراسية (25 دقيقة)، ما هي المدة المعيارية للاستراحة القصيرة؟',
-        options: ['5 دقائق', '45 دقيقة', 'ساعتان'],
-        correct: 0,
-        explain: 'الاستراحة القصيرة لمدة 5 دقائق تساعد على تجديد الذهن قبل بدء جلسة تركيز جديدة.'
-      }
-    ];
-
-    if (lib.files.length > 0) {
-      const sample = lib.files[0];
-      base.push({
-        question: `أي من العناصر التالية مسجل كدرس داخل منصة هدهد؟`,
-        options: [sample.title, 'مقرر علم الأحياء البحرية', 'قوانين الفضاء الفلكي'],
-        correct: 0,
-        explain: `«${sample.title}» من الدروس المدرجة ضمن المنصة للمراجعة.`
-      });
-    }
-    return base;
-  }
-
-  function answerQuiz(qIdx, chosenIdx, correctIdx, explain) {
-    const box = document.getElementById('qOpts_' + qIdx);
-    const expEl = document.getElementById('qExplain_' + qIdx);
-    if (!box) return;
-    const btns = box.querySelectorAll('.quiz-option-btn');
-    btns.forEach((b, i) => {
-      b.classList.remove('correct', 'wrong');
-      if (i === correctIdx) b.classList.add('correct');
-      else if (i === chosenIdx && chosenIdx !== correctIdx) b.classList.add('wrong');
-    });
-    if (expEl) {
-      expEl.style.display = 'block';
-      expEl.textContent = (chosenIdx === correctIdx ? '✅ إجابة صحيحة: ' : '❌ راجع الفكرة: ') + explain;
-    }
-  }
-
   function exportBackupJson() {
     const payload = {
       exportedAt: new Date().toISOString(),
       lib,
-      logicBlocks,
+      quizHistory,
       favs,
       completed
     };
@@ -1416,9 +1253,9 @@ ${studioAttach.extUrl ? 'رابط خارجي مرفق: ' + studioAttach.extUrl :
           lib = data.lib;
           localStorage.setItem('hudhud_lib_cache', JSON.stringify(lib));
         }
-        if (Array.isArray(data.logicBlocks)) {
-          logicBlocks = data.logicBlocks;
-          localStorage.setItem('hudhud_logic_blocks', JSON.stringify(logicBlocks));
+        if (Array.isArray(data.quizHistory)) {
+          quizHistory = data.quizHistory;
+          localStorage.setItem('hudhud_quiz_history', JSON.stringify(quizHistory));
         }
         if (Array.isArray(data.favs)) {
           favs = data.favs;
