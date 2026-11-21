@@ -464,6 +464,21 @@ const writeJson = (k, v) => {
 };
 const dayKey = t => new Date(t).toISOString().slice(0, 10);
 
+function extractYouTubeId(url) {
+  const str = String(url || '').trim();
+  if (!str) return '';
+  const match = str.match(/(?:youtube\.com\/(?:watch\?.*v=|shorts\/|embed\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+  if (match && match[1]) return match[1];
+  try {
+    const u = new URL(str.startsWith('http') ? str : 'https://' + str);
+    if (u.searchParams.get('v')) return u.searchParams.get('v');
+    const parts = u.pathname.split('/').filter(Boolean);
+    return parts.pop() || '';
+  } catch (e) {
+    return str.split('v=')[1]?.split('&')[0] || str.split('/').pop()?.split('?')[0] || '';
+  }
+}
+
 let largeFilesDb = null;
 function openLargeFilesDb() {
   return new Promise((resolve, reject) => {
@@ -521,7 +536,7 @@ function updateCountdown() {
     : 'منصة التعلم والمراجعة الذكية — حان موعد الامتحان، بالتوفيق 🤍';
 }
 updateCountdown();
-setInterval(updateCountdown, 3600000);
+setInterval(updateCountdown, 60000);
 
 function mountHoopoeIcons() {
   const masterSvg = $('hoopoeVectorMaster');
@@ -1419,7 +1434,7 @@ async function openViewer(id) {
   body.innerHTML = '';
 
   if (!fileContent && ['html', 'pdf'].includes(f.type)) {
-    body.innerHTML = `<div style="display:flex;height:100%;align-items:center;justify-content:center;padding:24px;text-align:center;color:#0f172a;"><div><h3>الملف الكبير محفوظ على جهازك الأصلي فقط</h3><p>إذا فتحت المنصة من متصفح أو جهاز آخر، أعد رفع الملف مرة واحدة ليُخزن في IndexedDB على هذا الجهاز.</p></div></div>`;
+    body.innerHTML = `<div style="display:flex;height:100%;align-items:center;justify-content:center;padding:24px;text-align:center;color:#0f172a;"><div><h3>الملف الكبير محفوظ على جهازك الأصلي فقط</h3><p>إذا فتحت المنصة من متصفح أو جهاز آخر، أعد رفع الملف مرة واحدة ليُخزن في IndexedDB على هذا الجهاز أو أضف رابطاً خارجياً للدرس.</p></div></div>`;
     document.body.classList.add('viewing');
     return;
   }
@@ -1449,13 +1464,12 @@ async function openViewer(id) {
     body.innerHTML = `<iframe src="data:application/pdf;base64,${fileContent}"></iframe>`;
     dlBtn.style.display = 'inline-flex';
   } else if (f.type === 'image') {
-    body.innerHTML = `<img src="${fileContent}">`;
+    body.innerHTML = `<img src="${escapeHtml(fileContent)}">`;
   } else if (f.type === 'youtube') {
-    let vid = fileContent.split('v=')[1] || fileContent.split('/').pop();
-    if (vid.includes('&')) vid = vid.split('&')[0];
-    body.innerHTML = `<iframe src="https://www.youtube.com/embed/${vid}" allowfullscreen></iframe>`;
+    const vid = extractYouTubeId(fileContent);
+    body.innerHTML = `<iframe src="https://www.youtube.com/embed/${escapeHtml(vid)}" allowfullscreen></iframe>`;
   } else if (f.type === 'mp4') {
-    body.innerHTML = `<video src="${fileContent}" controls autoplay></video>`;
+    body.innerHTML = `<video src="${escapeHtml(fileContent)}" controls autoplay></video>`;
   }
   document.body.classList.add('viewing');
 }
@@ -1693,7 +1707,7 @@ async function saveFile() {
   const links = collectLinksFromForm();
   if (!title) { $('errorMsg').textContent = 'اكتب اسم المحتوى'; return; }
 
-  const finalizeRecord = async (record) => {
+  const finalizeRecord = async (record, isLargeLocalOnly = false) => {
     const wasEditing = Boolean(editingFileId);
     if (editingFileId) {
       lib.files = lib.files.map(f => f.id === editingFileId ? record : f);
@@ -1704,7 +1718,11 @@ async function saveFile() {
     await saveData();
     closeModal();
     render();
-    showToast(wasEditing ? 'تم التعديل بنجاح' : 'تم حفظ الملف بنجاح ✅');
+    showToast(
+      isLargeLocalOnly
+        ? 'تم حفظ الملف الكبير على جهازك فقط (أضف رابطاً خارجياً ليراه الجميع)'
+        : (wasEditing ? 'تم التعديل بنجاح' : 'تم حفظ الملف بنجاح ✅')
+    );
   };
 
   if (['image', 'youtube', 'mp4'].includes(type)) {
@@ -1755,7 +1773,7 @@ async function saveFile() {
           idbStored: true,
           content: processedContent,
           added: existing ? existing.added : Date.now()
-        });
+        }, true);
       } else {
         await deleteLargeFileContent(fileId);
         await finalizeRecord({
@@ -1765,7 +1783,7 @@ async function saveFile() {
           idbStored: false,
           content: processedContent,
           added: existing ? existing.added : Date.now()
-        });
+        }, false);
       }
     } catch (err) {
       $('errorMsg').textContent = 'حدث خطأ أثناء حفظ الملف الكبير محلياً';
