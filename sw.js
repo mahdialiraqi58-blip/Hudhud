@@ -1,23 +1,12 @@
-const CACHE_NAME = 'hudhud-no-banner-2026-11-21';
-
-self.addEventListener('install', (event) => {
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.map((key) => caches.delete(key)))
-    ).then(() => self.clients.claim())
-  );
-});
-
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-  const url = new URL(event.request.url);
-  if (url.origin !== self.location.origin) return;
-
-  event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
-  );
-});
+async function saveData() {
+  try {
+    const u = firebase.auth().currentUser;
+    if (!u) throw new Error('no auth');
+    const token = await u.getIdToken();
+    const r = await fetch(FIREBASE_URL + 'data.json?auth=' + token, {
+      method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(lib)
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    localStorage.setItem('hudhud_lib_cache', JSON.stringify(lib));
+  } catch (e) { showToast('فشل الحفظ. تأكد من تسجيل الدخول والصلاحيات.', 'error'); }
+}
