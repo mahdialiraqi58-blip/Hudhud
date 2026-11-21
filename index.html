@@ -71,7 +71,7 @@ body.viewing, body.sheet-open { overflow: hidden; }
 @keyframes fly { 0% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-16px) rotate(6deg); } 100% { transform: translateY(0) rotate(0deg); } }
 #preloader.hidden { opacity: 0; pointer-events: none; }
 
-.wrap { max-width: 1080px; margin: 0 auto; padding: 20px 20px 95px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 20px 20px 95px; }
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 12px; flex-wrap: wrap; background: var(--surface); backdrop-filter: blur(16px); border: 1px solid var(--line); border-radius: 24px; padding: 12px 18px; box-shadow: var(--shadow-sm); }
 .logo-area { display: flex; align-items: center; gap: 12px; cursor: pointer; }
 .logo-icon { display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 17px; background: linear-gradient(145deg, #1e1b4b, #312e81); border: 1px solid rgba(251, 191, 36, 0.35); box-shadow: var(--shadow-md); transition: transform 0.25s ease; overflow: hidden; }
@@ -135,15 +135,20 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
 .btn.ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--line); backdrop-filter: blur(12px); }
 .btn.ghost:hover { border-color: var(--accent); }
 .btn.success { background: var(--success); color: #fff; }
+.btn.warn { background: var(--warn); color: #0f172a; }
 .btn.small { padding: 7px 12px; font-size: 13px; border-radius: 11px; }
 
-.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
-.cat-card { position: relative; background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 16px; text-align: center; cursor: pointer; transition: all 0.25s ease; box-shadow: var(--shadow-sm); animation: fadeIn 0.4s ease forwards; opacity: 0; }
+.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
+.cat-card { position: relative; background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 16px; text-align: center; cursor: pointer; transition: all 0.25s ease; box-shadow: var(--shadow-sm); animation: fadeIn 0.4s ease forwards; opacity: 0; }
 @keyframes fadeIn { to { opacity: 1; } }
 .cat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: var(--accent); }
-.cat-icon { font-size: 40px; margin-bottom: 10px; transition: transform 0.25s ease; }
+.cat-icon { font-size: 38px; margin-bottom: 8px; transition: transform 0.25s ease; }
 .cat-card:hover .cat-icon { transform: scale(1.08); }
 .cat-name { font-weight: 700; font-size: 17px; }
+.cat-risk-pill { display: inline-block; margin-top: 6px; font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 99px; }
+.risk-high { background: rgba(239, 68, 68, 0.14); color: var(--danger); }
+.risk-mid { background: rgba(245, 158, 11, 0.16); color: #d97706; }
+.risk-low { background: rgba(16, 185, 129, 0.14); color: var(--success); }
 .cat-mini-prog { height: 5px; background: var(--line); border-radius: 5px; margin-top: 12px; overflow: hidden; }
 .cat-mini-fill { height: 100%; background: var(--success); transition: width 0.3s; }
 .cat-admin-tools { position: absolute; top: 10px; left: 10px; display: flex; gap: 4px; }
@@ -196,7 +201,7 @@ pre { position: absolute; inset: 0; margin: 0; padding: 20px; background: #1e1e1
 
 .scrim { position: fixed; inset: 0; z-index: 300; background: rgba(15, 23, 42, 0.72); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; }
 .sheet-open .scrim { display: flex; }
-.sheet { width: 100%; max-width: 540px; background: var(--surface-solid); border: 1px solid var(--line); border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 15px; margin: 20px; box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto; transform: translateY(20px); opacity: 0; transition: all 0.3s; }
+.sheet { width: 100%; max-width: 560px; background: var(--surface-solid); border: 1px solid var(--line); border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 15px; margin: 20px; box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto; transform: translateY(20px); opacity: 0; transition: all 0.3s; }
 .sheet-open .sheet { transform: translateY(0); opacity: 1; }
 label { display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 600; color: var(--muted); }
 select, input[type="text"], input[type="password"], input[type="email"], input[type="url"], textarea { padding: 11px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); color: var(--ink); font: inherit; transition: 0.2s; width: 100%; }
@@ -231,13 +236,23 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 .skeleton { background: linear-gradient(90deg, var(--line) 25%, var(--surface) 50%, var(--line) 75%); background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: 18px; }
 @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-.cmd-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 14px; }
-.cmd-ring { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.cmd-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.cmd-ring { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
 .cmd-heat { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 14px); gap: 4px; direction: ltr; overflow-x: auto; padding-bottom: 4px; }
 .cmd-heat i { width: 14px; height: 14px; border-radius: 4px; background: var(--line); display: block; }
 .cmd-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 9px 0; border-bottom: 1px solid var(--line); font-weight: 600; font-size: 14px; }
 .cmd-xp { height: 9px; background: var(--line); border-radius: 9px; overflow: hidden; margin-top: 6px; }
 .cmd-xp b { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--star)); }
+
+.flashcard-box { background: var(--bg); border: 1px solid var(--line); border-radius: 18px; padding: 20px; min-height: 155px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; }
+.flashcard-q { font-size: 16.5px; font-weight: 700; color: var(--ink); }
+.flashcard-a { background: var(--tint); color: var(--ink); padding: 12px 14px; border-radius: 12px; font-size: 14px; border-right: 3px solid var(--accent); }
+.quiz-opt { width: 100%; text-align: right; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 11px 14px; border-radius: 12px; cursor: pointer; font: inherit; font-weight: 600; transition: 0.2s; }
+.quiz-opt:hover { border-color: var(--accent); }
+.quiz-opt.correct { background: rgba(16, 185, 129, 0.16); border-color: var(--success); color: var(--success); }
+.quiz-opt.wrong { background: rgba(239, 68, 68, 0.14); border-color: var(--danger); color: var(--danger); }
+.radar-bar { height: 7px; background: var(--line); border-radius: 99px; overflow: hidden; width: 110px; }
+.radar-bar i { display: block; height: 100%; background: var(--accent); }
 </style>
 </head>
 <body>
@@ -318,8 +333,9 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 
   <div class="hub-tabs">
     <button class="hub-tab active" id="tab-lessons" onclick="switchHubTab('lessons')">📚 الدروس والأقسام</button>
-    <button class="hub-tab" id="tab-cmd" onclick="switchHubTab('cmd')">🚀 مركز القيادة</button>
-    <button class="hub-tab" id="tab-diag" onclick="switchHubTab('diag')">🛠️ التشخيص والنسخ الاحتياطي</button>
+    <button class="hub-tab" id="tab-cmd" onclick="switchHubTab('cmd')">🚀 مركز القيادة والجاهزية</button>
+    <button class="hub-tab" id="tab-lab" onclick="switchHubTab('lab')">🧠 مختبر الاسترجاع والاختبار</button>
+    <button class="hub-tab" id="tab-diag" onclick="switchHubTab('diag')">🛠️ التشخيص والمزامنة</button>
   </div>
 
   <div class="stats-grid" id="statsGrid"></div>
@@ -331,6 +347,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
         <input type="text" id="searchInput" placeholder="ابحث في جميع الدروس، الوسوم، والملاحظات...">
         <span class="kbd-hint">Ctrl+K</span>
       </div>
+      <button class="btn ghost" onclick="launchSmartNextLesson()" title="ابدأ الدرس الأكثر أولوية أو خطراً الآن">⚡ انطلاقة ذكية</button>
       <button class="btn" id="mainAddBtn" style="display:none" onclick="openAddModal()">+ إضافة</button>
     </div>
 
@@ -354,7 +371,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     <div id="viewerTitle" style="font-weight:700; flex:1; text-align:center; min-width:140px;"></div>
     <div class="vactions">
       <div id="viewerExtLinks" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
-      <button type="button" class="btn ghost small" id="markDoneBtn" onclick="toggleCompletedCurrent()">⬜ تمت الدراسة</button>
+      <button type="button" class="btn ghost small" id="markDoneBtn" onclick="toggleCompletedCurrent()">⬜ تحديد كمكتمل</button>
       <button type="button" class="btn ghost small" onclick="shareCurrentFile()">🔗 مشاركة</button>
       <button type="button" class="btn ghost small" onclick="toggleFullscreen()">⛶ ملء الشاشة</button>
       <button type="button" class="btn ghost small" id="downloadBtn" onclick="downloadFile()" style="display:none">📥 تحميل</button>
@@ -407,7 +424,8 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
       </div>
       <label>القسم<select id="catSelect" onchange="saveFormDraft()"></select></label>
       <label>اسم المحتوى<input type="text" id="fileTitle" oninput="saveFormDraft()"></label>
-      <label>ملاحظة توجيهية للدرس (اختياري)<textarea id="fileNote" placeholder="مثال: ركّز على المسائل المحلولة..." oninput="saveFormDraft()"></textarea></label>
+      <label>ملاحظة توجيهية للدرس (تُستخدم أيضاً في بطاقات المراجعة)<textarea id="fileNote" placeholder="مثال: ركّز على المسائل المحلولة..." oninput="saveFormDraft()"></textarea></label>
+      <label>سؤال مراجعة سريع (اختياري للاسترجاع النشط)<input type="text" id="fileQuestion" placeholder="مثال: ما الشرط الأساسي لـ...؟"></label>
       <label>الوسوم (افصل بينها بفاصلة)<input type="text" id="fileTags" placeholder="وزاريات, مرشحات, الفصل الأول" oninput="saveFormDraft()"></label>
       <div class="links-builder">
         <div class="links-builder-head">
@@ -477,6 +495,25 @@ function extractYouTubeId(url) {
   } catch (e) {
     return str.split('v=')[1]?.split('&')[0] || str.split('/').pop()?.split('?')[0] || '';
   }
+}
+
+let activeBlobUrl = null;
+function releaseActiveBlobUrl() {
+  if (activeBlobUrl) {
+    URL.revokeObjectURL(activeBlobUrl);
+    activeBlobUrl = null;
+  }
+}
+function base64ToBlobUrl(base64Str, mimeType) {
+  releaseActiveBlobUrl();
+  const byteCharacters = atob(base64Str);
+  const byteNumbers = new Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  const blob = new Blob([new Uint8Array(byteNumbers)], { type: mimeType });
+  activeBlobUrl = URL.createObjectURL(blob);
+  return activeBlobUrl;
 }
 
 let largeFilesDb = null;
@@ -653,6 +690,13 @@ let currentViewerFile = null;
 let currentOrderedList = [];
 let deferredInstallPrompt = null;
 
+let flashcardIdx = 0;
+let flashcardFlipped = false;
+let quizIndex = 0;
+let quizScore = 0;
+let quizAnswered = false;
+let quizSelected = -1;
+
 const todayKey = 'hudhud_sessions_' + dayKey(Date.now());
 let todaySessions = parseInt(localStorage.getItem(todayKey) || '0', 10);
 
@@ -682,12 +726,12 @@ function updateNetworkBanner(isOnline) {
   const banner = $('networkBanner');
   if (!isOnline) {
     banner.className = 'smart-banner offline';
-    banner.textContent = '📡 أنت الآن في وضع عدم الاتصال بالإنترنت — يتم عرض الدروس المحفوظة محلياً';
+    banner.textContent = '📡 أنت الآن في وضع عدم الاتصال بالإنترنت — التعديلات تُحفظ في طابور المزامنة تلقائياً';
   } else {
     banner.className = 'smart-banner online-back';
-    banner.textContent = '✅ عاد الاتصال بالإنترنت — جاري مزامنة أحدث الدروس';
+    banner.textContent = '✅ عاد الاتصال بالإنترنت — جاري مزامنة البيانات والدروس';
     setTimeout(() => { banner.className = 'smart-banner'; }, 3500);
-    loadData();
+    flushSyncQueue().then(() => loadData());
   }
 }
 window.addEventListener('offline', () => updateNetworkBanner(false));
@@ -837,7 +881,7 @@ restoreUiState();
 
 function switchHubTab(tabName) {
   activeHubTab = tabName;
-  ['lessons', 'cmd', 'diag'].forEach(t => {
+  ['lessons', 'cmd', 'lab', 'diag'].forEach(t => {
     const btn = $('tab-' + t);
     if (btn) btn.classList.toggle('active', t === tabName);
   });
@@ -849,8 +893,65 @@ function switchHubTab(tabName) {
     $('lessonsView').style.display = 'none';
     $('smartHubContainer').style.display = 'block';
     if (tabName === 'cmd') renderCmd();
+    else if (tabName === 'lab') renderLab();
     else renderDiag();
   }
+}
+
+/* ==========================================================================
+   محرك التنبؤ بالجاهزية ومؤشر الخطر (Readiness & Decay Engine)
+   ========================================================================== */
+function getLessonRiskScore(file, reviewsMap) {
+  const rescueList = readJson('hudhud_rescue_queue', []);
+  const isRescued = rescueList.includes(file.id);
+  const isDone = completed.includes(file.id);
+  const rev = reviewsMap[file.id];
+
+  let risk = isDone ? 25 : 65;
+  if (isRescued) risk += 30;
+  if (rev) {
+    if (rev.step === 0) risk += 25;
+    if (rev.due <= Date.now()) {
+      const overdueDays = Math.min(25, Math.max(5, Math.round((Date.now() - rev.due) / DAY) * 4));
+      risk += overdueDays;
+    } else {
+      risk = Math.max(5, risk - (rev.step * 12));
+    }
+  }
+  return Math.min(100, Math.max(0, risk));
+}
+
+function getCategoryRadar(catId) {
+  const reviewsMap = getReviewsMap();
+  const catFiles = lib.files.filter(f => f.catId === catId);
+  if (!catFiles.length) return { avgRisk: 0, mastery: 0, label: 'لا توجد دروس', cls: 'risk-low' };
+  const totalRisk = catFiles.reduce((sum, f) => sum + getLessonRiskScore(f, reviewsMap), 0);
+  const avgRisk = Math.round(totalRisk / catFiles.length);
+  const mastery = Math.max(0, 100 - avgRisk);
+  if (avgRisk >= 60) return { avgRisk, mastery, label: `خطر نسيان مرتفع (${avgRisk}%)`, cls: 'risk-high' };
+  if (avgRisk >= 35) return { avgRisk, mastery, label: `متوسط الخطر (${avgRisk}%)`, cls: 'risk-mid' };
+  return { avgRisk, mastery, label: `ثبات جيد (${mastery}%)`, cls: 'risk-low' };
+}
+
+function getExamReadinessIndex() {
+  if (!lib.files.length) return 0;
+  const reviewsMap = getReviewsMap();
+  const doneRatio = completed.length / lib.files.length;
+  const avgMastery = lib.files.reduce((s, f) => s + (100 - getLessonRiskScore(f, reviewsMap)), 0) / lib.files.length;
+  const quizLog = readJson('hudhud_quiz_scores', []);
+  const quizAvg = quizLog.length
+    ? quizLog.reduce((a, b) => a + b.pct, 0) / quizLog.length
+    : avgMastery;
+  return Math.min(100, Math.round(doneRatio * 35 + avgMastery * 0.45 + quizAvg * 0.20));
+}
+
+function launchSmartNextLesson() {
+  if (!lib.files.length) return showToast('لا توجد دروس متاحة حالياً', 'error');
+  const reviewsMap = getReviewsMap();
+  const ranked = [...lib.files].sort((a, b) => getLessonRiskScore(b, reviewsMap) - getLessonRiskScore(a, reviewsMap));
+  const top = ranked[0];
+  showToast(`⚡ تم اختيار: ${top.title} (الأعلى أولوية للمراجعة الآن)`);
+  openViewer(top.id);
 }
 
 function getCmdStats() {
@@ -871,7 +972,10 @@ function getCmdStats() {
 }
 
 function getDailyPlan() {
-  const left = lib.files.filter(f => !completed.includes(f.id)).sort((a, b) => (a.added || 0) - (b.added || 0));
+  const reviewsMap = getReviewsMap();
+  const left = lib.files
+    .filter(f => !completed.includes(f.id))
+    .sort((a, b) => getLessonRiskScore(b, reviewsMap) - getLessonRiskScore(a, reviewsMap) || (a.added || 0) - (b.added || 0));
   const days = Math.max(0, Math.ceil((EXAM_DATE - Date.now()) / DAY));
   const tk = dayKey(Date.now());
   let goal = parseInt(localStorage.getItem('hudhud_goalval_' + tk) || '0', 10);
@@ -900,6 +1004,7 @@ function renderCmd() {
   const total = lib.files.length;
   const done = total - left.length;
   const pct = total ? Math.round((done / total) * 100) : 0;
+  const readiness = getExamReadinessIndex();
   const todayDone = compLog[tk] || 0;
   const gp = Math.min(100, Math.round((todayDone / goal) * 100));
   const xp = done * 50 + sess * 20 + streak * 10;
@@ -912,6 +1017,17 @@ function renderCmd() {
 
   const due = Object.keys(R).filter(id => R[id].due <= Date.now()).map(id => lib.files.find(f => f.id === id)).filter(Boolean);
   const todo = left.slice(0, Math.max(0, goal - todayDone));
+
+  const radarRows = lib.categories.map(cat => {
+    const rad = getCategoryRadar(cat.id);
+    return `<div class="cmd-row">
+      <span>${cat.icon} ${escapeHtml(cat.name)}</span>
+      <span style="display:flex;align-items:center;gap:10px">
+        <span class="radar-bar"><i style="width:${rad.mastery}%"></i></span>
+        <span class="cat-risk-pill ${rad.cls}">${rad.label}</span>
+      </span>
+    </div>`;
+  }).join('');
 
   let heat = '';
   for (let i = 83; i >= 0; i--) {
@@ -926,55 +1042,287 @@ function renderCmd() {
 
   $('smartHubContainer').innerHTML = `
   <div class="panel-card"><div class="cmd-ring">
-    <svg width="124" height="124" viewBox="0 0 124 124"><circle cx="62" cy="62" r="52" fill="none" stroke="var(--line)" stroke-width="11"/><circle cx="62" cy="62" r="52" fill="none" stroke="var(--accent)" stroke-width="11" stroke-linecap="round" stroke-dasharray="${CI}" stroke-dashoffset="${CI * (1 - pct / 100)}" transform="rotate(-90 62 62)"/><text x="62" y="70" text-anchor="middle" font-size="26" font-weight="700" fill="var(--ink)">${pct}%</text></svg>
-    <div style="flex:1;min-width:200px"><h2 style="margin:0 0 4px">${cur[2]} ${cur[1]}</h2>
-    <div style="color:var(--muted);font-size:13px">${xp} نقطة خبرة${nxt ? ` — باقي ${nxt[0] - xp} للمستوى ${nxt[2]} ${nxt[1]}` : ' — وصلت لأعلى مستوى 👑'}</div>
-    <div class="cmd-xp"><b style="width:${xpPct}%"></b></div></div></div></div>
+    <svg width="124" height="124" viewBox="0 0 124 124"><circle cx="62" cy="62" r="52" fill="none" stroke="var(--line)" stroke-width="11"/><circle cx="62" cy="62" r="52" fill="none" stroke="var(--accent)" stroke-width="11" stroke-linecap="round" stroke-dasharray="${CI}" stroke-dashoffset="${CI * (1 - readiness / 100)}" transform="rotate(-90 62 62)"/><text x="62" y="70" text-anchor="middle" font-size="25" font-weight="700" fill="var(--ink)">${readiness}%</text></svg>
+    <div style="flex:1;min-width:220px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <h2 style="margin:0 0 4px">${cur[2]} ${cur[1]} — مؤشر الجاهزية: ${readiness}%</h2>
+        <button class="btn small" onclick="launchSmartNextLesson()">⚡ ابدأ المهمة الأعلى خطراً</button>
+      </div>
+      <div style="color:var(--muted);font-size:13px">الإنجاز: ${pct}% (${done}/${total}) • ${xp} نقطة خبرة${nxt ? ` — باقي ${nxt[0] - xp} للمستوى ${nxt[2]} ${nxt[1]}` : ' — أعلى مستوى 👑'}</div>
+      <div class="cmd-xp"><b style="width:${xpPct}%"></b></div>
+    </div></div></div>
+
   <div class="stats-grid">
     <div class="stat-card"><div class="stat-val">${days}</div><div class="stat-lbl">⏳ يوم للتمهيدي</div></div>
     <div class="stat-card"><div class="stat-val">${streak}</div><div class="stat-lbl">🔥 أيام متتالية</div></div>
-    <div class="stat-card"><div class="stat-val">${Math.min(todayDone, goal)}/${goal}</div><div class="stat-lbl">🎯 هدف اليوم</div></div>
+    <div class="stat-card"><div class="stat-val">${Math.min(todayDone, goal)}/${goal}</div><div class="stat-lbl">🎯 حصة اليوم الذكية</div></div>
     <div class="stat-card"><div class="stat-val">${due.length}</div><div class="stat-lbl">🔁 مراجعات مستحقة</div></div>
   </div>
+
   <div class="cmd-grid">
-    <div class="panel-card"><h3 style="margin:0 0 8px">🎯 خطة اليوم</h3>
+    <div class="panel-card"><h3 style="margin:0 0 8px">🎯 جدولة اليوم التكيّفية</h3>
       <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${gp}%"></div></div>
-      ${todo.map(f => row(f, `<button class="btn small" onclick="openViewer('${f.id}')">ابدأ</button>`)).join('') || empty(left.length ? '✅ خلّصت هدف اليوم، وكل زيادة مكسب!' : '🎉 خلّصت كل الدروس، بس ذكّر نفسك بالمراجعات.')}
+      ${todo.map(f => row(f, `<button class="btn small" onclick="openViewer('${f.id}')">ابدأ</button>`)).join('') || empty(left.length ? '✅ أنجزت حصة اليوم المخططة، وكل درس إضافي يرفع جاهزيتك!' : '🎉 أكملت جميع الدروس، ركّز الآن على المراجعات والمختبر.')}
     </div>
-    <div class="panel-card"><h3 style="margin:0 0 8px">🔁 مراجعات اليوم</h3>
-      ${due.map(f => row(f, `<button class="btn small success" onclick="cmdReview('${f.id}',1)">✓ أتذكرها</button><button class="btn small ghost" onclick="cmdReview('${f.id}',0)">أعدها</button>`)).join('') || empty('ما عندك مراجعات مستحقة. الدماغ يرتاح 🧠')}
+    <div class="panel-card"><h3 style="margin:0 0 8px">🔁 مراجعات اليوم المتباعدة</h3>
+      ${due.map(f => row(f, `<button class="btn small success" onclick="cmdReview('${f.id}',1)">✓ أتذكرها</button><button class="btn small ghost" onclick="cmdReview('${f.id}',0)">أعدها</button>`)).join('') || empty('لا توجد مراجعات مستحقة الآن 🧠')}
     </div>
   </div>
-  <div class="panel-card"><h3 style="margin:0 0 10px">📅 نشاطك آخر 12 أسبوع</h3><div class="cmd-heat">${heat}</div></div>
-  <p style="text-align:center;color:var(--muted);font-size:13px">الهدهد جاب نبأ يقين لسليمان، وانت راح تجيب النجاح بإذن الله 🤍</p>`;
+
+  <div class="panel-card"><h3 style="margin:0 0 8px">📡 رادار الثبات والخطر حسب القسم</h3>${radarRows || empty('لا توجد أقسام بعد')}</div>
+  <div class="panel-card"><h3 style="margin:0 0 10px">📅 سجل النشاط آخر 12 أسبوع</h3><div class="cmd-heat">${heat}</div></div>`;
 }
 
 window.cmdReview = (id, ok) => {
   const R = readJson('hudhud_reviews', {});
   const r = R[id];
   if (!r) return;
+  let rescue = readJson('hudhud_rescue_queue', []);
   if (ok) {
     r.step++;
+    rescue = rescue.filter(x => x !== id);
     if (r.step >= REVIEW_STEPS.length) delete R[id];
     else r.due = Date.now() + REVIEW_STEPS[r.step] * DAY;
   } else {
     r.step = 0;
     r.due = Date.now() + DAY;
+    if (!rescue.includes(id)) rescue.push(id);
   }
   const C = readJson('hudhud_comp_log', {});
   const k = dayKey(Date.now()) + 'r';
   C[k] = (C[k] || 0) + 1;
   writeJson('hudhud_reviews', R);
   writeJson('hudhud_comp_log', C);
-  showToast(ok ? 'ممتاز! أجّلت المراجعة القادمة 🧠' : 'ما مشكلة، نعيدها باجر 💪');
+  writeJson('hudhud_rescue_queue', rescue);
+  showToast(ok ? 'ممتاز! تم تحديث جدول المراجعة 🧠' : 'تمت إضافته لقائمة الإنقاذ والمراجعة غداً 💪');
   renderCmd();
 };
+
+/* ==========================================================================
+   مختبر الاسترجاع النشط والتشخيص (Active Recall & Diagnostic Lab)
+   ========================================================================== */
+function getFlashcardsList() {
+  const rescue = readJson('hudhud_rescue_queue', []);
+  const candidates = lib.files.filter(f => f.question || f.note);
+  const prioritized = [...candidates].sort((a, b) => (rescue.includes(b.id) ? 1 : 0) - (rescue.includes(a.id) ? 1 : 0));
+  return prioritized.map(f => {
+    const cat = lib.categories.find(c => c.id === f.catId);
+    return {
+      id: f.id,
+      catLabel: cat ? `${cat.icon} ${cat.name}` : 'درس',
+      question: f.question || `اختبر استيعابك لدرس: «${f.title}»`,
+      answer: f.note || `راجع النقاط الرئيسية والمفاهيم الأساسية في درس «${f.title}».`
+    };
+  });
+}
+
+function buildDiagnosticQuiz() {
+  const pool = lib.files.filter(f => f.title && (f.note || f.question || f.catId));
+  if (pool.length < 2) return [];
+  const allCats = lib.categories.length ? lib.categories : DEFAULT_CATS;
+  return pool.slice(0, 8).map((item, i) => {
+    const correctCat = allCats.find(c => c.id === item.catId) || allCats[0];
+    const distractors = allCats.filter(c => c.id !== correctCat.id).map(c => c.name);
+    while (distractors.length < 3) distractors.push(`محور دراسي ${distractors.length + 1}`);
+    const options = [correctCat.name, ...distractors.slice(0, 3)].sort((a, b) => ((a.length + i) % 2) - 0.5);
+    return {
+      fileId: item.id,
+      q: item.question
+        ? `${item.question} (الدرس: ${item.title})`
+        : `إلى أي قسم ينتمي درس «${item.title}» وما سياقه الرئيسي؟`,
+      options,
+      correct: options.indexOf(correctCat.name),
+      explain: item.note || `هذا الدرس مصنف ضمن قسم «${correctCat.name}».`
+    };
+  });
+}
+
+function renderLab() {
+  if (activeHubTab !== 'lab') return;
+  const cards = getFlashcardsList();
+  const quiz = buildDiagnosticQuiz();
+  const rescue = readJson('hudhud_rescue_queue', []).map(id => lib.files.find(f => f.id === id)).filter(Boolean);
+  const quizHistory = readJson('hudhud_quiz_scores', []);
+  const lastScore = quizHistory.length ? quizHistory[quizHistory.length - 1].pct + '%' : 'لم يُجرَ بعد';
+
+  if (flashcardIdx >= cards.length) flashcardIdx = 0;
+  const curCard = cards[flashcardIdx];
+
+  const cardHtml = curCard ? `
+    <div class="flashcard-box">
+      <div>
+        <span class="cat-badge">${curCard.catLabel} • بطاقة ${flashcardIdx + 1} من ${cards.length}</span>
+        <div class="flashcard-q" style="margin-top:10px">${escapeHtml(curCard.question)}</div>
+        ${flashcardFlipped ? `<div class="flashcard-a" style="margin-top:12px"><strong>الإجابة / الخلاصة:</strong> ${escapeHtml(curCard.answer)}</div>` : ''}
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn small ghost" onclick="flipFlashcard()">${flashcardFlipped ? '🙈 إخفاء الجواب' : '👁️ إظهار الجواب'}</button>
+        <button class="btn small success" onclick="rateFlashcard(true)">✓ أتقنتها</button>
+        <button class="btn small warn" onclick="rateFlashcard(false)">⚠ أحتاج إعادتها</button>
+      </div>
+    </div>
+  ` : `<p style="color:var(--muted)">أضف «ملاحظة توجيهية» أو «سؤال مراجعة سريع» لأي درس لتوليد بطاقات الاسترجاع النشط تلقائياً.</p>`;
+
+  let quizHtml = '';
+  if (quiz.length) {
+    if (quizIndex >= quiz.length) {
+      const pct = Math.round((quizScore / quiz.length) * 100);
+      quizHtml = `
+        <div style="text-align:center;padding:12px">
+          <h3 style="margin:0 0 6px">نتيجة الاختبار التشخيصي: ${quizScore} / ${quiz.length} (${pct}%)</h3>
+          <p style="color:var(--muted);font-size:13.5px;margin:0 0 12px">تم تحديث مؤشر جاهزيتك وإضافة الأسئلة المتعثرة إلى قائمة الإنقاذ.</p>
+          <button class="btn small" onclick="restartQuiz()">↻ إعادة الاختبار</button>
+        </div>
+      `;
+    } else {
+      const qItem = quiz[quizIndex];
+      quizHtml = `
+        <div>
+          <span class="cat-badge">سؤال ${quizIndex + 1} من ${quiz.length}</span>
+          <div style="font-weight:700;margin:10px 0">${escapeHtml(qItem.q)}</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            ${qItem.options.map((opt, idx) => {
+              let cls = 'quiz-opt';
+              if (quizAnswered) {
+                if (idx === qItem.correct) cls += ' correct';
+                else if (idx === quizSelected) cls += ' wrong';
+              }
+              return `<button class="${cls}" onclick="answerQuiz(${idx})">${escapeHtml(opt)}</button>`;
+            }).join('')}
+          </div>
+          ${quizAnswered ? `
+            <div class="lesson-tip-box" style="margin-top:12px">${escapeHtml(qItem.explain)}</div>
+            <button class="btn small" style="margin-top:10px" onclick="nextQuizQuestion()">${quizIndex + 1 < quiz.length ? 'السؤال التالي »' : 'عرض النتيجة النهائية'}</button>
+          ` : ''}
+        </div>
+      `;
+    }
+  } else {
+    quizHtml = `<p style="color:var(--muted)">أضف درسين على الأقل لتشغيل الاختبار التشخيصي السريع.</p>`;
+  }
+
+  $('smartHubContainer').innerHTML = `
+    <div class="cmd-grid">
+      <div class="panel-card">
+        <h3 style="margin:0 0 10px">🃏 بطاقات الاسترجاع النشط (Flashcards)</h3>
+        ${cardHtml}
+      </div>
+      <div class="panel-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px">
+          <h3 style="margin:0">📝 الاختبار التشخيصي السريع</h3>
+          <span class="cat-badge">آخر نتيجة: ${lastScore}</span>
+        </div>
+        ${quizHtml}
+      </div>
+    </div>
+    <div class="panel-card">
+      <h3 style="margin:0 0 8px">🆘 قائمة الإنقاذ (الدروس التي تحتاج إعادة تركيز: ${rescue.length})</h3>
+      ${rescue.length
+        ? rescue.map(f => `<div class="cmd-row"><span>${escapeHtml(f.title)}</span><button class="btn small" onclick="openViewer('${f.id}')">مراجعة الآن</button></div>`).join('')
+        : `<p style="color:var(--muted);margin:0">لا توجد دروس متعثرة في قائمة الإنقاذ حالياً — استمر بهذا المستوى الممتاز ✨</p>`}
+    </div>
+  `;
+}
+
+function flipFlashcard() {
+  flashcardFlipped = !flashcardFlipped;
+  renderLab();
+}
+
+function rateFlashcard(ok) {
+  const cards = getFlashcardsList();
+  if (!cards.length) return;
+  const cur = cards[flashcardIdx];
+  let rescue = readJson('hudhud_rescue_queue', []);
+  if (ok) {
+    rescue = rescue.filter(id => id !== cur.id);
+    showToast('رائع! تم تثبيت البطاقة ✓');
+  } else {
+    if (!rescue.includes(cur.id)) rescue.push(cur.id);
+    showToast('تمت إضافتها لقائمة الإنقاذ لإعادتها لاحقاً', 'error');
+  }
+  writeJson('hudhud_rescue_queue', rescue);
+  flashcardFlipped = false;
+  flashcardIdx = (flashcardIdx + 1) % cards.length;
+  renderLab();
+}
+
+function answerQuiz(idx) {
+  if (quizAnswered) return;
+  const quiz = buildDiagnosticQuiz();
+  const qItem = quiz[quizIndex];
+  if (!qItem) return;
+  quizAnswered = true;
+  quizSelected = idx;
+  let rescue = readJson('hudhud_rescue_queue', []);
+  if (idx === qItem.correct) {
+    quizScore++;
+    rescue = rescue.filter(id => id !== qItem.fileId);
+  } else if (!rescue.includes(qItem.fileId)) {
+    rescue.push(qItem.fileId);
+  }
+  writeJson('hudhud_rescue_queue', rescue);
+  renderLab();
+}
+
+function nextQuizQuestion() {
+  const quiz = buildDiagnosticQuiz();
+  quizIndex++;
+  quizAnswered = false;
+  quizSelected = -1;
+  if (quizIndex >= quiz.length && quiz.length > 0) {
+    const pct = Math.round((quizScore / quiz.length) * 100);
+    const logs = readJson('hudhud_quiz_scores', []);
+    logs.push({ date: dayKey(Date.now()), pct });
+    writeJson('hudhud_quiz_scores', logs.slice(-20));
+  }
+  renderLab();
+}
+
+function restartQuiz() {
+  quizIndex = 0;
+  quizScore = 0;
+  quizAnswered = false;
+  quizSelected = -1;
+  renderLab();
+}
+
+/* ==========================================================================
+   طابور المزامنة الذكي (Resilient Sync Queue) والتشخيص
+   ========================================================================== */
+function enqueueSyncAction(actionType, payload) {
+  const queue = readJson('hudhud_sync_queue', []);
+  queue.push({ id: 'sync_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6), type: actionType, payload, createdAt: Date.now() });
+  writeJson('hudhud_sync_queue', queue);
+}
+
+async function flushSyncQueue() {
+  const queue = readJson('hudhud_sync_queue', []);
+  if (!queue.length) return;
+  const u = firebase.auth().currentUser;
+  if (!u) return;
+
+  try {
+    const token = await u.getIdToken();
+    const r = await fetch(FIREBASE_URL + 'data.json?auth=' + encodeURIComponent(token), {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(buildLightFirebasePayload())
+    });
+    if (r.ok) {
+      writeJson('hudhud_sync_queue', []);
+      showToast('تمت مزامنة التعديلات المؤجلة مع السحابة ✅');
+      if (activeHubTab === 'diag') renderDiag();
+    }
+  } catch (e) {}
+}
 
 function renderDiag() {
   const container = $('smartHubContainer');
   if (!container || activeHubTab !== 'diag') return;
   const cacheRaw = localStorage.getItem('hudhud_lib_cache');
   const cacheSizeKb = cacheRaw ? Math.round(new Blob([cacheRaw]).size / 1024) : 0;
+  const syncQueue = readJson('hudhud_sync_queue', []);
   const brokenLinksCount = lib.files.reduce((acc, f) => {
     const list = Array.isArray(f.links) ? f.links : [];
     return acc + list.filter(l => !l.url || !/^https?:\/\//i.test(normalizeUrl(l.url))).length;
@@ -982,26 +1330,27 @@ function renderDiag() {
 
   container.innerHTML = `
     <div class="panel-card">
-      <h2 style="margin:0 0 10px;">🛠️ لوحة التشخيص الذاتي والنسخ الاحتياطي</h2>
+      <h2 style="margin:0 0 10px;">🛠️ لوحة التشخيص الذاتي والمزامنة والنسخ الاحتياطي</h2>
       <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:16px;">
         <div style="background:var(--bg); padding:14px; border-radius:14px; border:1px solid var(--line);">
           <div style="font-size:12px; color:var(--muted);">حالة الشبكة</div>
           <div style="font-weight:700; margin-top:4px;">${navigator.onLine ? '✅ متصل بالإنترنت' : '📡 وضع عدم الاتصال'}</div>
         </div>
         <div style="background:var(--bg); padding:14px; border-radius:14px; border:1px solid var(--line);">
+          <div style="font-size:12px; color:var(--muted);">طابور المزامنة المعلق</div>
+          <div style="font-weight:700; margin-top:4px;">${syncQueue.length} عملية</div>
+        </div>
+        <div style="background:var(--bg); padding:14px; border-radius:14px; border:1px solid var(--line);">
           <div style="font-size:12px; color:var(--muted);">حجم الكاش المحلي للدروس</div>
-          <div style="font-weight:700; margin-top:4px;">${cacheSizeKb} KB (والملفات الكبيرة في IndexedDB)</div>
+          <div style="font-weight:700; margin-top:4px;">${cacheSizeKb} KB + IndexedDB</div>
         </div>
         <div style="background:var(--bg); padding:14px; border-radius:14px; border:1px solid var(--line);">
-          <div style="font-size:12px; color:var(--muted);">روابط ناقصة أو غير صالحة</div>
+          <div style="font-size:12px; color:var(--muted);">روابط تحتاج مراجعة</div>
           <div style="font-weight:700; margin-top:4px;">${brokenLinksCount}</div>
-        </div>
-        <div style="background:var(--bg); padding:14px; border-radius:14px; border:1px solid var(--line);">
-          <div style="font-size:12px; color:var(--muted);">جلسات الدراسة اليوم</div>
-          <div style="font-weight:700; margin-top:4px;">${todaySessions} جلسة</div>
         </div>
       </div>
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn small success" onclick="flushSyncQueue()">🔄 مزامنة الطابور الآن</button>
         <button class="btn small" onclick="exportBackupJson()">📤 تصدير نسخة احتياطية JSON</button>
         <button class="btn ghost small" onclick="$('importBackupInput').click()">📥 استيراد نسخة احتياطية</button>
         <input type="file" id="importBackupInput" accept=".json" hidden onchange="importBackupJson(this.files[0])">
@@ -1016,7 +1365,9 @@ function exportBackupJson() {
     exportedAt: new Date().toISOString(),
     lib,
     favs,
-    completed
+    completed,
+    rescueQueue: readJson('hudhud_rescue_queue', []),
+    quizScores: readJson('hudhud_quiz_scores', [])
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -1042,9 +1393,12 @@ function importBackupJson(file) {
       }
       if (Array.isArray(data.favs)) { favs = data.favs; writeJson('favs', favs); }
       if (Array.isArray(data.completed)) { completed = data.completed; writeJson('completed', completed); }
+      if (Array.isArray(data.rescueQueue)) writeJson('hudhud_rescue_queue', data.rescueQueue);
+      if (Array.isArray(data.quizScores)) writeJson('hudhud_quiz_scores', data.quizScores);
       showToast('تم استيراد النسخة الاحتياطية وتحديث الواجهة 📥');
       render();
       if (activeHubTab === 'cmd') renderCmd();
+      else if (activeHubTab === 'lab') renderLab();
       else if (activeHubTab === 'diag') renderDiag();
     } catch (err) {
       showToast('ملف النسخة الاحتياطية غير صالح', 'error');
@@ -1067,6 +1421,7 @@ function saveFormDraft() {
     catId: $('catSelect').value,
     title: $('fileTitle').value,
     note: $('fileNote').value,
+    question: $('fileQuestion').value,
     tags: $('fileTags').value,
     url: $('urlInput').value
   });
@@ -1203,7 +1558,8 @@ async function saveData() {
     });
     if (!r.ok) throw new Error('HTTP ' + r.status);
   } catch (e) {
-    showToast('تم الحفظ محلياً؛ تحقق من تسجيل الدخول وصلاحيات القاعدة للمزامنة السحابية.', 'error');
+    enqueueSyncAction('save_library', { updatedAt: Date.now() });
+    showToast('تم الحفظ محلياً وإضافته لطابور المزامنة السحابية.', 'error');
   }
 }
 
@@ -1295,14 +1651,14 @@ function render() {
 
   const totalFiles = lib.files.length;
   const completedCount = lib.files.filter(f => completed.includes(f.id)).length;
-  const pct = totalFiles ? Math.round((completedCount / totalFiles) * 100) : 0;
+  const readiness = getExamReadinessIndex();
 
   stats.innerHTML = `
     <div class="stat-card"><div class="stat-val">${totalFiles}</div><div class="stat-lbl">إجمالي الدروس</div></div>
     <div class="stat-card"><div class="stat-val">${lib.categories.length}</div><div class="stat-lbl">الأقسام</div></div>
     <div class="stat-card"><div class="stat-val">${todaySessions}</div><div class="stat-lbl">جلسات اليوم</div></div>
     <div class="stat-card"><div class="stat-val" style="color:var(--success)">${completedCount}</div><div class="stat-lbl">المنجزة</div></div>`;
-  progWrap.innerHTML = `<span class="progress-text">مستوى الإنجاز العام</span><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%"></div></div><span class="progress-text">${pct}%</span>`;
+  progWrap.innerHTML = `<span class="progress-text">جاهزية الامتحان</span><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${readiness}%"></div></div><span class="progress-text">${readiness}%</span>`;
 
   if (activeHubTab !== 'lessons') return;
   renderFilterBar();
@@ -1311,6 +1667,7 @@ function render() {
     const matched = lib.files.filter(f =>
       f.title.toLowerCase().includes(query) ||
       (f.note && f.note.toLowerCase().includes(query)) ||
+      (f.question && f.question.toLowerCase().includes(query)) ||
       (f.tags && f.tags.some(t => t.toLowerCase().includes(query))) ||
       (f.links && f.links.some(l => (l.label || '').toLowerCase().includes(query)))
     );
@@ -1322,7 +1679,8 @@ function render() {
       const catFiles = lib.files.filter(f => f.catId === cat.id);
       const catDone = catFiles.filter(f => completed.includes(f.id)).length;
       const catPct = catFiles.length ? Math.round((catDone / catFiles.length) * 100) : 0;
-      html += `<div class="cat-card" onclick="currentCatId='${cat.id}'; render()">${isAdmin ? `<div class="cat-admin-tools"><button class="mini-icon-btn" onclick="editCategory('${cat.id}', event)" title="تعديل">✏️</button><button class="mini-icon-btn" onclick="deleteCategory('${cat.id}', event)" title="حذف">🗑️</button></div>` : ''}<div class="cat-icon">${cat.icon}</div><div class="cat-name">${escapeHtml(cat.name)}</div><div style="color:var(--muted); font-size:13px; margin-top:6px;">${catDone} / ${catFiles.length} منجز</div><div class="cat-mini-prog"><div class="cat-mini-fill" style="width:${catPct}%"></div></div></div>`;
+      const rad = getCategoryRadar(cat.id);
+      html += `<div class="cat-card" onclick="currentCatId='${cat.id}'; render()">${isAdmin ? `<div class="cat-admin-tools"><button class="mini-icon-btn" onclick="editCategory('${cat.id}', event)" title="تعديل">✏️</button><button class="mini-icon-btn" onclick="deleteCategory('${cat.id}', event)" title="حذف">🗑️</button></div>` : ''}<div class="cat-icon">${cat.icon}</div><div class="cat-name">${escapeHtml(cat.name)}</div><span class="cat-risk-pill ${rad.cls}">${rad.label}</span><div style="color:var(--muted); font-size:13px; margin-top:6px;">${catDone} / ${catFiles.length} منجز</div><div class="cat-mini-prog"><div class="cat-mini-fill" style="width:${catPct}%"></div></div></div>`;
     });
     html += `</div>`;
     c.innerHTML = html;
@@ -1431,6 +1789,7 @@ async function openViewer(id) {
   const dlBtn = $('downloadBtn');
   codeBtn.style.display = 'none';
   dlBtn.style.display = 'none';
+  releaseActiveBlobUrl();
   body.innerHTML = '';
 
   if (!fileContent && ['html', 'pdf'].includes(f.type)) {
@@ -1461,7 +1820,8 @@ async function openViewer(id) {
       }
     };
   } else if (f.type === 'pdf') {
-    body.innerHTML = `<iframe src="data:application/pdf;base64,${fileContent}"></iframe>`;
+    const blobUrl = base64ToBlobUrl(fileContent, 'application/pdf');
+    body.innerHTML = `<iframe src="${blobUrl}"></iframe>`;
     dlBtn.style.display = 'inline-flex';
   } else if (f.type === 'image') {
     body.innerHTML = `<img src="${escapeHtml(fileContent)}">`;
@@ -1505,6 +1865,7 @@ function downloadFile() {
 
 function closeViewer() {
   if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  releaseActiveBlobUrl();
   document.body.classList.remove('viewing');
   $('viewerBody').innerHTML = '';
   currentViewerFile = null;
@@ -1560,7 +1921,7 @@ function doLogin() {
   const password = $('passInput').value;
   if (!email || !password) { $('errorMsg').textContent = 'أدخل البريد وكلمة المرور'; return; }
   firebase.auth().signInWithEmailAndPassword(email, password)
-    .then(() => { isAdmin = true; closeModal(); render(); showToast('مرحباً بك يا مدير'); })
+    .then(() => { isAdmin = true; closeModal(); render(); flushSyncQueue(); showToast('مرحباً بك يا مدير'); })
     .catch(() => { $('errorMsg').textContent = 'البريد أو كلمة المرور غير صحيحة'; });
 }
 
@@ -1589,6 +1950,7 @@ function openAddModal() {
     $('fileNameDisplay').textContent = 'لم يتم اختيار ملف (الحد الأقصى 25 MB)';
     $('fileTitle').value = '';
     $('fileNote').value = '';
+    $('fileQuestion').value = '';
     $('fileTags').value = '';
     $('urlInput').value = '';
     $('linksContainer').innerHTML = '';
@@ -1601,6 +1963,7 @@ function openAddModal() {
       if (draft.type) $('fileType').value = draft.type;
       if (draft.title) $('fileTitle').value = draft.title;
       if (draft.note) $('fileNote').value = draft.note;
+      if (draft.question) $('fileQuestion').value = draft.question;
       if (draft.tags) $('fileTags').value = draft.tags;
       if (draft.url) $('urlInput').value = draft.url;
     }
@@ -1650,6 +2013,7 @@ function editFile(id, event) {
   $('fileType').value = f.type;
   $('fileTitle').value = f.title;
   $('fileNote').value = f.note || '';
+  $('fileQuestion').value = f.question || '';
   $('fileTags').value = (f.tags || []).join(', ');
   const linksContainer = $('linksContainer');
   linksContainer.innerHTML = '';
@@ -1702,6 +2066,7 @@ async function saveFile() {
   const catId = $('catSelect').value;
   const title = $('fileTitle').value.trim();
   const note = $('fileNote').value.trim();
+  const question = $('fileQuestion').value.trim();
   const rawTags = $('fileTags').value;
   const tags = rawTags ? rawTags.split(',').map(t => t.trim()).filter(Boolean) : [];
   const links = collectLinksFromForm();
@@ -1731,7 +2096,7 @@ async function saveFile() {
     const existing = editingFileId ? lib.files.find(f => f.id === editingFileId) : null;
     await finalizeRecord({
       id: existing ? existing.id : 'f' + Date.now(),
-      type, catId, title, note, tags, links,
+      type, catId, title, note, question, tags, links,
       content: url,
       added: existing ? existing.added : Date.now()
     });
@@ -1741,7 +2106,7 @@ async function saveFile() {
   if (!pendingFileData) {
     if (editingFileId) {
       const existing = lib.files.find(f => f.id === editingFileId);
-      await finalizeRecord({ ...existing, type, catId, title, note, tags, links });
+      await finalizeRecord({ ...existing, type, catId, title, note, question, tags, links });
       return;
     }
     $('errorMsg').textContent = 'اختر الملف أولاً';
@@ -1768,7 +2133,7 @@ async function saveFile() {
         await saveLargeFileContent(fileId, type, processedContent);
         await finalizeRecord({
           id: fileId,
-          type, catId, title, note, tags, links,
+          type, catId, title, note, question, tags, links,
           sizeKb,
           idbStored: true,
           content: processedContent,
@@ -1778,7 +2143,7 @@ async function saveFile() {
         await deleteLargeFileContent(fileId);
         await finalizeRecord({
           id: fileId,
-          type, catId, title, note, tags, links,
+          type, catId, title, note, question, tags, links,
           sizeKb,
           idbStored: false,
           content: processedContent,
@@ -1830,6 +2195,7 @@ firebase.auth().onAuthStateChanged(user => {
   isAdmin = Boolean(user);
   $('adminBtn').textContent = isAdmin ? '🔓' : '🔒';
   render();
+  if (isAdmin && navigator.onLine) flushSyncQueue();
 });
 
 window.addEventListener('hashchange', checkUrlHash);
