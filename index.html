@@ -1819,7 +1819,90 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 <script>
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed', err));
+  }</script>
+  <script>
+(function () {
+  // 1) العد التنازلي التلقائي
+  function updateCountdown() {
+    const el = document.querySelector('.brand-sub'); if (!el) return;
+    const days = Math.ceil((new Date('2027-02-01T00:00:00') - new Date()) / 86400000);
+    el.textContent = days > 0
+      ? `منصة التعلم والمراجعة الذكية — متبقي ${days} يوماً للتمهيدي (1/2/2027)`
+      : 'منصة التعلم والمراجعة الذكية — حان موعد الامتحان، بالتوفيق 🤍';
   }
+  updateCountdown(); setInterval(updateCountdown, 3600000);
+
+  // 2) الحفظ بتوكن المستخدم المسجّل
+  window.saveData = async function () {
+    try {
+      const u = firebase.auth().currentUser;
+      if (!u) throw new Error('no auth');
+      const token = await u.getIdToken();
+      const r = await fetch(FIREBASE_URL + 'data.json?auth=' + encodeURIComponent(token), {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(lib)
+      });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      localStorage.setItem('hudhud_lib_cache', JSON.stringify(lib));
+    } catch (e) { showToast('فشل الحفظ. تأكد من تسجيل الدخول وصلاحيات القاعدة.', 'error'); }
+  };
+
+  // 3) اسم النسخة الاحتياطية بتاريخ اليوم
+  window.exportBackupJson = function () {
+    const payload = { exportedAt: new Date().toISOString(), lib, logicBlocks, favs, completed };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'hudhud-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('تم تصدير النسخة الاحتياطية بنجاح 📤');
+  };
+
+  // 4) الاختبار: خلط الخيارات + إصلاح الفاصلة العليا
+  let quizQs = [];
+  const origBuild = window.buildDynamicQuestions;
+  window.buildDynamicQuestions = function () {
+    quizQs = origBuild().map(q => {
+      const right = q.options[q.correct];
+      const opts = [...q.options].sort(() => Math.random() - 0.5);
+      return { ...q, options: opts, correct: opts.indexOf(right), explain: String(q.explain).replace(/['\\]/g, '’') };
+    });
+    return quizQs;
+  };
+  window.answerQuiz = function (qIdx, chosenIdx) {
+    const q = quizQs[qIdx]; if (!q) return;
+    const box = document.getElementById('qOpts_' + qIdx);
+    const ex = document.getElementById('qExplain_' + qIdx);
+    if (!box) return;
+    box.querySelectorAll('.quiz-option-btn').forEach((b, i) => {
+      b.classList.remove('correct', 'wrong');
+      if (i === q.correct) b.classList.add('correct');
+      else if (i === chosenIdx) b.classList.add('wrong');
+    });
+    if (ex) {
+      ex.style.display = 'block';
+      ex.textContent = (chosenIdx === q.correct ? '✅ إجابة صحيحة: ' : '❌ راجع الفكرة: ') + q.explain;
+    }
+  };
+
+  // 5) إصلاح تنسيق صورة المحاكاة
+  const st = document.createElement('style');
+  st.textContent = '.sim-uploaded-img{position:static !important;inset:auto !important;width:auto !important;height:auto !important;}';
+  document.head.appendChild(st);
+
+  // 6) عزل دروس HTML داخل sandbox
+  const vb = document.getElementById('viewerBody');
+  if (vb) {
+    new MutationObserver(() => {
+      vb.querySelectorAll('iframe[srcdoc]:not([sandbox])').forEach(f => {
+        const doc = f.srcdoc;
+        f.setAttribute('sandbox', 'allow-scripts allow-forms allow-popups allow-modals');
+        f.srcdoc = doc;
+      });
+    }).observe(vb, { childList: true });
+  }
+})();
 </script>
 </body>
 </html>
