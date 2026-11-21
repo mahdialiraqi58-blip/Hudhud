@@ -179,7 +179,31 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
 
 .panel-card { background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
 
-/* تنسيق الاختبارات غير المحدودة */
+/* أدوات رفع PDF داخل خانة الاختبارات */
+.quiz-pdf-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--tint);
+  border: 1px dashed var(--accent);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+.quiz-pdf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-solid);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
 .quiz-builder-bar {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -219,7 +243,7 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
   cursor: pointer;
   transition: 0.2s;
 }
-.quiz-option-btn:hover:not(:disabled) { border-color: var(--accent); transform: translateX(-2px); }
+.quiz-option-btn:hover { border-color: var(--accent); transform: translateX(-2px); }
 .quiz-option-btn.correct { background: rgba(16, 185, 129, 0.16); border-color: var(--success); color: var(--success); }
 .quiz-option-btn.wrong { background: rgba(239, 68, 68, 0.14); border-color: var(--danger); color: var(--danger); }
 .quiz-result-box {
@@ -230,21 +254,9 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
   padding: 18px;
   text-align: center;
 }
-.quiz-history-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
-}
-.quiz-history-chip {
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 11px;
-  padding: 6px 12px;
-  font-size: 12.5px;
-  font-weight: 700;
-}
-.remove-link-btn { background: rgba(239, 68, 68, 0.12); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 10px; padding: 8px 10px; cursor: pointer; font-weight: bold; }
+.quiz-history-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.quiz-history-chip { background: var(--bg); border: 1px solid var(--line); border-radius: 11px; padding: 6px 12px; font-size: 12.5px; font-weight: 700; }
+.remove-link-btn { background: rgba(239, 68, 68, 0.12); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 10px; padding: 7px 10px; cursor: pointer; font-weight: bold; font-size: 12px; }
 
 .viewer { position: fixed; inset: 0; z-index: 200; background: var(--bg); display: none; flex-direction: column; }
 .viewing .viewer { display: flex; }
@@ -619,12 +631,14 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   let currentOrderedList = [];
   let deferredInstallPrompt = null;
 
-  /* حالة الاختبارات غير المحدودة */
+  /* حالة الاختبارات غير المحدودة + ملفات PDF المضافة للاختبار */
   let quizSettings = JSON.parse(localStorage.getItem('hudhud_quiz_settings') || 'null') || {
     catId: 'all',
     count: 10,
     seed: 1
   };
+  let quizPdfMeta = JSON.parse(localStorage.getItem('hudhud_quiz_pdf_meta') || 'null');
+  let quizPdfBase64Cache = '';
   let currentQuizQuestions = [];
   let quizAnswers = {};
   let quizHistory = JSON.parse(localStorage.getItem('hudhud_quiz_history') || '[]');
@@ -926,7 +940,66 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     }
   }
 
-  /* مولد الاختبارات غير المحدودة */
+  /* إضافة ملف PDF مباشرة من خانة الاختبارات */
+  function handleQuizPdfUpload(file) {
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+      return showToast('يرجى اختيار ملف بصيغة PDF', 'error');
+    }
+    const sizeKb = Math.round(file.size / 1024);
+    quizPdfMeta = {
+      name: file.name,
+      sizeKb,
+      addedAt: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })
+    };
+    localStorage.setItem('hudhud_quiz_pdf_meta', JSON.stringify(quizPdfMeta));
+
+    if (file.size <= 1500 * 1024) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        quizPdfBase64Cache = String(e.target.result || '').split(',')[1] || '';
+      };
+      reader.readAsDataURL(file);
+    } else {
+      quizPdfBase64Cache = '';
+    }
+
+    showToast(`تم إرفاق ملف PDF «${file.name}» للاختبارات 📄`);
+    generateUnlimitedQuiz(false);
+    renderSmartHub();
+  }
+
+  function removeQuizPdf() {
+    quizPdfMeta = null;
+    quizPdfBase64Cache = '';
+    localStorage.removeItem('hudhud_quiz_pdf_meta');
+    showToast('تمت إزالة ملف PDF من الاختبارات');
+    generateUnlimitedQuiz(false);
+    renderSmartHub();
+  }
+
+  function previewQuizPdf() {
+    if (!quizPdfMeta) return;
+    if (!quizPdfBase64Cache) {
+      return showToast('أعد اختيار ملف PDF من جهازك لعرض معاينته المباشرة', 'error');
+    }
+    currentViewerFile = {
+      id: 'quiz_pdf_preview',
+      title: quizPdfMeta.name,
+      type: 'pdf',
+      content: quizPdfBase64Cache,
+      note: 'معاينة ملف PDF المرفق للاختبارات التدريبية'
+    };
+    document.getElementById('viewerTitle').textContent = quizPdfMeta.name;
+    document.getElementById('viewerNoteText').textContent = currentViewerFile.note;
+    document.getElementById('viewerNoteBanner').style.display = 'flex';
+    document.getElementById('viewerExtLinks').innerHTML = '';
+    document.getElementById('codeToggleBtn').style.display = 'none';
+    document.getElementById('downloadBtn').style.display = 'inline-flex';
+    document.getElementById('viewerBody').innerHTML = `<iframe src="data:application/pdf;base64,${quizPdfBase64Cache}"></iframe>`;
+    document.body.classList.add('viewing');
+  }
+
   function shuffleArray(arr) {
     const copy = [...arr];
     for (let i = copy.length - 1; i > 0; i--) {
@@ -934,6 +1007,34 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
       [copy[i], copy[j]] = [copy[j], copy[i]];
     }
     return copy;
+  }
+
+  function buildPdfQuestions() {
+    if (!quizPdfMeta) return [];
+    const cleanName = quizPdfMeta.name.replace(/\.pdf$/i, '');
+    const pool = [
+      {
+        question: `ما الغرض من إرفاق ملف «${cleanName}» ضمن خانة الاختبارات؟`,
+        options: [
+          'ربط المراجعة والاختبارات بملف المنهج أو الأسئلة المرفق',
+          'إلغاء باقي الأقسام والمواد الدراسية',
+          'تغيير موعد الامتحان التمهيدي'
+        ],
+        correct: 0,
+        explain: `ملف «${quizPdfMeta.name}» مرفق ليكون مرجعاً سريعاً أثناء التدريب والاختبار.`
+      },
+      {
+        question: `كيف تستفيد بأقصى شكل من ملف «${cleanName}» قبل يوم 1/2/2027؟`,
+        options: [
+          'قراءة الفكرة ثم حل اختبارات متكررة وتصحيح الأخطاء فوراً',
+          'تصفحه مرة واحدة دون حل أي أسئلة',
+          'تأجيله إلى ليلة الامتحان فقط'
+        ],
+        correct: 0,
+        explain: 'التدريب المتكرر بالاختبارات ومراجعة الأخطاء يثبّت المعلومة بشكل أفضل.'
+      }
+    ];
+    return pool;
   }
 
   function buildLessonQuestions(catId) {
@@ -1010,8 +1111,9 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
       };
     });
 
+    const pdfQs = buildPdfQuestions();
     const lessonQs = buildLessonQuestions(quizSettings.catId);
-    const combined = shuffleArray([...bankShuffled, ...lessonQs]);
+    const combined = shuffleArray([...pdfQs, ...bankShuffled, ...lessonQs]);
 
     const targetCount = Math.max(3, Math.min(20, Number(quizSettings.count) || 10));
     const list = [];
@@ -1104,12 +1206,25 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 
       container.innerHTML = `
         <div class="panel-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
             <div>
               <h2 style="margin:0;">🎯 اختبار تدريبي ذكي — جولات غير محدودة</h2>
-              <p style="margin:4px 0 0; color:var(--muted); font-size:13.5px;">ولّد عدداً غير محدود من الاختبارات العشوائية من دروسك والبنك الهندسي استعداداً ليوم 1/2/2027.</p>
+              <p style="margin:4px 0 0; color:var(--muted); font-size:13.5px;">ارفع ملف PDF أو اختر القسم والعدد وولّد اختبارات غير محدودة استعداداً ليوم 1/2/2027.</p>
             </div>
             <button type="button" class="btn" onclick="generateUnlimitedQuiz(true)">⚡ اختبار جديد غير محدود</button>
+          </div>
+
+          <div class="quiz-pdf-bar">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <button type="button" class="btn small" onclick="document.getElementById('quizPdfFileInput').click()">📄 إضافة ملف PDF</button>
+              <input type="file" id="quizPdfFileInput" accept=".pdf" hidden onchange="handleQuizPdfUpload(this.files[0])">
+              ${quizPdfMeta
+                ? `<span class="quiz-pdf-chip">📎 ${escapeHtml(quizPdfMeta.name)} (${quizPdfMeta.sizeKb} KB)</span>
+                   ${quizPdfBase64Cache ? `<button type="button" class="btn ghost small" onclick="previewQuizPdf()">👁️ معاينة PDF</button>` : ''}
+                   <button type="button" class="remove-link-btn" onclick="removeQuizPdf()">✕ إزالة</button>`
+                : `<span style="font-size:12.5px; color:var(--muted);">لم يُرفق ملف PDF بعد — اضغط «إضافة ملف PDF» لإرفاق ملزمة أو أسئلة.</span>`
+              }
+            </div>
           </div>
 
           <div class="quiz-builder-bar">
@@ -1164,7 +1279,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
             <div class="quiz-result-box">
               <div style="font-size:20px; font-weight:700;">نتيجة الاختبار #${quizSettings.seed}: ${scoreCount} من ${currentQuizQuestions.length} (${finalPct}%)</div>
               <div style="font-size:13.5px; color:var(--muted); margin-top:6px;">
-                ${finalPct >= 80 ? 'ممتاز جداً! مستوى جاهزيتك عالٍ جداً.' : (finalPct >= 50 ? 'جيد جداً، جرّب اختباراً جديداً لتثبيت المعلومات أكثر.' : 'لا بأس؛ راجع الدرس ثم ولّد اختباراً جديداً للتدريب.')}
+                ${finalPct >= 80 ? 'ممتاز جداً! مستوى جاهزيتك عالٍ جداً.' : (finalPct >= 50 ? 'جيد جداً، جرّب اختباراً جديداً لتثبيت المعلومات أكثر.' : 'لا بأس؛ راجع الدرس أو ملف الـ PDF ثم ولّد اختباراً جديداً.')}
               </div>
               <button type="button" class="btn" style="margin-top:12px;" onclick="generateUnlimitedQuiz(true)">⚡ ابدأ اختباراً جديداً الآن</button>
             </div>
@@ -1228,6 +1343,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
       exportedAt: new Date().toISOString(),
       lib,
       quizHistory,
+      quizPdfMeta,
       favs,
       completed
     };
@@ -1256,6 +1372,10 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
         if (Array.isArray(data.quizHistory)) {
           quizHistory = data.quizHistory;
           localStorage.setItem('hudhud_quiz_history', JSON.stringify(quizHistory));
+        }
+        if (data.quizPdfMeta) {
+          quizPdfMeta = data.quizPdfMeta;
+          localStorage.setItem('hudhud_quiz_pdf_meta', JSON.stringify(quizPdfMeta));
         }
         if (Array.isArray(data.favs)) {
           favs = data.favs;
@@ -1298,7 +1418,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   function toggleFav(id, event) { event.stopPropagation(); favs = favs.includes(id) ? favs.filter(f => f !== id) : [...favs, id]; localStorage.setItem('favs', JSON.stringify(favs)); render(); }
   
   function toggleCompletedCurrent() {
-    if (!currentViewerFile) return;
+    if (!currentViewerFile || currentViewerFile.id === 'quiz_pdf_preview') return;
     const id = currentViewerFile.id;
     if (!completed.includes(id)) {
       completed.push(id);
@@ -1371,7 +1491,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     }
   }
   function shareCurrentFile() {
-    if (!currentViewerFile) return;
+    if (!currentViewerFile || currentViewerFile.id === 'quiz_pdf_preview') return;
     const url = window.location.origin + window.location.pathname + '#file=' + currentViewerFile.id;
     navigator.clipboard.writeText(url).then(() => showToast('تم نسخ رابط الدرس 🔗'));
   }
