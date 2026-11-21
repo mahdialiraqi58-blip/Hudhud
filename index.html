@@ -5,13 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>هدهد - المنصة التعليمية الذكية</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
-<!-- PWA Meta Tags -->
 <meta name="theme-color" content="#4f46e5">
 <link rel="manifest" href="./manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link id="dynamicAppleIcon" rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3750/3750079.png">
-<!-- Confetti Library -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
@@ -179,7 +177,6 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
 .file-actions { display: flex; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line); }
 .file-actions button { flex: 1; }
 
-/* Smart Labs & Logic Blocks */
 .panel-card { background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
 .attach-toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
 .attach-btn { background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 8px 13px; border-radius: 12px; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
@@ -189,8 +186,36 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
 .logic-block-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-top: 14px; }
 .logic-block-card { background: var(--bg); border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
 .formula-pill { font-family: monospace; direction: ltr; text-align: center; background: var(--tint); color: var(--accent); padding: 8px 12px; border-radius: 12px; font-weight: 700; font-size: 13.5px; }
-.sim-preview-box { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: #fff; min-height: 260px; margin-top: 12px; }
-.sim-preview-box iframe { position: static; width: 100%; height: 300px; }
+
+.sim-stage {
+  margin-top: 14px;
+  background: #0b1222;
+  color: #f8fafc;
+  border: 1px solid rgba(129, 140, 248, 0.35);
+  border-radius: 18px;
+  padding: 16px;
+}
+.sim-img-thumb {
+  max-height: 150px;
+  max-width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.16);
+  display: block;
+  margin: 10px auto;
+  object-fit: contain;
+}
+@keyframes pulseFlow {
+  0% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -72; }
+}
+.animated-wire {
+  stroke-dasharray: 12 6;
+  animation: pulseFlow var(--flow-dur, 1.2s) linear infinite;
+}
+.animated-wire.paused {
+  animation-play-state: paused;
+}
+
 .quiz-option-btn { width: 100%; text-align: right; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 10px 14px; border-radius: 12px; font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: 0.2s; }
 .quiz-option-btn:hover { border-color: var(--accent); }
 .quiz-option-btn.correct { background: rgba(16, 185, 129, 0.16); border-color: var(--success); color: var(--success); }
@@ -571,7 +596,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   let currentOrderedList = [];
   let deferredInstallPrompt = null;
 
-  // مرفقات الاستوديو (صورة، PDF، رابط خارجي) + أنميشن HTML المولد
   let studioAttach = { imageDataUrl: '', imageName: '', pdfName: '', extUrl: '' };
   let lastGeneratedSimHtml = '';
 
@@ -814,10 +838,21 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (e) => {
-      studioAttach.imageDataUrl = e.target.result;
-      studioAttach.imageName = file.name;
-      renderAttachmentsStrip();
-      showToast('تم إرفاق الصورة بالمحاكي 🖼️');
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxW = 720;
+        const scale = img.width > maxW ? maxW / img.width : 1;
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        studioAttach.imageDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+        studioAttach.imageName = file.name;
+        renderAttachmentsStrip();
+        showToast('تم إرفاق الصورة وضبطها بنجاح 🖼️');
+      };
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   }
@@ -870,7 +905,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
             <button class="btn ghost small" id="saveSimAsLessonBtn" style="display:none;" onclick="saveGeneratedSimToLibrary()">💾 حفظ الأنيميشن كدرس HTML</button>
           </div>
 
-          <div id="simPreviewBox" class="sim-preview-box" style="display:none;"></div>
+          <div id="simStageBox" class="sim-stage" style="display:none;"></div>
         </div>
 
         <div class="logic-block-grid">
@@ -948,6 +983,58 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     }
   }
 
+  function buildStandaloneHtmlDoc(title, formula, cmdText, imgUrl, pdfName, extUrl) {
+    const imgBlock = imgUrl
+      ? `<div style="text-align:center; margin:12px 0;"><img src="${imgUrl}" style="max-width:100%; max-height:190px; border-radius:12px; border:1px solid #334155;"></div>`
+      : '';
+    const extraInfo = [
+      pdfName ? `📄 PDF: ${pdfName}` : '',
+      extUrl ? `🔗 رابط: ${extUrl}` : ''
+    ].filter(Boolean).join(' | ');
+
+    return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><style>
+      body{margin:0;font-family:"IBM Plex Sans Arabic",sans-serif;background:#0b1222;color:#f8fafc;padding:18px;}
+      .hdr{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+      .pill{background:#312e81;color:#e0e7ff;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:700;}
+      .cmd{background:#111a2e;padding:10px 12px;border-radius:12px;font-size:13px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.08);}
+      .ctrl{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:13px;}
+      svg{width:100%;height:140px;background:#111a2e;border-radius:14px;border:1px solid rgba(255,255,255,0.08);}
+      @keyframes flowMove{0%{stroke-dashoffset:0}100%{stroke-dashoffset:-72}}
+      .wire{stroke-dasharray:12 6;animation:flowMove 1.2s linear infinite;}
+    </style></head><body>
+      <div class="hdr"><strong>🎬 ${escapeHtml(title)}</strong><span class="pill">${escapeHtml(formula)}</span></div>
+      <div class="cmd"><strong>الأمر:</strong> ${escapeHtml(cmdText)}</div>
+      ${imgBlock}
+      <div class="ctrl">
+        <span>سرعة الحركة: <b id="spdTxt">60%</b></span>
+        <input id="spdSlider" type="range" min="15" max="100" value="60" style="flex:1;">
+        <button id="pauseBtn" style="padding:6px 12px;border:0;border-radius:8px;background:#4f46e5;color:#fff;font-weight:700;cursor:pointer;">إيقاف/تشغيل</button>
+      </div>
+      <svg id="simSvg" viewBox="0 0 420 140">
+        <rect x="30" y="25" width="360" height="82" rx="18" fill="none" stroke="#818cf8" stroke-width="3.5" class="wire" id="wireRect"/>
+        <circle cx="210" cy="66" r="22" fill="#f59e0b"/>
+        <text x="210" y="71" text-anchor="middle" fill="#0f172a" font-weight="bold" font-size="13">M / I</text>
+        <text x="210" y="128" text-anchor="middle" fill="#94a3b8" font-size="11">${escapeHtml(extraInfo || 'محاكاة حركة التيار والمجال')}</text>
+      </svg>
+      <script>
+        const sl = document.getElementById('spdSlider');
+        const tx = document.getElementById('spdTxt');
+        const wr = document.getElementById('wireRect');
+        const pb = document.getElementById('pauseBtn');
+        let paused = false;
+        sl.addEventListener('input', () => {
+          tx.textContent = sl.value + '%';
+          const dur = Math.max(0.35, (2.2 - (Number(sl.value)/100)*1.7)).toFixed(2) + 's';
+          wr.style.animationDuration = dur;
+        });
+        pb.addEventListener('click', () => {
+          paused = !paused;
+          wr.style.animationPlayState = paused ? 'paused' : 'running';
+        });
+      <\/script>
+    </body></html>`;
+  }
+
   function runCommandSimulation(mode) {
     const title = document.getElementById('lbTitleInput').value.trim() || 'مخطط وأنميشن دائرة / مفهوم';
     const formula = document.getElementById('lbFormulaInput').value.trim() || 'V = I · R';
@@ -978,84 +1065,63 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
       return;
     }
 
-    const box = document.getElementById('simPreviewBox');
+    const stage = document.getElementById('simStageBox');
     const saveBtn = document.getElementById('saveSimAsLessonBtn');
-    box.style.display = 'block';
+    stage.style.display = 'block';
     if (saveBtn) saveBtn.style.display = 'inline-flex';
 
-    const imgSectionHtml = studioAttach.imageDataUrl
-      ? `<div style="margin-bottom:10px; text-align:center;"><img src="${studioAttach.imageDataUrl}" style="max-height:110px; border-radius:10px; border:1px solid #334155;"></div>`
-      : '';
+    lastGeneratedSimHtml = buildStandaloneHtmlDoc(
+      title,
+      formula,
+      cmdText,
+      studioAttach.imageDataUrl,
+      studioAttach.pdfName,
+      studioAttach.extUrl
+    );
 
-    const metaNotes = [
-      studioAttach.pdfName ? `📄 ملف PDF مرفق: ${escapeHtml(studioAttach.pdfName)}` : '',
-      studioAttach.extUrl ? `🔗 رابط خارجي: <a href="${escapeHtml(studioAttach.extUrl)}" target="_blank" style="color:#38bdf8;">${escapeHtml(studioAttach.extUrl)}</a>` : ''
+    const metaParts = [
+      studioAttach.imageName ? `🖼️ صورة: ${escapeHtml(studioAttach.imageName)}` : '',
+      studioAttach.pdfName ? `📄 PDF: ${escapeHtml(studioAttach.pdfName)}` : '',
+      studioAttach.extUrl ? `🔗 رابط: <a href="${escapeHtml(studioAttach.extUrl)}" target="_blank" style="color:#38bdf8;">${escapeHtml(studioAttach.extUrl)}</a>` : ''
     ].filter(Boolean).join(' &nbsp;|&nbsp; ');
 
-    lastGeneratedSimHtml = `<!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="utf-8">
-<style>
-  body { margin:0; font-family:"IBM Plex Sans Arabic",sans-serif; background:#070d19; color:#f8fafc; padding:16px; }
-  .top { display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
-  .badge { background:#312e81; color:#e0e7ff; padding:4px 10px; border-radius:8px; font-size:12px; font-weight:700; }
-  .cmd { font-size:12.5px; color:#cbd5e1; background:#111a2e; padding:8px 12px; border-radius:10px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.08); }
-  .ctrl { display:flex; align-items:center; gap:10px; margin-bottom:10px; font-size:13px; }
-  svg { width:100%; height:135px; background:#111a2e; border-radius:14px; border:1px solid rgba(255,255,255,0.08); }
-  .meta { margin-top:8px; font-size:12px; color:#94a3b8; }
-</style>
-</head>
-<body>
-  <div class="top">
-    <strong>🎬 ${escapeHtml(title)}</strong>
-    <span class="badge">${escapeHtml(formula)}</span>
-  </div>
-  <div class="cmd"><strong>الأمر:</strong> ${escapeHtml(cmdText)}</div>
-  ${imgSectionHtml}
-  <div class="ctrl">
-    <label>سرعة الحركة / شدة المجال: <span id="spdVal">60</span>%</label>
-    <input id="spdRange" type="range" min="15" max="100" value="60" style="flex:1;">
-    <button id="toggleAnimBtn" style="padding:5px 12px; border-radius:8px; border:0; background:#4f46e5; color:#fff; cursor:pointer; font-weight:700;">إيقاف/تشغيل</button>
-  </div>
-  <svg id="sceneSvg" viewBox="0 0 420 135">
-    <rect x="35" y="25" width="350" height="80" rx="18" fill="none" stroke="#818cf8" stroke-width="3.5" stroke-dasharray="12 7">
-      <animate id="flowAnim" attributeName="stroke-dashoffset" from="0" to="-76" dur="1.2s" repeatCount="indefinite"/>
-    </rect>
-    <circle cx="210" cy="65" r="24" fill="#f59e0b">
-      <animateTransform id="rotorAnim" attributeName="transform" type="rotate" from="0 210 65" to="360 210 65" dur="2s" repeatCount="indefinite"/>
-    </circle>
-    <line x1="194" y1="65" x2="226" y2="65" stroke="#0f172a" stroke-width="3"/>
-    <text x="210" y="123" text-anchor="middle" fill="#a5b4fc" font-size="11">مسار التدفق والحركة التفاعلية</text>
-  </svg>
-  ${metaNotes ? `<div class="meta">${metaNotes}</div>` : ''}
-  <script>
-    const rng = document.getElementById('spdRange');
-    const lbl = document.getElementById('spdVal');
-    const flow = document.getElementById('flowAnim');
-    const rotor = document.getElementById('rotorAnim');
-    const svgEl = document.getElementById('sceneSvg');
-    const btn = document.getElementById('toggleAnimBtn');
-    let paused = false;
+    stage.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+        <strong>🎬 ${escapeHtml(title)}</strong>
+        <span class="formula-pill" style="padding:4px 10px; font-size:12px;">${escapeHtml(formula)}</span>
+      </div>
+      <div style="font-size:13px; color:#cbd5e1; margin-bottom:10px;"><strong>الأمر:</strong> ${escapeHtml(cmdText)}</div>
+      ${studioAttach.imageDataUrl ? `<img src="${studioAttach.imageDataUrl}" class="sim-img-thumb" alt="المرفق">` : ''}
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px; font-size:13px;">
+        <span>سرعة التدفق: <b id="stageSpdLabel">60%</b></span>
+        <input id="stageSpdRange" type="range" min="15" max="100" value="60" style="flex:1;" oninput="updateStageSpeed(this.value)">
+        <button type="button" class="btn small" onclick="toggleStageAnim()">إيقاف/تشغيل</button>
+      </div>
+      <svg viewBox="0 0 420 130" style="width:100%; height:130px; background:#111a2e; border-radius:14px; border:1px solid rgba(255,255,255,0.08);">
+        <rect x="28" y="20" width="364" height="78" rx="18" fill="none" stroke="#818cf8" stroke-width="3.5" class="animated-wire" id="stageWire"/>
+        <circle cx="210" cy="59" r="22" fill="#f59e0b"/>
+        <text x="210" y="64" text-anchor="middle" fill="#0f172a" font-weight="bold" font-size="13">M / I</text>
+        <text x="210" y="116" text-anchor="middle" fill="#94a3b8" font-size="11">أنميشن تفاعلي حي — جاهز للحفظ كدرس HTML</text>
+      </svg>
+      ${metaParts ? `<div style="margin-top:8px; font-size:12px; color:#94a3b8;">${metaParts}</div>` : ''}
+    `;
 
-    rng.addEventListener('input', () => {
-      lbl.textContent = rng.value;
-      const factor = Number(rng.value) / 100;
-      flow.setAttribute('dur', Math.max(0.35, (2.2 - factor * 1.7)).toFixed(2) + 's');
-      rotor.setAttribute('dur', Math.max(0.5, (3.2 - factor * 2.5)).toFixed(2) + 's');
-    });
+    showToast('تم تشغيل الأنميشن التفاعلي بنجاح 🎬');
+  }
 
-    btn.addEventListener('click', () => {
-      paused = !paused;
-      if (paused) svgEl.pauseAnimations();
-      else svgEl.unpauseAnimations();
-    });
-  <\/script>
-</body>
-</html>`;
+  function updateStageSpeed(val) {
+    const lbl = document.getElementById('stageSpdLabel');
+    const wire = document.getElementById('stageWire');
+    if (lbl) lbl.textContent = val + '%';
+    if (wire) {
+      const dur = Math.max(0.35, (2.2 - (Number(val) / 100) * 1.7)).toFixed(2) + 's';
+      wire.style.setProperty('--flow-dur', dur);
+    }
+  }
 
-    box.innerHTML = `<iframe srcdoc="${escapeHtml(lastGeneratedSimHtml)}"></iframe>`;
-    showToast('تم توليد الأنميشن التفاعلي بنجاح 🎬');
+  function toggleStageAnim() {
+    const wire = document.getElementById('stageWire');
+    if (wire) wire.classList.toggle('paused');
   }
 
   function saveGeneratedSimToLibrary() {
