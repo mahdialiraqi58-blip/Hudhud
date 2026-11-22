@@ -1698,16 +1698,13 @@ function handleAdminBtn() {
   }
 }
 async function verifyAdminRole(user) {
-  window.__dbg = { uid: user ? user.uid : null, role: null, err: null };
   if (!user) return false;
   try {
     const snap = await firebase.database()
       .ref('users/' + user.uid + '/role')
       .once('value');
-    window.__dbg.role = snap.val();
     return snap.val() === 'admin';
   } catch (err) {
-    window.__dbg.err = (err && (err.code || err.message)) || String(err);
     console.error('Admin role verification failed:', err);
     return false;
   }
@@ -1723,7 +1720,7 @@ async function doLogin() {
     const allowed = await verifyAdminRole(credential.user);
     if (!allowed) {
       await firebase.auth().signOut();
-      $('errorMsg').textContent = 'تم تسجيل الدخول، لكن الحساب لا يحمل صلاحية مدير معتمدة. اطلب من مسؤول النظام تعيين دور الإدارة.' + ' [v2] UID=' + (window.__dbg && window.__dbg.uid) + ' | role=' + (window.__dbg && window.__dbg.role) + ' | err=' + (window.__dbg && window.__dbg.err);
+      $('errorMsg').textContent = 'تم تسجيل الدخول، لكن الحساب لا يحمل صلاحية مدير معتمدة. اطلب من مسؤول النظام تعيين دور الإدارة.';
       return;
     }
     isAdmin = true;
