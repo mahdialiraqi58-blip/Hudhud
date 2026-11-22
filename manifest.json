@@ -1,27 +1,19 @@
 {
-  "name": "هدهد - المنصة التعليمية الذكية",
-  "short_name": "هدهد",
-  "description": "منصة التعلم والمراجعة الذكية للتمهيدي",
-  "lang": "ar",
-  "dir": "rtl",
-  "start_url": "./",
-  "scope": "./",
-  "display": "standalone",
-  "orientation": "portrait",
-  "theme_color": "#4f46e5",
-  "background_color": "#f4f7fb",
-  "icons": [
-    {
-      "src": "https://cdn-icons-png.flaticon.com/512/3750/3750079.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
+  "rules": {
+    "data": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.email === 'mahdialiraqi58@gmail.com'"
     },
-    {
-      "src": "https://cdn-icons-png.flaticon.com/512/3750/3750079.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
+    "files": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.email === 'mahdialiraqi58@gmail.com'"
+    },
+    "users": {
+      ".read": "auth != null && auth.token.email === 'mahdialiraqi58@gmail.com'",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && ((auth.uid === $uid && newData.child('role').val() === data.child('role').val()) || auth.token.email === 'mahdialiraqi58@gmail.com')"
+      }
     }
-  ]
+  }
 }
