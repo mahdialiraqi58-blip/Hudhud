@@ -1,0 +1,90 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "data": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.role === 'admin'"
+    },
+    "files": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.role === 'admin'"
+    },
+    "settings": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.role === 'admin'"
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || auth.token.role === 'admin')",
+        ".write": false
+      }
+    },
+    "classes": {
+      "$classId": {
+        ".read": "auth != null && (auth.token.role === 'admin' || data.child('teacherId').val() === auth.uid || root.child('memberships').child(auth.uid).child($classId).val() === true)",
+        ".write": false
+      },
+      ".read": "auth != null && auth.token.role === 'admin'"
+    },
+    "teacherClasses": {
+      "$teacherId": {
+        ".read": "auth != null && (auth.uid === $teacherId || auth.token.role === 'admin')",
+        ".write": false
+      }
+    },
+    "classCodes": {
+      "$code": {
+        ".read": "auth != null && auth.token.role === 'student'",
+        ".write": false
+      }
+    },
+    "joinRequests": {
+      "$classId": {
+        ".read": "auth != null && (auth.token.role === 'admin' || root.child('classes').child($classId).child('teacherId').val() === auth.uid)",
+        "$studentId": {
+          ".read": "auth != null && (auth.token.role === 'admin' || auth.uid === $studentId || root.child('classes').child($classId).child('teacherId').val() === auth.uid)",
+          ".write": false
+        }
+      }
+    },
+    "memberships": {
+      "$studentId": {
+        "$classId": {
+          ".read": "auth != null && (auth.token.role === 'admin' || auth.uid === $studentId || root.child('classes').child($classId).child('teacherId').val() === auth.uid)",
+          ".write": false
+        },
+        ".read": "auth != null && (auth.token.role === 'admin' || auth.uid === $studentId)"
+      }
+    },
+    "classContent": {
+      "$classId": {
+        ".read": "auth != null && (auth.token.role === 'admin' || root.child('classes').child($classId).child('teacherId').val() === auth.uid || root.child('memberships').child(auth.uid).child($classId).val() === true)",
+        ".write": "auth != null && (auth.token.role === 'admin' || (auth.token.role === 'teacher' && root.child('classes').child($classId).child('teacherId').val() === auth.uid))"
+      }
+    },
+    "studentProgress": {
+      "$studentId": {
+        "$classId": {
+          ".read": "auth != null && (auth.token.role === 'admin' || auth.uid === $studentId || root.child('classes').child($classId).child('teacherId').val() === auth.uid)",
+          ".write": "auth != null && auth.token.role === 'student' && auth.uid === $studentId && root.child('memberships').child($studentId).child($classId).val() === true"
+        }
+      }
+    },
+    "classMembers": {
+      "$classId": {
+        ".read": "auth != null && (auth.token.role === 'admin' || root.child('classes').child($classId).child('teacherId').val() === auth.uid)",
+        "$studentId": {
+          ".read": "auth != null && (auth.token.role === 'admin' || auth.uid === $studentId || root.child('classes').child($classId).child('teacherId').val() === auth.uid)",
+          ".write": false
+        }
+      }
+    },
+    "studentJoinRequests": {
+      "$studentId": {
+        ".read": "auth != null && (auth.uid === $studentId || auth.token.role === 'admin')",
+        ".write": false
+      }
+    }
+  }
+}
