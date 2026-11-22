@@ -320,6 +320,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
     <button class="hub-tab active" id="tab-lessons" onclick="switchHubTab('lessons')">📚 الدروس والأقسام</button>
     <button class="hub-tab" id="tab-cmd" onclick="switchHubTab('cmd')">🚀 مركز القيادة</button>
     <button class="hub-tab" id="tab-diag" onclick="switchHubTab('diag')">🛠️ التشخيص والنسخ الاحتياطي</button>
+    <button class="hub-tab" id="tab-roles" onclick="switchHubTab('roles')">👥 مساحة الحساب</button>
   </div>
 
   <div class="stats-grid" id="statsGrid"></div>
@@ -339,6 +340,9 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
   </div>
 
   <div id="smartHubContainer" style="display:none;"></div>
+  <section id="roleDashboardView" style="display:none;margin-top:16px">
+    <div id="hudhud-role-root"></div>
+  </section>
 </div>
 
 <button id="backToTopBtn" onclick="scrollToTop()" title="العودة للأعلى">↑</button>
@@ -440,6 +444,9 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script>
+<link rel="stylesheet" href="./web/role-dashboard.css">
 
 <script>
 const DAY = 86400000;
@@ -516,6 +523,47 @@ async function getLargeFileContent(id) {
     const req = tx.objectStore('files').get(id);
     req.onsuccess = () => resolve(req.result ? req.result.content : null);
     req.onerror = () => reject(req.error);
+  });
+}
+
+async function getLargeFileRecord(id) {
+  const db = await openLargeFilesDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('files', 'readonly');
+    const req = tx.objectStore('files').get(id);
+    req.onsuccess = () => resolve(req.result || null);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// Phase 1: complete local-file backup helpers. These never delete existing records.
+async function getAllLargeFileRecords() {
+  const db = await openLargeFilesDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('files', 'readonly');
+    const req = tx.objectStore('files').getAll();
+    req.onsuccess = () => resolve(Array.isArray(req.result) ? req.result : []);
+    req.onerror = () => reject(req.error || new Error('تعذر قراءة الملفات المحلية'));
+  });
+}
+
+async function restoreLargeFileRecords(records) {
+  if (!Array.isArray(records)) throw new TypeError('قائمة الملفات المحلية غير صالحة');
+  const db = await openLargeFilesDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('files', 'readwrite');
+    const store = tx.objectStore('files');
+    for (const record of records) {
+      if (!record || typeof record.id !== 'string' || !record.id || typeof record.type !== 'string' || !('content' in record)) {
+        tx.abort();
+        reject(new TypeError('يوجد ملف محلي غير صالح في النسخة الاحتياطية'));
+        return;
+      }
+      store.put(record);
+    }
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error || new Error('تعذر استعادة الملفات المحلية'));
+    tx.onabort = () => reject(tx.error || new Error('تم إلغاء استعادة الملفات المحلية'));
   });
 }
 
@@ -641,6 +689,8 @@ firebase.initializeApp(firebaseConfig);
 const FIREBASE_URL = 'https://hudhud-344ec-default-rtdb.firebaseio.com/';
 let lib = { files: [], categories: [], settings: { siteName: 'هدهد' } };
 let isAdmin = false;
+let authStateReady = false;
+let adminVerificationPending = false;
 let activeHubTab = 'lessons';
 let currentCatId = null;
 let showFavorites = false;
@@ -837,10 +887,18 @@ restoreUiState();
 
 function switchHubTab(tabName) {
   activeHubTab = tabName;
-  ['lessons', 'cmd', 'diag'].forEach(t => {
+  ['lessons', 'cmd', 'diag', 'roles'].forEach(t => {
     const btn = $('tab-' + t);
     if (btn) btn.classList.toggle('active', t === tabName);
   });
+  $('roleDashboardView').style.display = tabName === 'roles' ? 'block' : 'none';
+  if (tabName === 'roles') {
+    $('lessonsView').style.display = 'none';
+    $('smartHubContainer').style.display = 'none';
+    if (firebase.auth().currentUser) HudhudRoleUI.mount().catch(e => showToast(e.message || 'تعذر فتح مساحة الحساب', 'error'));
+    else $('hudhud-role-root').innerHTML = '<div class="panel-card" style="max-width:520px;margin:auto"><h2>تسجيل الدخول إلى مساحة الحساب</h2><p style="color:var(--muted)">سجّل الدخول بالبريد وكلمة المرور للحساب الذي عيّن له المدير دوراً في المنصة.</p><label>البريد الإلكتروني<input id="roleLoginEmail" type="email" autocomplete="username" required></label><label style="margin-top:10px">كلمة المرور<input id="roleLoginPassword" type="password" autocomplete="current-password" required></label><button class="btn" style="margin-top:14px;width:100%" onclick="rolePortalLogin()">دخول</button><p id="roleLoginError" role="alert" style="color:var(--danger)"></p></div>';
+    return;
+  }
   if (tabName === 'lessons') {
     $('lessonsView').style.display = 'block';
     $('smartHubContainer').style.display = 'none';
@@ -1002,7 +1060,7 @@ function renderDiag() {
         </div>
       </div>
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <button class="btn small" onclick="exportBackupJson()">📤 تصدير نسخة احتياطية JSON</button>
+        <button class="btn small" onclick="exportBackupJson()">📤 تصدير نسخة احتياطية كاملة JSON</button>
         <button class="btn ghost small" onclick="$('importBackupInput').click()">📥 استيراد نسخة احتياطية</button>
         <input type="file" id="importBackupInput" accept=".json" hidden onchange="importBackupJson(this.files[0])">
         <button class="btn ghost small" style="color:var(--danger); border-color:var(--danger)" onclick="clearLocalLessonCache()">🗑️ تفريغ الكاش المحلي للدروس</button>
@@ -1011,46 +1069,107 @@ function renderDiag() {
   `;
 }
 
-function exportBackupJson() {
-  const payload = {
-    exportedAt: new Date().toISOString(),
-    lib,
-    favs,
-    completed
-  };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'hudhud-backup-' + dayKey(Date.now()) + '.json';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showToast('تم تصدير النسخة الاحتياطية بنجاح 📤');
+async function exportBackupJson() {
+  try {
+    const largeFiles = await getAllLargeFileRecords();
+    const payload = {
+      schema: 'hudhud-backup',
+      schemaVersion: 2,
+      exportedAt: new Date().toISOString(),
+      lib: buildLightFirebasePayload(),
+      favs: Array.isArray(favs) ? favs : [],
+      completed: Array.isArray(completed) ? completed : [],
+      largeFiles,
+      storageNote: 'تتضمن هذه النسخة ملفات IndexedDB المحلية أيضاً.'
+    };
+    const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'hudhud-complete-backup-' + dayKey(Date.now()) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+    showToast(`تم تصدير النسخة الكاملة (${largeFiles.length} ملف محلي) 📤`);
+    return true;
+  } catch (err) {
+    console.error('Backup export failed:', err);
+    showToast('تعذر إنشاء النسخة الاحتياطية الكاملة', 'error');
+    return false;
+  }
 }
 
-function importBackupJson(file) {
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (data.lib && Array.isArray(data.lib.files)) {
-        lib = data.lib;
-        writeJson('hudhud_lib_cache', lib);
-      }
-      if (Array.isArray(data.favs)) { favs = data.favs; writeJson('favs', favs); }
-      if (Array.isArray(data.completed)) { completed = data.completed; writeJson('completed', completed); }
-      showToast('تم استيراد النسخة الاحتياطية وتحديث الواجهة 📥');
-      render();
-      if (activeHubTab === 'cmd') renderCmd();
-      else if (activeHubTab === 'diag') renderDiag();
-    } catch (err) {
-      showToast('ملف النسخة الاحتياطية غير صالح', 'error');
+function validateImportedBackup(data) {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('تنسيق النسخة غير صالح');
+  const libData = data.lib || data.library;
+  if (!libData || !Array.isArray(libData.files) || !Array.isArray(libData.categories)) {
+    throw new Error('النسخة لا تحتوي بنية الأقسام والدروس المطلوبة');
+  }
+  const fileIds = new Set();
+  for (const f of libData.files) {
+    if (!f || typeof f.id !== 'string' || !f.id || typeof f.title !== 'string' || typeof f.type !== 'string') {
+      throw new Error('يوجد سجل درس غير صالح');
     }
-  };
-  reader.readAsText(file);
+    if (fileIds.has(f.id)) throw new Error('توجد معرفات دروس مكررة في النسخة');
+    fileIds.add(f.id);
+  }
+  if (data.favs != null && !Array.isArray(data.favs)) throw new Error('قائمة المفضلة غير صالحة');
+  if (data.completed != null && !Array.isArray(data.completed)) throw new Error('قائمة الإنجاز غير صالحة');
+  if (data.largeFiles != null && !Array.isArray(data.largeFiles)) throw new Error('قائمة الملفات المحلية غير صالحة');
+  for (const record of (data.largeFiles || [])) {
+    if (!record || typeof record.id !== 'string' || !record.id || typeof record.type !== 'string' || !('content' in record)) {
+      throw new Error('يوجد ملف محلي غير مكتمل في النسخة');
+    }
+  }
+  return { libData, largeFiles: data.largeFiles || [] };
+}
+
+async function importBackupJson(file) {
+  if (!file) return;
+  if (file.size > 150 * 1024 * 1024) {
+    showToast('حجم النسخة يتجاوز الحد الآمن للاستيراد داخل المتصفح', 'error');
+    return;
+  }
+  try {
+    const data = JSON.parse(await file.text());
+    const validated = validateImportedBackup(data);
+    const hasLegacyLocalFiles = validated.libData.files.some(f => f.idbStored) && !validated.largeFiles.length;
+    if (hasLegacyLocalFiles) {
+      const proceed = confirm('هذه نسخة قديمة وقد لا تحتوي الملفات الكبيرة المحفوظة على الجهاز. هل تريد متابعة استيراد المحتوى مع احتمال بقاء بعض الملفات المحلية غير متاحة؟');
+      if (!proceed) return;
+    } else if (!confirm(`سيتم استبدال بيانات المحتوى الحالية بـ ${validated.libData.files.length} درساً و${validated.libData.categories.length} قسماً. سيتم الاحتفاظ بالنسخة القديمة عبر تنزيل نسخة احتياطية قبل الاستيراد. هل تتابع؟`)) {
+      return;
+    }
+
+    // Download a rollback copy before changing any local data.
+    const rollbackReady = await exportBackupJson();
+    if (!rollbackReady) throw new Error('لم نتمكن من إنشاء نسخة رجوع؛ أُوقف الاستيراد لحماية البيانات');
+    // Restore blobs first; if this fails, do not replace the library metadata.
+    await restoreLargeFileRecords(validated.largeFiles);
+
+    lib = {
+      ...validated.libData,
+      files: validated.libData.files,
+      categories: validated.libData.categories,
+      settings: validated.libData.settings || { siteName: 'هدهد' }
+    };
+    favs = Array.isArray(data.favs) ? data.favs : [];
+    completed = Array.isArray(data.completed) ? data.completed : [];
+    writeJson('hudhud_lib_cache', buildLightFirebasePayload());
+    writeJson('favs', favs);
+    writeJson('completed', completed);
+    render();
+    if (activeHubTab === 'cmd') renderCmd();
+    else if (activeHubTab === 'diag') renderDiag();
+    showToast('تم التحقق والاستيراد محلياً بنجاح. لم تُرفع البيانات إلى Firebase تلقائياً.');
+  } catch (err) {
+    console.error('Backup import failed:', err);
+    showToast(err.message || 'تعذر استيراد النسخة الاحتياطية', 'error');
+  } finally {
+    const input = $('importBackupInput');
+    if (input) input.value = '';
+  }
 }
 
 function clearLocalLessonCache() {
@@ -1191,19 +1310,42 @@ async function loadData() {
 
 async function saveData() {
   const lightPayload = buildLightFirebasePayload();
+  // Keep a local draft for resilience, but never present it as a cloud save.
   writeJson('hudhud_lib_cache', lightPayload);
+
+  const user = firebase.auth().currentUser;
+  if (!user || !isAdmin) {
+    showToast('لا توجد صلاحية إدارة موثقة. لم تتم المزامنة السحابية.', 'error');
+    return false;
+  }
+
   try {
-    const u = firebase.auth().currentUser;
-    if (!u) throw new Error('no auth');
-    const token = await u.getIdToken();
-    const r = await fetch(FIREBASE_URL + 'data.json?auth=' + encodeURIComponent(token), {
+    const token = await user.getIdToken(true);
+    const endpoint = FIREBASE_URL + 'data.json?auth=' + encodeURIComponent(token);
+
+    // Read the current ETag, then write conditionally to avoid overwriting
+    // another administrator's newer changes.
+    const current = await fetch(endpoint, { headers: { 'X-Firebase-ETag': 'true' } });
+    if (!current.ok) throw new Error('تعذر قراءة النسخة السحابية: HTTP ' + current.status);
+    const etag = current.headers.get('ETag');
+    if (!etag) throw new Error('لم يُرجع Firebase وسم ETag؛ أُوقف الحفظ لحماية البيانات');
+
+    const response = await fetch(endpoint, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'If-Match': etag },
       body: JSON.stringify(lightPayload)
     });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
+    if (response.status === 412) {
+      showToast('تغيرت البيانات السحابية بواسطة جلسة أخرى. أعد تحميل البيانات قبل المحاولة.', 'error');
+      return false;
+    }
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    showToast('تم حفظ التغييرات ومزامنتها سحابياً', 'success');
+    return true;
   } catch (e) {
-    showToast('تم الحفظ محلياً؛ تحقق من تسجيل الدخول وصلاحيات القاعدة للمزامنة السحابية.', 'error');
+    console.error('Cloud save failed:', e);
+    showToast('حُفظت مسودة محلية فقط؛ لم يتأكد الحفظ السحابي. ' + (e.message || ''), 'error');
+    return false;
   }
 }
 
@@ -1555,13 +1697,40 @@ function handleAdminBtn() {
     setTimeout(() => $('emailInput').focus(), 100);
   }
 }
-function doLogin() {
+async function verifyAdminRole(user) {
+  if (!user) return false;
+  try {
+    const tokenResult = await user.getIdTokenResult(true);
+    const claims = tokenResult.claims || {};
+    return claims.admin === true || claims.role === 'admin' ||
+      (Array.isArray(claims.roles) && claims.roles.includes('admin'));
+  } catch (err) {
+    console.error('Admin claim verification failed:', err);
+    return false;
+  }
+}
+
+async function doLogin() {
   const email = $('emailInput').value.trim();
   const password = $('passInput').value;
   if (!email || !password) { $('errorMsg').textContent = 'أدخل البريد وكلمة المرور'; return; }
-  firebase.auth().signInWithEmailAndPassword(email, password)
-    .then(() => { isAdmin = true; closeModal(); render(); showToast('مرحباً بك يا مدير'); })
-    .catch(() => { $('errorMsg').textContent = 'البريد أو كلمة المرور غير صحيحة'; });
+  $('errorMsg').textContent = 'جارٍ التحقق من صلاحيات الحساب…';
+  try {
+    const credential = await firebase.auth().signInWithEmailAndPassword(email, password);
+    const allowed = await verifyAdminRole(credential.user);
+    if (!allowed) {
+      await firebase.auth().signOut();
+      $('errorMsg').textContent = 'تم تسجيل الدخول، لكن الحساب لا يحمل صلاحية مدير معتمدة. اطلب من مسؤول النظام تعيين دور الإدارة.';
+      return;
+    }
+    isAdmin = true;
+    closeModal();
+    render();
+    showToast('تم التحقق من صلاحيات الإدارة بنجاح');
+  } catch (err) {
+    console.error('Admin sign-in failed:', err);
+    $('errorMsg').textContent = 'تعذر تسجيل الدخول أو التحقق من الصلاحيات. راجع بيانات الحساب وإعدادات الإدارة.';
+  }
 }
 
 function openSettings() {
@@ -1571,9 +1740,18 @@ function openSettings() {
   $('newSiteName').value = lib.settings.siteName || 'هدهد';
   document.body.classList.add('sheet-open');
 }
-function saveSettings() {
+async function saveSettings() {
+  const previous = { ...lib.settings };
   lib.settings.siteName = $('newSiteName').value.trim() || 'هدهد';
-  saveData().then(() => { $('siteTitle').textContent = lib.settings.siteName; closeModal(); showToast('تم حفظ الإعدادات'); });
+  const saved = await saveData();
+  if (!saved) {
+    lib.settings = previous;
+    writeJson('hudhud_lib_cache', buildLightFirebasePayload());
+    return;
+  }
+  $('siteTitle').textContent = lib.settings.siteName;
+  closeModal();
+  showToast('تم حفظ الإعدادات');
 }
 
 function openAddModal() {
@@ -1622,21 +1800,36 @@ function editCategory(id, event) {
   $('catSec').style.display = 'flex';
   document.body.classList.add('sheet-open');
 }
-function saveCategory() {
+async function saveCategory() {
   const name = $('newCatName').value.trim();
   const icon = $('newCatIcon').value.trim() || '📁';
   if (!name) { $('errorMsg').textContent = 'اكتب اسم القسم'; return; }
+  const previous = lib.categories.map(c => ({ ...c }));
   const wasEditing = Boolean(editingCatId);
   if (editingCatId) lib.categories = lib.categories.map(c => c.id === editingCatId ? { ...c, name, icon } : c);
   else lib.categories.push({ id: 'c' + Date.now(), name, icon });
-  saveData().then(() => { closeModal(); render(); showToast(wasEditing ? 'تم تحديث القسم' : 'تم إضافة القسم'); });
+  const saved = await saveData();
+  if (!saved) {
+    lib.categories = previous;
+    writeJson('hudhud_lib_cache', buildLightFirebasePayload());
+    return;
+  }
+  closeModal(); render();
+  showToast(wasEditing ? 'تم تحديث القسم' : 'تم إضافة القسم');
 }
-function deleteCategory(id, event) {
+async function deleteCategory(id, event) {
   event.stopPropagation();
   if (lib.files.some(f => f.catId === id)) return showToast('لا يمكن حذف قسم يحتوي على ملفات', 'error');
   if (!confirm('حذف هذا القسم نهائياً؟')) return;
+  const previous = lib.categories.map(c => ({ ...c }));
   lib.categories = lib.categories.filter(c => c.id !== id);
-  saveData().then(() => { render(); showToast('تم حذف القسم'); });
+  const saved = await saveData();
+  if (!saved) {
+    lib.categories = previous;
+    writeJson('hudhud_lib_cache', buildLightFirebasePayload());
+    return;
+  }
+  render(); showToast('تم حذف القسم');
 }
 
 function editFile(id, event) {
@@ -1707,20 +1900,30 @@ async function saveFile() {
   const links = collectLinksFromForm();
   if (!title) { $('errorMsg').textContent = 'اكتب اسم المحتوى'; return; }
 
-  const finalizeRecord = async (record, isLargeLocalOnly = false) => {
+  const finalizeRecord = async (record, isLargeLocalOnly = false, previousLargeRecord = null) => {
     const wasEditing = Boolean(editingFileId);
+    const previousFiles = lib.files.slice();
     if (editingFileId) {
       lib.files = lib.files.map(f => f.id === editingFileId ? record : f);
     } else {
       lib.files.push(record);
-      clearFormDraft();
     }
-    await saveData();
+    const saved = await saveData();
+    if (!saved) {
+      lib.files = previousFiles;
+      if (previousLargeRecord) await saveLargeFileContent(previousLargeRecord.id, previousLargeRecord.type, previousLargeRecord.content);
+      else if (isLargeLocalOnly) await deleteLargeFileContent(record.id);
+      writeJson('hudhud_lib_cache', buildLightFirebasePayload());
+      showToast('لم يتأكد الحفظ السحابي؛ أُعيدت بيانات الدرس والملف المحلي السابق لحمايتها.', 'error');
+      return;
+    }
+    if (!record.idbStored) await deleteLargeFileContent(record.id);
+    if (!wasEditing) clearFormDraft();
     closeModal();
     render();
     showToast(
       isLargeLocalOnly
-        ? 'تم حفظ الملف الكبير على جهازك فقط (أضف رابطاً خارجياً ليراه الجميع)'
+        ? 'تم حفظ سجل الدرس سحابياً، لكن محتوى الملف الكبير موجود على هذا الجهاز فقط. ارفع رابطاً ليتمكن الآخرون من فتحه.'
         : (wasEditing ? 'تم التعديل بنجاح' : 'تم حفظ الملف بنجاح ✅')
     );
   };
@@ -1729,19 +1932,21 @@ async function saveFile() {
     const url = $('urlInput').value.trim();
     if (!url) { $('errorMsg').textContent = 'ضع الرابط'; return; }
     const existing = editingFileId ? lib.files.find(f => f.id === editingFileId) : null;
+    const previousLargeRecord = existing ? await getLargeFileRecord(existing.id) : null;
     await finalizeRecord({
       id: existing ? existing.id : 'f' + Date.now(),
       type, catId, title, note, tags, links,
       content: url,
       added: existing ? existing.added : Date.now()
-    });
+    }, false, previousLargeRecord);
     return;
   }
 
   if (!pendingFileData) {
     if (editingFileId) {
       const existing = lib.files.find(f => f.id === editingFileId);
-      await finalizeRecord({ ...existing, type, catId, title, note, tags, links });
+      const previousLargeRecord = existing ? await getLargeFileRecord(existing.id) : null;
+      await finalizeRecord({ ...existing, type, catId, title, note, tags, links }, Boolean(existing && existing.idbStored), previousLargeRecord);
       return;
     }
     $('errorMsg').textContent = 'اختر الملف أولاً';
@@ -1764,6 +1969,7 @@ async function saveFile() {
     const res = e.target.result;
     const processedContent = type === 'html' ? res : String(res).split(',')[1];
     try {
+      const previousLargeRecord = await getLargeFileRecord(fileId);
       if (isLarge) {
         await saveLargeFileContent(fileId, type, processedContent);
         await finalizeRecord({
@@ -1773,9 +1979,8 @@ async function saveFile() {
           idbStored: true,
           content: processedContent,
           added: existing ? existing.added : Date.now()
-        }, true);
+        }, true, previousLargeRecord);
       } else {
-        await deleteLargeFileContent(fileId);
         await finalizeRecord({
           id: fileId,
           type, catId, title, note, tags, links,
@@ -1783,7 +1988,7 @@ async function saveFile() {
           idbStored: false,
           content: processedContent,
           added: existing ? existing.added : Date.now()
-        }, false);
+        }, false, previousLargeRecord);
       }
     } catch (err) {
       $('errorMsg').textContent = 'حدث خطأ أثناء حفظ الملف الكبير محلياً';
@@ -1815,21 +2020,62 @@ function goHome() {
 async function deleteFile(id, event) {
   event.stopPropagation();
   if (!confirm('حذف هذا الدرس نهائياً؟')) return;
+  const previousFiles = lib.files.slice();
+  const previousFavs = favs.slice();
+  const previousCompleted = completed.slice();
   lib.files = lib.files.filter(f => f.id !== id);
   favs = favs.filter(x => x !== id);
   completed = completed.filter(x => x !== id);
+  const saved = await saveData();
+  if (!saved) {
+    lib.files = previousFiles;
+    favs = previousFavs;
+    completed = previousCompleted;
+    writeJson('favs', favs);
+    writeJson('completed', completed);
+    writeJson('hudhud_lib_cache', buildLightFirebasePayload());
+    showToast('لم يتم تأكيد الحذف سحابياً؛ تمت استعادة بيانات الدرس محلياً.', 'error');
+    return;
+  }
   writeJson('favs', favs);
   writeJson('completed', completed);
   await deleteLargeFileContent(id);
-  await saveData();
   render();
   showToast('تم حذف الدرس');
 }
 
-firebase.auth().onAuthStateChanged(user => {
-  isAdmin = Boolean(user);
+async function rolePortalLogin() {
+  const email = $('roleLoginEmail')?.value.trim();
+  const password = $('roleLoginPassword')?.value;
+  const error = $('roleLoginError');
+  if (!email || !password) { if (error) error.textContent = 'أدخل البريد وكلمة المرور.'; return; }
+  try {
+    await firebase.auth().signInWithEmailAndPassword(email, password);
+    await HudhudRoleUI.mount();
+  } catch (e) {
+    if (error) error.textContent = e.message || 'تعذر تسجيل الدخول.';
+  }
+}
+
+firebase.auth().onAuthStateChanged(async user => {
+  authStateReady = true;
+  adminVerificationPending = Boolean(user);
+  isAdmin = false; // Fail closed until a trusted admin claim is verified.
+  $('adminBtn').textContent = '🔒';
+  if (user) {
+    const allowed = await verifyAdminRole(user);
+    isAdmin = allowed;
+    if (!allowed) {
+      console.warn('Authenticated account has no recognized admin claim.');
+    }
+  }
+  adminVerificationPending = false;
   $('adminBtn').textContent = isAdmin ? '🔓' : '🔒';
   render();
+  if ($('roleDashboardView')?.style.display !== 'none') {
+    if (user) HudhudRoleUI.mount().catch(e => console.warn('Role dashboard:', e));
+    else $('hudhud-role-root').innerHTML = '';
+  }
 });
 
 window.addEventListener('hashchange', checkUrlHash);
