@@ -2082,5 +2082,28 @@ window.addEventListener('hashchange', checkUrlHash);
 
 loadData();
 </script>
+<!-- لمسة الديكور الداكن (Dark Theme) -->
+<style>
+  /* تغيير الخلفية والألوان الأساسية */
+  body { background-color: #0d1117 !important; color: #c9d1d9 !important; }
+  
+  /* تغيير لون البطاقات (الكروت) */
+  .card, .box, [class*="card"], div[style*="background: #fff"] { 
+      background-color: #161b22 !important; 
+      border: 1px solid #30363d !important; 
+      color: #c9d1d9 !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;
+  }
+  
+  /* تغيير لون النصوص الثانوية */
+  p, span, h1, h2, h3, h4, small { color: #e6edf3 !important; }
+  
+  /* لون زر الدروس (بنفسجي نيون) */
+  .btn-primary, button[onclick*="lessons"], a[href*="lessons"] {
+      background: linear-gradient(135deg, #6e40c9, #a371f7) !important;
+      color: white !important;
+      border: none !important;
+  }
+</style>
 </body>
 </html>
