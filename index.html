@@ -1700,12 +1700,12 @@ function handleAdminBtn() {
 async function verifyAdminRole(user) {
   if (!user) return false;
   try {
-    const tokenResult = await user.getIdTokenResult(true);
-    const claims = tokenResult.claims || {};
-    return claims.admin === true || claims.role === 'admin' ||
-      (Array.isArray(claims.roles) && claims.roles.includes('admin'));
+    const snap = await firebase.database()
+      .ref('users/' + user.uid + '/role')
+      .once('value');
+    return snap.val() === 'admin';
   } catch (err) {
-    console.error('Admin claim verification failed:', err);
+    console.error('Admin role verification failed:', err);
     return false;
   }
 }
