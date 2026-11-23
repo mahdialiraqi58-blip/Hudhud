@@ -209,8 +209,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 @media (max-width: 480px) { .link-row { grid-template-columns: 1fr; } }
 .link-row input { padding: 9px 10px; font-size: 13px; }
 
-.drop-zone { position:relative; border: 2px dashed var(--line); border-radius: 16px; padding: 22px; text-align: center; cursor: pointer; transition: 0.2s; background: var(--bg); overflow:hidden; }
-.file-picker-overlay { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; z-index:2; font-size:100px; }
+.drop-zone { border: 2px dashed var(--line); border-radius: 16px; padding: 22px; text-align: center; cursor: pointer; transition: 0.2s; background: var(--bg); }
 .drop-zone.dragover { border-color: var(--accent); background: var(--tint); }
 .drop-zone p { margin: 0; color: var(--muted); font-size: 13.5px; }
 
@@ -401,11 +400,11 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
         </select>
       </label>
       <div id="fileUploadBox">
-        <div class="drop-zone" id="dropZone">
-          <p>📁 اسحب الملف هنا أو اضغط للاختيار (يدعم PDF وHTML حتى 25 MB)</p>
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+          <p>📁 اسحب الملف هنا أو اضغط للاختيار (يدعم الملفات الكبيرة حتى 25 MB)</p>
           <p style="font-size:12px; margin-top:5px;" id="fileNameDisplay">لم يتم اختيار ملف</p>
-          <input type="file" id="fileInput" class="file-picker-overlay" aria-label="اختيار ملف" accept=".pdf,application/pdf,.html,text/html" onchange="handleFileSelect(this.files && this.files[0])">
         </div>
+        <input type="file" id="fileInput" hidden onchange="handleFileSelect(this.files[0])">
       </div>
       <div id="urlInputBox" style="display:none">
         <label>ضع الرابط هنا<input type="text" id="urlInput" placeholder="https://..." oninput="saveFormDraft()"></label>
@@ -447,7 +446,6 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 <link rel="stylesheet" href="./web/role-dashboard.css">
 
 <script>
@@ -1252,7 +1250,7 @@ function updateViewerDoneBtn() {
 
 function buildLightFirebasePayload() {
   const lightFiles = (lib.files || []).map(f => {
-    if (f.idbStored || f.remoteUrl) {
+    if (f.idbStored) {
       const { content, ...rest } = f;
       return rest;
     }
@@ -1310,45 +1308,27 @@ async function loadData() {
   }
 }
 
-let lastCloudSaveError = '';
 async function saveData() {
   const lightPayload = buildLightFirebasePayload();
+  // Keep a local draft for resilience, but never present it as a cloud save.
   writeJson('hudhud_lib_cache', lightPayload);
+
   const user = firebase.auth().currentUser;
-  if (!user) {
-    lastCloudSaveError = 'DIAG: لا يوجد مستخدم مسجل الدخول.';
-    showToast(lastCloudSaveError, 'error');
+  if (!user || !isAdmin) {
+    showToast('لا توجد صلاحية إدارة موثقة. لم تتم المزامنة السحابية.', 'error');
     return false;
   }
 
   try {
-    const tokenResult = await user.getIdTokenResult(true);
-    const claims = tokenResult.claims || {};
-    const claimAdmin = claims.admin === true || claims.role === 'admin' ||
-      (Array.isArray(claims.roles) && claims.roles.includes('admin'));
-    const emailVerified = user.emailVerified === true || claims.email_verified === true;
-    console.info('[Hudhud auth diagnostic]', {
-      email: user.email || '(none)', emailVerified,
-      adminClaim: claimAdmin, claims: {
-        admin: claims.admin, role: claims.role, roles: claims.roles,
-        email_verified: claims.email_verified
-      }
-    });
-    if (!isAdmin || !claimAdmin) {
-      lastCloudSaveError = `DIAG: الحساب ${user.email || ''} | البريد موثّق: ${emailVerified ? 'نعم' : 'لا'} | صلاحية المدير (Custom Claim): ${claimAdmin ? 'موجودة' : 'غير موجودة'}.`;
-      showToast(lastCloudSaveError, 'error');
-      return false;
-    }
-
-    const token = tokenResult.token;
+    const token = await user.getIdToken(true);
     const endpoint = FIREBASE_URL + 'data.json?auth=' + encodeURIComponent(token);
+
+    // Read the current ETag, then write conditionally to avoid overwriting
+    // another administrator's newer changes.
     const current = await fetch(endpoint, { headers: { 'X-Firebase-ETag': 'true' } });
-    if (!current.ok) {
-      const detail = (await current.text()).slice(0, 240);
-      throw new Error(`قراءة قاعدة البيانات فشلت (HTTP ${current.status}) ${detail}`);
-    }
+    if (!current.ok) throw new Error('تعذر قراءة النسخة السحابية: HTTP ' + current.status);
     const etag = current.headers.get('ETag');
-    if (!etag) throw new Error('Firebase لم يُرجع ETag؛ أُوقف الحفظ لحماية البيانات.');
+    if (!etag) throw new Error('لم يُرجع Firebase وسم ETag؛ أُوقف الحفظ لحماية البيانات');
 
     const response = await fetch(endpoint, {
       method: 'PUT',
@@ -1356,21 +1336,15 @@ async function saveData() {
       body: JSON.stringify(lightPayload)
     });
     if (response.status === 412) {
-      lastCloudSaveError = 'DIAG: HTTP 412 — تغيّرت البيانات السحابية بالتزامن؛ أعد تحميل الصفحة ثم حاول مجدداً.';
-      showToast(lastCloudSaveError, 'error');
+      showToast('تغيرت البيانات السحابية بواسطة جلسة أخرى. أعد تحميل البيانات قبل المحاولة.', 'error');
       return false;
     }
-    if (!response.ok) {
-      const detail = (await response.text()).slice(0, 240);
-      throw new Error(`كتابة قاعدة البيانات فشلت (HTTP ${response.status}) ${detail}`);
-    }
-    lastCloudSaveError = '';
+    if (!response.ok) throw new Error('HTTP ' + response.status);
     showToast('تم حفظ التغييرات ومزامنتها سحابياً', 'success');
     return true;
   } catch (e) {
     console.error('Cloud save failed:', e);
-    lastCloudSaveError = 'DIAG: ' + (e.message || String(e));
-    showToast(lastCloudSaveError, 'error');
+    showToast('حُفظت مسودة محلية فقط؛ لم يتأكد الحفظ السحابي. ' + (e.message || ''), 'error');
     return false;
   }
 }
@@ -1570,28 +1544,6 @@ async function openViewer(id) {
   }
 
   let fileContent = f.content;
-  if (!fileContent && f.remoteUrl) {
-    try {
-      const remoteResponse = await fetch(f.remoteUrl);
-      if (!remoteResponse.ok) throw new Error('HTTP ' + remoteResponse.status);
-      const remoteBlob = await remoteResponse.blob();
-      if (f.type === 'html') {
-        fileContent = await remoteBlob.text();
-      } else {
-        const dataUrl = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(String(reader.result || '').split(',')[1] || '');
-          reader.onerror = () => reject(reader.error || new Error('تعذرت قراءة الملف'));
-          reader.readAsDataURL(remoteBlob);
-        });
-        fileContent = dataUrl;
-      }
-      f.content = fileContent;
-    } catch (remoteError) {
-      console.error('Remote file load failed:', remoteError);
-      showToast('تعذر تنزيل الملف من التخزين السحابي. تحقق من صلاحيات Storage والاتصال.', 'error');
-    }
-  }
   if (!fileContent && f.idbStored) {
     fileContent = await getLargeFileContent(f.id);
     if (fileContent) f.content = fileContent;
@@ -1924,47 +1876,21 @@ dropZone.addEventListener('drop', e => handleFileSelect(e.dataTransfer.files[0])
 
 function handleFileSelect(file) {
   if (!file) return;
-  const selectedType = $('fileType').value;
-  const fileName = String(file.name || '').toLowerCase();
-  const validType = selectedType === 'pdf'
-    ? (file.type === 'application/pdf' || fileName.endsWith('.pdf'))
-    : selectedType === 'html'
-      ? (file.type === 'text/html' || fileName.endsWith('.html') || fileName.endsWith('.htm'))
-      : false;
-  if (!validType) {
-    pendingFileData = null;
-    $('fileInput').value = '';
-    $('errorMsg').textContent = selectedType === 'pdf'
-      ? 'نوع الملف غير صحيح. اختر ملف PDF.'
-      : 'نوع الملف غير صحيح. اختر ملف HTML.';
-    $('fileNameDisplay').textContent = 'لم يتم اختيار ملف';
-    return;
-  }
-  if (file.size <= 0) {
-    $('errorMsg').textContent = 'الملف فارغ؛ اختر ملفاً صالحاً.';
-    $('fileInput').value = '';
-    return;
-  }
   if (file.size > MAX_LARGE_FILE_BYTES) {
     $('errorMsg').textContent = 'حجم الملف أكبر من الحد المسموح (25 MB)';
-    $('fileInput').value = '';
     return;
   }
   $('errorMsg').textContent = '';
   pendingFileData = file;
   const sizeLabel = file.size >= 1024 * 1024
     ? (file.size / (1024 * 1024)).toFixed(2) + ' MB'
-    : Math.max(1, Math.round(file.size / 1024)) + ' KB';
+    : Math.round(file.size / 1024) + ' KB';
   $('fileNameDisplay').textContent = `${file.name} (${sizeLabel})`;
-  if (!$('fileTitle').value) $('fileTitle').value = file.name.replace(/\.[^/.]+$/, '');
+  if (!$('fileTitle').value) $('fileTitle').value = file.name.replace(/\.[^/.]+$/, "");
   saveFormDraft();
 }
 
 async function saveFile() {
-  if (!firebase.auth().currentUser || !isAdmin) {
-    $('errorMsg').textContent = 'لا يمكن إضافة الملفات قبل تسجيل الدخول بحساب يحمل صلاحية المدير المعتمدة.';
-    return;
-  }
   const type = $('fileType').value;
   const catId = $('catSelect').value;
   const title = $('fileTitle').value.trim();
@@ -1988,7 +1914,7 @@ async function saveFile() {
       if (previousLargeRecord) await saveLargeFileContent(previousLargeRecord.id, previousLargeRecord.type, previousLargeRecord.content);
       else if (isLargeLocalOnly) await deleteLargeFileContent(record.id);
       writeJson('hudhud_lib_cache', buildLightFirebasePayload());
-      showToast((lastCloudSaveError || 'تعذر تأكيد الحفظ السحابي.') + ' لم تُعتمد إضافة الدرس.', 'error');
+      showToast('لم يتأكد الحفظ السحابي؛ أُعيدت بيانات الدرس والملف المحلي السابق لحمايتها.', 'error');
       return;
     }
     if (!record.idbStored) await deleteLargeFileContent(record.id);
@@ -2036,33 +1962,6 @@ async function saveFile() {
   const existing = editingFileId ? lib.files.find(f => f.id === editingFileId) : null;
   const sizeKb = Math.max(1, Math.round(pendingFileData.size / 1024));
   const isLarge = pendingFileData.size > LARGE_FILE_THRESHOLD;
-
-  if (isLarge) {
-    try {
-      if (!firebase.storage) throw new Error('Firebase Storage SDK غير محمّل');
-      const storage = firebase.storage();
-      const storagePath = `files/${fileId}_${Date.now()}`;
-      const contentType = pendingFileData.type || (type === 'pdf' ? 'application/pdf' : 'text/html');
-      const uploadTask = storage.ref(storagePath).put(pendingFileData, {
-        contentType,
-        customMetadata: { originalName: pendingFileData.name || '', uploadedBy: firebase.auth().currentUser.uid }
-      });
-      $('errorMsg').textContent = 'جارٍ رفع الملف إلى التخزين السحابي…';
-      await uploadTask;
-      const remoteUrl = await uploadTask.snapshot.ref.getDownloadURL();
-      const previousLargeRecord = await getLargeFileRecord(fileId);
-      await finalizeRecord({
-        id: fileId, type, catId, title, note, tags, links, sizeKb,
-        remoteUrl, storagePath, idbStored: false,
-        added: existing ? existing.added : Date.now()
-      }, false, previousLargeRecord);
-      return;
-    } catch (storageError) {
-      console.warn('Firebase Storage upload unavailable; using local fallback:', storageError);
-      const code = storageError && storageError.code ? ` (${storageError.code})` : '';
-      $('errorMsg').textContent = `تعذر الرفع السحابي${code}. سيُحفظ الملف على هذا الجهاز فقط كحل مؤقت.`;
-    }
-  }
 
   const reader = new FileReader();
   reader.onerror = () => { $('errorMsg').textContent = 'تعذر قراءة الملف من الجهاز'; };
